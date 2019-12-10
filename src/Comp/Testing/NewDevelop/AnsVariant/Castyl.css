@@ -1,0 +1,32 @@
+.checkbox {
+	position:relative;
+	padding-left:25px;
+  margin-left:20px;
+  margin-top:-15px;
+}
+.checkbox input[type=checkbox] {
+	display:none;
+}
+.checkbox label:after {
+	content:'';
+	display:block;
+	height:25px;
+	width:25px;
+	outline:2px solid rgba(0, 0, 0, 0.54);
+	position:absolute;
+	top:0;
+	left:0;
+}
+.checkbox input[type=checkbox]:checked + label:after {
+	outline:2px solid #3f51b5;
+	border:5px solid #fff;
+	width:15px;
+	height:15px;
+	background-color:#fff;
+	color: #3f51b5;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	content: "\2714";
+	font: 20pt Arial;
+}

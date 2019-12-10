@@ -1,0 +1,53 @@
+{
+  "name": "work",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@date-io/date-fns": "^1.3.11",
+    "@material-ui/core": "^4.4.2",
+    "@material-ui/icons": "^4.4.1",
+    "@material-ui/lab": "^4.0.0-alpha.26",
+    "@material-ui/pickers": "^3.2.7",
+    "chart.js": "^2.8.0",
+    "date-fns": "^2.0.0-beta.5",
+    "final-form": "^4.18.6",
+    "final-form-arrays": "^3.0.2",
+    "final-form-material-ui": "^0.3.0",
+    "notistack": "^0.9.3",
+    "react": "^16.9.0",
+    "react-awesome-modal": "^2.0.5",
+    "react-chartjs-2": "^2.8.0",
+    "react-datepicker2": "^3.0.3",
+    "react-dom": "^16.9.0",
+    "react-final-form": "^6.3.3",
+    "react-final-form-arrays": "^3.1.1",
+    "react-minimal-pie-chart": "^5.0.2",
+    "react-scripts": "3.1.1",
+    "react-spring": "^8.0.27",
+    "react-trend": "^1.2.5",
+    "reaviz": "^3.0.3",
+    "recharts": "^1.7.1",
+    "styled-components": "^4.3.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
