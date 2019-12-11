@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import { TextField } from 'final-form-material-ui'
 import arrayMutators from 'final-form-arrays'
+import { CircularProgress } from '@material-ui/core'
 
 import { Form, Field  } from "react-final-form";
 
@@ -42,7 +43,7 @@ class EditorTest extends PureComponent {
 				initialValues={{
 					block: [
 						{
-							name: 'Блок 1',
+							name: 'Блок 1 Блок 1 Блок 1',
 							quest: [
 								{
 									name: 'Вопрос 1',
@@ -52,11 +53,12 @@ class EditorTest extends PureComponent {
 							]
 						}
 					],
-					focus: '0',
-					focusBlock: '0',
+					focus: 0,
+					focusBlock: 0,
+					loader: false,
 				}}
 				render={({ handleSubmit, form: { mutators: { push, remove }}, submitting, pristine, values }) => {
-					const { focus, focusBlock } = values
+					const { focus, focusBlock, loader } = values
 					return (
 						<DevelopProvider value={{
 							values: values,
@@ -67,9 +69,14 @@ class EditorTest extends PureComponent {
 							focus: values.focus,
 							focusBlock: values.focusBlock
 						}}>
+
+							<Loader in={loader}>
+								<CircularProgress />
+							</Loader>
+
 							<RootEditor>
 								<TopCard w={wTopCard}>
-									<CloseButton variant='outlined' color='secondary'>Закрыть редактор</CloseButton>
+									<CloseButton variant='outlined' color='secondary' onClick={this.props.onCloseEditor}>Закрыть редактор</CloseButton>
 									<Field
 										name={`block[${focusBlock}].quest[${focus}].name`}
 										component={StyledTextField}
@@ -107,6 +114,18 @@ class EditorTest extends PureComponent {
 const StyledTextField = styled(TextField)` && {
 	max-height: 40px;
 	width: ${p=>p.w - 420}px;
+}`
+
+const Loader = styled.div` {
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background-color: rgba(255,255,255,0.8);
+	position: absolute;
+	justify-content: center;
+	align-items: center;
+	top: 0px;
+	display: ${p=>p.in ? 'flex' : 'none'};
 }`
 
 export default EditorTest

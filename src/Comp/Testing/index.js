@@ -8,8 +8,7 @@ import MyBreakTemplate from 'Comp/Card/MyBreakTemplate'
 class Testing extends Component {
 
   state = {
-    activeTest: 0,
-
+    activeTest: 1,
   }
 
   render () {

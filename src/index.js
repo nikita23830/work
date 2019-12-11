@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import * as serviceWorker from './serviceWorker';
 
 render(
-  <SnackbarProvider maxSnack={5}>
+  <SnackbarProvider maxSnack={5} >
     <App />
   </SnackbarProvider>,
   document.getElementById("root")

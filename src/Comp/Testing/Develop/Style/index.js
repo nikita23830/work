@@ -271,7 +271,7 @@ export const StyleButton = styled(Button)` && {
 }`
 
 export const Root = styled(Card)` && {
-  height: ${p=>p.h - 11}px;
+  height: ${p=>p.h - 16}px;
   flex-grow: 1;
 	border-bottom: 1px solid #3f51b5;
 	border-top: 1px solid #3f51b5;
