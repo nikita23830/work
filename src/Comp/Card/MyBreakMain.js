@@ -10,7 +10,7 @@ import {Card,
   TableBody,
   TableCell,
   TableHead,
-  IconButton
+  IconButton,
 } from '@material-ui/core'
 import { Delete } from '@material-ui/icons'
 
@@ -21,7 +21,7 @@ class MyBreakMain extends Component {
     wMain: 100,
   }
 
-  componentDidMount () {
+  componentDidMount() {
     let hMain = document.documentElement.clientHeight - 84
     let wMain = (document.documentElement.clientWidth - 20) / 2
     this.setState({ hMain: hMain, wMain: wMain })
@@ -29,6 +29,7 @@ class MyBreakMain extends Component {
 
   render() {
     const { hMain, wMain } = this.state
+    const { list, deleteMyBreak } = this.props
     return (
       <>
         <StyledCard h={hMain} w={wMain}>
@@ -45,18 +46,17 @@ class MyBreakMain extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell align='left'>11:50</TableCell>
-                <TableCell align='left'>15 минут</TableCell>
-                <TableCell align='right'>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-
-              
-
+              {list.map((i, index) => (
+                <TableRow>
+                  <TableCell align='left'>{i[0]}</TableCell>
+                  <TableCell align='left'>{i[1]}</TableCell>
+                  <TableCell align='right'>
+                    <IconButton aria-label="delete">
+                      <Delete color='primary' onClick={deleteMyBreak(index)}/>
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
 
@@ -77,6 +77,19 @@ const StyledSpan = styled.span` && {
   width: 100%;
   display: flex;
   justify-content: space-between;
+}`
+
+const Loader = styled.div` {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,255,255,0.5);
+  display: ${p=>p.loader ? 'flex' : 'none'};
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
 }`
 
 export default MyBreakMain

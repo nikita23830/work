@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-
+import { withCookies, Cookies } from 'react-cookie';
 import MainTable from 'Comp/MainTable'
 import MainPage from 'Comp/MainPage'
 import DefAppBar from 'Comp/AppBar'
@@ -16,6 +16,7 @@ import Rating from 'Comp/Rating'
 import Profile from 'Comp/Rating/Profile'
 import EveryDayReport from 'Comp/Report/EveryDayReport'
 import RatingShop from 'Comp/Rating/Shop'
+import Auth from 'Comp/Auth'
 
 import RouterTest from 'Comp/Testing/router'
 
@@ -23,39 +24,53 @@ import RouterTest from 'Comp/Testing/router'
 class Main extends Component {
 
   state = {
-    openDialogTable: false,
     page: 0,
     drawer: false,
-  }
-
-  handleClose = () => {
-    this.setState({ openDialogTable: false })
-  }
-
-  handleClick = () => {
-
+    needAuth: true,
+    login: '',
+    people_id: -1,
   }
 
   openDrawer = () => this.setState({ drawer: !this.state.drawer })
 
-  onContextMenu = (h, m) => (e) => {
-    e.preventDefault();
-    this.setState({ openDialogTable: true })
-  }
-
   onChangePage = (index) => () => {
-    this.setState({ page: index })
-	localStorage.setItem('activePage', index)
+    this.setState({ page: index, drawer: false })
+	  localStorage.setItem('activePage', index)
   }
 
-  componentWillMount() {
-	  let page = localStorage.getItem('activePage')
+  onCheckAuth = async (uid, login) => {
+    const { cookies, socket } = this.props
+    await cookies.set('token', uid, { path: '/' });
+    await this.setState({ needAuth: false })
+    await socket.emit('addLogin', {type: 'login', login: login})
+  }
+
+  async componentWillMount() {
+    const { cookies, socket } = this.props
+    const uid = cookies.get('token')
+    if (uid) this.setState({ needAuth: false })
+    let page = localStorage.getItem('activePage')
 	  this.setState({ page: page === null ? 0 : +page })
   }
 
+  async componentDidMount() {
+    const { needAuth } = this.state
+    const { cookies, socket } = this.props
+    const uid = cookies.get('token')
+    await socket.emit('newCon', '')
+    if (!needAuth) await socket.emit('addLogin', {type: 'uid', uid: uid})
+    await socket.on('addLogin', (data) => {
+      this.setState({ login: data.login, people_id: data.people_id})
+    })
+  }
+
   render () {
-    const { openDialogTable, page, drawer } = this.state
-    return (
+    const { openDialogTable, page, drawer, needAuth } = this.state
+    const { socket } = this.props
+    if (needAuth) return (
+      <Auth socket={socket} submit={this.onCheckAuth}/>
+    )
+    else return (
       <>
         <DefAppBar openDrawer={this.openDrawer} />
 
@@ -63,13 +78,7 @@ class Main extends Component {
 
         <StyleMainDiv>
 
-          {getPageContent({
-            page,
-            onContextMenu: this.onContextMenu,
-            handleClose: this.handleClose,
-            openDialogTable: openDialogTable
-
-          })}
+          {getPageContent({ page })}
 
         <ChipCheckServer />
         </StyleMainDiv>
@@ -158,4 +167,4 @@ const StyleMainDiv = styled.div` && {
 }`
 
 
-export default Main
+export default withCookies(Main)

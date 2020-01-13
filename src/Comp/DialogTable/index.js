@@ -13,13 +13,13 @@ import { Add } from '@material-ui/icons'
 class DialogTable extends Component {
 
   render () {
-    const {handleClose, openDialogTable} = this.props
+    const {handleClose, openDialogTable, onClickCustom} = this.props
     return (
-      <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={openDialogTable}>
+      <Dialog onClose={handleClose(0,0)} aria-labelledby="simple-dialog-title" open={openDialogTable}>
         <DialogTitle id="simple-dialog-title">Продолжительность перерыва</DialogTitle>
         <List>
 
-          <ListItem button onClick={() => console.log('addAccount')}>
+          <ListItem button onClick={onClickCustom(1)}>
             <ListItemAvatar>
               <Avatar>
                 <Add />
@@ -27,7 +27,7 @@ class DialogTable extends Component {
             </ListItemAvatar>
             <ListItemText primary="5 минут" />
           </ListItem>
-          <ListItem button onClick={() => console.log('addAccount')}>
+          <ListItem button onClick={onClickCustom(2)}>
             <ListItemAvatar>
               <Avatar>
                 <Add />
@@ -35,7 +35,7 @@ class DialogTable extends Component {
             </ListItemAvatar>
             <ListItemText primary="10 минут" />
           </ListItem>
-          <ListItem button onClick={() => console.log('addAccount')}>
+          <ListItem button onClick={onClickCustom(3)}>
             <ListItemAvatar>
               <Avatar>
                 <Add />

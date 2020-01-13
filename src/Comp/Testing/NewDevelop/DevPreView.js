@@ -6,128 +6,63 @@ import { ExpandMore } from '@material-ui/icons'
 class DevPreView extends Component {
 
 	render() {
-		const { showDevPreView, onDevPreView } = this.props
+		const { showDevPreView, onDevPreView, data } = this.props
 		return (
 			<Modal
 				aria-labelledby="simple-modal-title"
 				aria-describedby="simple-modal-description"
 				open={showDevPreView}
 			 >
-				<ModalDiv>
+				{data && <ModalDiv>
 					<StyleCard>
 						<HeadBlock>
-							<LiHead>
-								<p>Название</p>
-								<p>АО 3 квартал 2019</p>
-							</LiHead>
-							<LiHead>
-								<p>Заданное количество вопросов</p>
-								<p>206</p>
-							</LiHead>
-							<LiHead>
-								<p>Выходное количество вопросов</p>
-								<p>100</p>
-							</LiHead>
-							<LiHead>
-								<p>Количество блоков</p>
-								<p>10</p>
-							</LiHead>
-							<LiHead>
-								<p>Дата открытия теста</p>
-								<p>21.11.2019</p>
-							</LiHead>
-							<LiHead>
-								<p>Дата закрытия теста</p>
-								<p>22.11.2019</p>
-							</LiHead>
-							<LiHead>
-								<p>Создан</p>
-								<p>t.testov</p>
-							</LiHead>
-							<LiHead>
-								<p>Редактирован</p>
-								<p>t.testov</p>
-							</LiHead>
-							<LiHead>
-								<p>Указан отдел</p>
-								<p>Астрал Отчет</p>
-							</LiHead>
-							<LiHead>
-								<p>Основной блок</p>
-								<p>-</p>
-							</LiHead>
+							<LiHead><p>Название</p><p>{data.name}</p></LiHead>
+							<LiHead><p>Заданное количество вопросов</p><p>{data.eNum}</p></LiHead>
+							<LiHead><p>Выходное количество вопросов</p><p>{data.outNum}</p></LiHead>
+							<LiHead><p>Количество блоков</p><p>{data.tree && data.tree.block.length}</p></LiHead>
+							<LiHead><p>Дата открытия теста</p><p>{data.dataIn}</p></LiHead>
+							<LiHead><p>Дата закрытия теста</p><p>{data.dataOut}</p></LiHead>
+							<LiHead><p>Создан</p><p>{data.create}</p></LiHead>
+							<LiHead><p>Редактирован</p><p>{data.create}</p></LiHead>
+							<LiHead><p>Указан отдел</p><p>{data.otd}</p></LiHead>
+							<LiHead><p>Основной блок</p><p>-</p></LiHead>
 						</HeadBlock>
 
-						<ExpansionPanel>
-							<ExpansionPanelSummary
-								expandIcon={<ExpandMore />}
-								aria-controls="panel1a-content"
-								id="panel1a-header"
-							>
-								<Typography>Блок 1</Typography>
-							</ExpansionPanelSummary>
-							<StyleExpansionPanelDetails>
-								<BodyBlock>
-									<BlockQ>Вопрос</BlockQ>
-									<BlockA>
-										<Ans true={true}>Верный длинный длинный длинный длинный длинный длинный длинный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-										<Ans true={false}>Неверный длинный длинный длинный длинный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-									</BlockA>
-								</BodyBlock>
-								<hr width="100%"/>
-								<BodyBlock>
-									<BlockQ>Вопрос</BlockQ>
-									<BlockA>
-										<Ans true={true}>Верный длинный длинный длинный длинный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-										<Ans true={false}>Неверный длинный длинный длинный длинный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-									</BlockA>
-								</BodyBlock>
-								<hr width="100%"/>
-								<BodyBlock>
-									<BlockQ>Вопрос</BlockQ>
-									<BlockA>
-										<Ans true={true}>Верный длинный длинный длинный длинный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-										<Ans true={false}>Неверный длинный длинный длинный длинный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-									</BlockA>
-								</BodyBlock>
-								<hr width="100%"/>
-								<BodyBlock>
-									<BlockQ>Вопрос</BlockQ>
-									<BlockA>
-										<Ans true={true}>Верный длинный длинный длинный длинный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-										<Ans true={false}>Неверный длинный длинный длинный длинный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-									</BlockA>
-								</BodyBlock>
-								<hr width="100%"/>
-								<BodyBlock>
-									<BlockQ>Вопрос</BlockQ>
-									<BlockA>
-										<Ans true={true}>Верный длинный длинный длинный длинный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-										<Ans true={false}>Неверный длинный длинный длинный длинный ответ</Ans>
-										<Ans true={false}>Неверный ответ</Ans>
-									</BlockA>
-								</BodyBlock>
-							</StyleExpansionPanelDetails>
-						</ExpansionPanel>
+						{data && data.tree && data.tree.block.map(i => (
+							<ExpansionPanel>
+								<ExpansionPanelSummary
+									expandIcon={<ExpandMore />}
+									aria-controls="panel1a-content"
+									id="panel1a-header"
+								>
+									<Typography>{i.name}</Typography>
+								</ExpansionPanelSummary>
+								<StyleExpansionPanelDetails>
+									{i.quest.map(j => (
+										<>
+											<BodyBlock>
+												<BlockQ>{j.name === '' ? <em>Без названия</em> : j.name}</BlockQ>
+												<BlockA>
+													{j.ans.map((k, kIndex) => {
+														let kTrue = j.true.indexOf(`a${kIndex}`) === -1 ? false : true
+														return (
+															<Ans true={kTrue}>{k.text}</Ans>
+														)
+													})}
+												</BlockA>
+											</BodyBlock>
+											<hr width="100%"/>
+										</>
+									))}
+								</StyleExpansionPanelDetails>
+							</ExpansionPanel>
+						))}
 
 
 					</StyleCard>
 
 					<CloseButton variant='outlined' color='secondary' onClick={onDevPreView}>Закрыть</CloseButton>
-				</ModalDiv>
+				</ModalDiv>}
 			  </Modal>
 		)
 	}

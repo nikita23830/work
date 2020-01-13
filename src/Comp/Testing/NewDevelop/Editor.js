@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { TextField } from 'final-form-material-ui'
 import arrayMutators from 'final-form-arrays'
 import { CircularProgress } from '@material-ui/core'
+import { SnackbarProvider, withSnackbar } from 'notistack';
 
 import { Form, Field  } from "react-final-form";
 
@@ -25,7 +26,11 @@ class EditorTest extends PureComponent {
 		this.setState({ ...dt })
 	}
 
-	onSubmit = () => { }
+	onSubmit = async (json) => {
+		const { enqueueSnackbar, onSaveTree } = this.props
+		await onSaveTree(json)()
+		enqueueSnackbar(`Сохранено`, {variant: 'success',autoHideDuration: 3000})
+	}
 
 	bindFormApi = formApi => {
 		this.formApi = formApi;
@@ -40,23 +45,7 @@ class EditorTest extends PureComponent {
 				onSubmit={this.onSubmit}
 				mutators={{ ...arrayMutators }}
 				decorators={[this.bindFormApi]}
-				initialValues={{
-					block: [
-						{
-							name: 'Блок 1 Блок 1 Блок 1',
-							quest: [
-								{
-									name: 'Вопрос 1',
-									type: 'one',
-									ans: []
-								}
-							]
-						}
-					],
-					focus: 0,
-					focusBlock: 0,
-					loader: false,
-				}}
+				initialValues={this.props.tree}
 				render={({ handleSubmit, form: { mutators: { push, remove }}, submitting, pristine, values }) => {
 					const { focus, focusBlock, loader } = values
 					return (
@@ -88,7 +77,7 @@ class EditorTest extends PureComponent {
 										variant='outlined'
 										required={true}
 									/>
-									<SaveButton variant='outlined' color='primary' disabled>Сохранить</SaveButton>
+									<SaveButton variant='outlined' color='primary' onClick={() => this.formApi.submit()}>Сохранить</SaveButton>
 								</TopCard>
 
 
@@ -128,4 +117,4 @@ const Loader = styled.div` {
 	display: ${p=>p.in ? 'flex' : 'none'};
 }`
 
-export default EditorTest
+export default withSnackbar(EditorTest)

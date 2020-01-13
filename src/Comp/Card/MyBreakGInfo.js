@@ -17,6 +17,7 @@ class MyBreakGInfo extends Component {
 
   render() {
     const { hMain, wMain } = this.state
+    const { list } = this.props
     return (
       <>
         <StyledCard h={hMain} w={wMain}>
@@ -29,7 +30,7 @@ class MyBreakGInfo extends Component {
                 Установлено перерывов:
               </Typography>
               <Typography variant="body2" component="p">
-                3
+                {list.length}
               </Typography>
             </StyledSpan>
             <StyledSpan>
@@ -37,7 +38,7 @@ class MyBreakGInfo extends Component {
                 Среднее время перерыва:
               </Typography>
               <Typography variant="body2" component="p">
-                15 мин.
+                {sred(list)}
               </Typography>
             </StyledSpan>
             <StyledSpan>
@@ -45,7 +46,7 @@ class MyBreakGInfo extends Component {
                 Установлено времени:
               </Typography>
               <Typography variant="body2" component="p">
-                45 мин.
+                {sum(list)}
               </Typography>
             </StyledSpan>
             <StyledSpan>
@@ -53,7 +54,7 @@ class MyBreakGInfo extends Component {
                 Осталось свободно:
               </Typography>
               <Typography variant="body2" component="p">
-                0 мин.
+                {ost(list)}
               </Typography>
             </StyledSpan>
           </StyleCardContent>
@@ -61,6 +62,29 @@ class MyBreakGInfo extends Component {
       </>
     )
   }
+}
+
+const sum = (data) => {
+  let result = 0;
+  data.map(i => {
+    result = result + (i[2].length * 5)
+  })
+  return `${result} мин.`
+}
+
+const ost = (data) => {
+  let result = 45;
+  data.map(i => {
+    result = result - (i[2].length * 5)
+  })
+  return `${result} мин.`
+}
+
+const sred = (data) => {
+  let arr = []
+  data.map(i => arr.push(i[2].length))
+  let sum = arr.reduce((a, b) => a + b, 0);
+  return `${Math.round((sum/arr.length)*5)} мин.`
 }
 
 const StyledCard = styled(Card)` && {
