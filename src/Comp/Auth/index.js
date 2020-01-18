@@ -1,7 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
-import { Card, Grid, TextField, Button, Typography, CircularProgress } from '@material-ui/core'
+import { Card, Grid, TextField, Button, Typography, CircularProgress, Link, Collapse, Select, MenuItem } from '@material-ui/core'
+
+import { Registration } from 'Comp/Auth/Reg'
 
 class Auth extends React.Component {
 
@@ -9,6 +11,15 @@ class Auth extends React.Component {
     login: '',
     pass: '',
     loader: false,
+    reg: false,
+    loaderReg: true,
+    listDept: [],
+    manager: [],
+    regist: {
+      dept: -1,
+      manager: -1,
+    },
+    errorRegist: {}
   }
 
   checkAuth = async () => {
@@ -18,44 +29,114 @@ class Auth extends React.Component {
     await socket.emit('checkAuth', {login: login, pass: pass})
   }
 
+  changeReg = () => this.setState({ reg: !this.state.reg })
+
+  checkLoginInReg = (e) => this.props.socket.emit('checkLoginInReg', e.target.value)
+
+  chandeDataRegist = (name, value) => {
+    let error = this.state.errorRegist
+    delete error[name]
+    if (name === 'dept')
+      this.setState({ regist: { ...this.state.regist, [name]: value, manager: -1 }, errorRegist: error })
+    else this.setState({ regist: { ...this.state.regist, [name]: value }, errorRegist: error })
+  }
+
+  onRequestRegistration = () => {
+    this.setState({ loaderReg: true })
+    const { regist, errorRegist } = this.state
+    const { socket, enqueueSnackbar } = this.props
+    let error = checkRegist(regist, errorRegist)
+    if (Object.keys(error).length > 0) {
+      enqueueSnackbar(`Не все данные заполнены`, {variant: 'warning',autoHideDuration: 3000})
+      this.setState({ errorRegist: error, loaderReg: false })
+    } else socket.emit('requestRegistration', regist)
+  }
+
   async componentDidMount() {
     const { socket, enqueueSnackbar, submit } = this.props
-    await socket.on('checkAuth', (data) => {
+    const dept = ['Астрал Отчет', '1С-Отчетность']
+    socket.emit('getAllToReg', '')
+    await socket.on('checkAuth', (data) => { // проверка на авторизацию
       this.setState({ loader: false })
       if (!data.true) enqueueSnackbar(`Неверный логин или пароль`, {variant: 'warning',autoHideDuration: 3000})
-      else submit(data.uid, this.state.login)
+      else {
+        enqueueSnackbar(`Успешная авторизация: ${data.surname} ${data.name}. Отдел: ${dept[data.dept]}`, {variant: 'success',autoHideDuration: 5000})
+        submit(data.uid, this.state.login)
+      }
+    })
+    await socket.on('send_error', (data) => { // прием ошибок
+      if (data.name) enqueueSnackbar(`${data.severity}: ${data.routine}. Code: ${data.code}`, {variant: data.name,autoHideDuration: 6000})
+      else enqueueSnackbar(data, {variant: 'error',autoHideDuration: 6000})
+      this.setState({ loaderReg: false })
+    })
+    await socket.on('getAllToReg', (data) => { // получаем данные для SELECT'ов регистрации
+      let manager = []
+      data.manager.map(i => {
+        if (!manager[i.id_dept]) manager[i.id_dept]= [];
+        manager[i.id_dept].push(`${i.surname} ${i.name}`)
+      })
+      for (let i = -1; i < manager.length; i++) { if (!manager[i]) manager[i] = [] }
+      this.setState({ listDept: data.dept, loaderReg: false, manager: manager })
+    })
+    await socket.on('checkLoginInReg', (data) => { // проверка занятости логина
+      if (!data.free) {
+        enqueueSnackbar(`Введенный логин уже занят`, {variant: 'warning',autoHideDuration: 3000})
+        this.setState({ errorRegist: { ...this.state.errorRegist, login: true } })
+      }
     })
   }
 
   render () {
-    const { login, pass, loader } = this.state
+    const { login, pass, loader, reg, loaderReg, manager, listDept, regist, errorRegist } = this.state
     return (
       <>
         <Loader loader={loader}>
           <CircularProgress />
         </Loader>
-        <AuthCard>
+        <AuthCard reg={reg}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={12}>
-              <Typography>Авторизация</Typography>
+              <Typography>{reg ? 'Регистрация' : 'Авторизация'}</Typography>
             </Grid>
             <Grid item xs={12} sm={12}>
-              <TextField
-                label='Логин'
-                value={login}
-                onChange={e => this.setState({ login: e.target.value })}
-              />
+              <Collapse in={!reg}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      label='Логин'
+                      value={login}
+                      onChange={e => this.setState({ login: e.target.value })}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      label='Пароль'
+                      type='password'
+                      value={pass}
+                      onChange={e => this.setState({ pass: e.target.value })}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <Button color='primary' variant='outlined' onClick={this.checkAuth}>Войти</Button>
+                  </Grid>
+                </Grid>
+              </Collapse>
+
+              <CustomCollapse in={reg}>
+                <Registration
+                  loaderReg={loaderReg}
+                  manager={manager}
+                  listDept={listDept}
+                  regist={regist}
+                  chandeDataRegist={this.chandeDataRegist}
+                  onRequestRegistration={this.onRequestRegistration}
+                  errorRegist={errorRegist}
+                  checkLoginInReg={this.checkLoginInReg}
+                />
+              </CustomCollapse>
             </Grid>
             <Grid item xs={12} sm={12}>
-              <TextField
-                label='Пароль'
-                type='password'
-                value={pass}
-                onChange={e => this.setState({ pass: e.target.value })}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <Button color='primary' variant='outlined' onClick={this.checkAuth}>Войти</Button>
+              <Link href='#' onClick={this.changeReg}>{reg ? 'Войти' : 'Зарегистрироваться'}</Link>
             </Grid>
           </Grid>
         </AuthCard>
@@ -66,14 +147,36 @@ class Auth extends React.Component {
 
 export default withSnackbar(Auth)
 
+const checkRegist = (regist, errorRegist) => {
+  const temp = ['name', 'surname', 'login', 'pass']
+  let result = { ...errorRegist }
+  temp.forEach(i => { if (!regist[i]) result[i] = true })
+  if (regist.name && regist.name.replace(/\s/g, '') === '') result.name = true
+  if (regist.surname && regist.surname.replace(/\s/g, '') === '') result.surname = true
+  if (regist.login && regist.login.replace(/\s/g, '') === '') result.login = true
+  if (regist.pass && regist.pass.replace(/\s/g, '') === '') result.pass = true
+  if (regist.dept === -1) result.dept = true
+  if (regist.manager === -1) result.manager = true
+  return result
+}
+
+const CustomCollapse = styled(Collapse)` && {
+  position: relative;
+}`
+
 const AuthCard = styled(Card)` && {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 300px;
-  height: 240px;
+  height: ${p=>!p.reg ? '280px' : '310px'};
   padding: 10px;
+}`
+
+const CustomGrid = styled(Grid)` && {
+  display: flex;
+  flex-direction: row;
 }`
 
 const Loader = styled.div` {

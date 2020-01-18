@@ -17,10 +17,10 @@ class App extends React.Component {
 
   componentDidMount = async () => {
     const { enqueueSnackbar } = this.props
-    await socket.on('restart', () => {
-      this.setState({ loader: true })
+    await socket.on('restart', async () => {
       enqueueSnackbar(`Сервер перезапущен. Настройка...`, {variant: 'info',autoHideDuration: 3000})
-      sleep(3000);
+      this.setState({ loader: true })
+      sleep(5000);
       window.location.reload()
     })
   }

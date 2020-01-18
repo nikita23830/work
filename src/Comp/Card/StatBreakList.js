@@ -13,6 +13,7 @@ import {Card,
   IconButton
 } from '@material-ui/core'
 import { Delete } from '@material-ui/icons'
+import { TIMING } from 'Comp/MainTable/tools'
 
 class StatBreakList extends Component {
 
@@ -27,6 +28,7 @@ class StatBreakList extends Component {
 
   render() {
     const { heightList } = this.state
+    const { list, delBreakWithListStat } = this.props
     return (
       <>
         <StyledCard height={heightList}>
@@ -42,124 +44,20 @@ class StatBreakList extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell><a href='#'>Тестов Т.</a></TableCell>
-                <TableCell>11:50</TableCell>
-                <TableCell>12:05</TableCell>
-                <TableCell>15 минут</TableCell>
-                <TableCell>Шкляр С.</TableCell>
-                <TableCell>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell><a href='#'>Тестов Т.</a></TableCell>
-                <TableCell>11:50</TableCell>
-                <TableCell>12:05</TableCell>
-                <TableCell>15 минут</TableCell>
-                <TableCell>Шкляр С.</TableCell>
-                <TableCell>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell><a href='#'>Тестов Т.</a></TableCell>
-                <TableCell>11:50</TableCell>
-                <TableCell>12:05</TableCell>
-                <TableCell>15 минут</TableCell>
-                <TableCell>Шкляр С.</TableCell>
-                <TableCell>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell><a href='#'>Тестов Т.</a></TableCell>
-                <TableCell>11:50</TableCell>
-                <TableCell>12:05</TableCell>
-                <TableCell>15 минут</TableCell>
-                <TableCell>Шкляр С.</TableCell>
-                <TableCell>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell><a href='#'>Тестов Т.</a></TableCell>
-                <TableCell>11:50</TableCell>
-                <TableCell>12:05</TableCell>
-                <TableCell>15 минут</TableCell>
-                <TableCell>Шкляр С.</TableCell>
-                <TableCell>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell><a href='#'>Тестов Т.</a></TableCell>
-                <TableCell>11:50</TableCell>
-                <TableCell>12:05</TableCell>
-                <TableCell>15 минут</TableCell>
-                <TableCell>Шкляр С.</TableCell>
-                <TableCell>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell><a href='#'>Тестов Т.</a></TableCell>
-                <TableCell>11:50</TableCell>
-                <TableCell>12:05</TableCell>
-                <TableCell>15 минут</TableCell>
-                <TableCell>Шкляр С.</TableCell>
-                <TableCell>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell><a href='#'>Тестов Т.</a></TableCell>
-                <TableCell>11:50</TableCell>
-                <TableCell>12:05</TableCell>
-                <TableCell>15 минут</TableCell>
-                <TableCell>Шкляр С.</TableCell>
-                <TableCell>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell><a href='#'>Тестов Т.</a></TableCell>
-                <TableCell>11:50</TableCell>
-                <TableCell>12:05</TableCell>
-                <TableCell>15 минут</TableCell>
-                <TableCell>Шкляр С.</TableCell>
-                <TableCell>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-
-
+              {list.map(i => (
+                <TableRow>
+                  <TableCell>{i.name}</TableCell>
+                  <TableCell>{TIMING[i.start][1]}:{addZero(TIMING[i.start][2])}</TableCell>
+                  <TableCell>{TIMING[i.end][1]}:{addZero(TIMING[i.end+1][2])}</TableCell>
+                  <TableCell>{i.array.length * 5} мин.</TableCell>
+                  <TableCell>{i.mName}</TableCell>
+                  <TableCell>
+                    <IconButton aria-label="delete" onClick={delBreakWithListStat}>
+                      <Delete color='primary' />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
 
@@ -181,5 +79,9 @@ const StyledSpan = styled.span` && {
   display: flex;
   justify-content: space-between;
 }`
+
+function addZero(n) {
+    return String("00" + n).slice(-2);
+}
 
 export default StatBreakList

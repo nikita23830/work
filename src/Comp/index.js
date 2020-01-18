@@ -17,6 +17,7 @@ import Profile from 'Comp/Rating/Profile'
 import EveryDayReport from 'Comp/Report/EveryDayReport'
 import RatingShop from 'Comp/Rating/Shop'
 import Auth from 'Comp/Auth'
+import { CircularProgress } from '@material-ui/core'
 
 import RouterTest from 'Comp/Testing/router'
 
@@ -29,6 +30,7 @@ class Main extends Component {
     needAuth: true,
     login: '',
     people_id: -1,
+    loader: true
   }
 
   openDrawer = () => this.setState({ drawer: !this.state.drawer })
@@ -43,6 +45,12 @@ class Main extends Component {
     await cookies.set('token', uid, { path: '/' });
     await this.setState({ needAuth: false })
     await socket.emit('addLogin', {type: 'login', login: login})
+  }
+
+  onExit = () => {
+    const { cookies } = this.props
+    cookies.remove('token')
+    window.location.reload()
   }
 
   async componentWillMount() {
@@ -60,25 +68,30 @@ class Main extends Component {
     await socket.emit('newCon', '')
     if (!needAuth) await socket.emit('addLogin', {type: 'uid', uid: uid})
     await socket.on('addLogin', (data) => {
-      this.setState({ login: data.login, people_id: data.people_id})
+      this.setState({ login: data.login, people_id: data.people_id, loader: false })
     })
   }
 
   render () {
-    const { openDialogTable, page, drawer, needAuth } = this.state
+    const { openDialogTable, page, drawer, needAuth, loader, people_id } = this.state
     const { socket } = this.props
     if (needAuth) return (
       <Auth socket={socket} submit={this.onCheckAuth}/>
     )
+    else if (loader) return (
+      <Loader loader={true}>
+        <CircularProgress />
+      </Loader>
+    )
     else return (
       <>
-        <DefAppBar openDrawer={this.openDrawer} />
+        <DefAppBar openDrawer={this.openDrawer} onExit={this.onExit} onChangePage={this.onChangePage} page={page}/>
 
         <DefDrawer onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer}/>
 
         <StyleMainDiv>
 
-          {getPageContent({ page })}
+          {getPageContent({ page: page, people_id: people_id })}
 
         <ChipCheckServer />
         </StyleMainDiv>
@@ -166,5 +179,17 @@ const StyleMainDiv = styled.div` && {
   margin-top: 5px;
 }`
 
+const Loader = styled.div` {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,255,255,0.5);
+  display: ${p=>p.loader ? 'flex' : 'none'};
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}`
 
 export default withCookies(Main)

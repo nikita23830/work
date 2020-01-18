@@ -19,6 +19,7 @@ class MainPageDiagram extends Component {
   }
 
   render() {
+    const { diag } = this.props
     const { wMain } = this.state;
     return (
       <StyledCard ref={(card) => { this.card = card; }} w={wMain}>
@@ -29,7 +30,7 @@ class MainPageDiagram extends Component {
           <ComposedChart
             width={wMain - 30}
             height={150}
-            data={data}
+            data={diag}
             margin={{
               top: 10, right: 0, bottom: -10, left: -40,
             }}
@@ -76,61 +77,6 @@ const CustomTooltip = ({ active, payload, label }) => {
 
   return null;
 };
-
-const data = [
-  {
-    name: "8:00",
-    uv: 11
-  },
-  {
-    name: "9:00",
-    uv: 7
-  },
-  {
-    name: "10:00",
-    uv: 3
-  },
-  {
-    name: "11:00",
-    uv: 20
-  },
-  {
-    name: "12:00",
-    uv: 30
-  },
-  {
-    name: "13:00",
-    uv: 10
-  },
-  {
-    name: "14:00",
-    uv: 5
-  },
-  {
-    name: "15:00",
-    uv: 14
-  },
-  {
-    name: "16:00",
-    uv: 11
-  },
-  {
-    name: "17:00",
-    uv: 13
-  },
-  {
-    name: "18:00",
-    uv: 7
-  },
-  {
-    name: "19:00",
-    uv: 3
-  },
-  {
-    name: "20:00",
-    uv: 1
-  }
-];
 
 const Styletext = styled.text` && {
   font-size: 8pt;

@@ -24,7 +24,7 @@ class MainTable extends Component {
     login: '',
     table: {},
     state: false,
-    loader: true
+    loader: true,
   }
 
   randomString(i) {
@@ -37,7 +37,7 @@ class MainTable extends Component {
   onRules = (e) => {
     const { enqueueSnackbar } = this.props
     e.preventDefault()
-    enqueueSnackbar(`Невозможно. Причина: Правила`, {variant: 'warning',autoHideDuration: 3000})
+    enqueueSnackbar(`Невозможно установить перерыв. Причина: Правила`, {variant: 'warning',autoHideDuration: 3000})
   }
 
   onClick = (id) => async () => {
@@ -49,10 +49,10 @@ class MainTable extends Component {
     let error = 0
     TIMING.map(i => { if (i[3] === id) id_cell = i[0] })
     for (let i = id_cell; i <= id_cell+2; i++) {
-      if (i>-1 && i<205 && (table[TIMING[i][3]] === COLORS[1] || table[TIMING[i][3]] === COLORS[3])) error = 1
+      if (i>-1 && i<204 && (table[TIMING[i][3]] === COLORS[0] || table[TIMING[i][3]] === COLORS[3])) error = 1
     }
     if (error === 1) {
-      enqueueSnackbar(`Невозможно. Причина: Задет закрытый участок времени`, {variant: 'warning',autoHideDuration: 3000})
+      enqueueSnackbar(`Невозможно установить перерыв. Причина: Правила`, {variant: 'warning',autoHideDuration: 3000})
       await this.setState({ loader: false })
     }
     else
@@ -73,7 +73,8 @@ class MainTable extends Component {
     let error = 0
     TIMING.map(i => { if (i[3] === `${hour}_${min}`) id_cell = i[0] })
     for (let i = id_cell; i <= id_cell+type-1; i++) {
-      if (i>-1 && i<205 && (table[TIMING[i][3]] === COLORS[1] || table[TIMING[i][3]] === COLORS[3])) error = 1
+
+      if (i>-1 && i<204 && (table[TIMING[i][3]] === COLORS[0] || table[TIMING[i][3]] === COLORS[3])) error = 1
     }
     if (error === 1) {
       enqueueSnackbar(`Невозможно. Причина: задет закрытый участок времени`, {variant: 'warning',autoHideDuration: 3000})
@@ -87,12 +88,12 @@ class MainTable extends Component {
 
   async componentDidMount () {
     const { socket } = this.context
-    const { enqueueSnackbar } = this.props
+    const { enqueueSnackbar, people_id } = this.props
     let hMain = (document.documentElement.clientHeight - 73) / 13
     await this.setState({ hMain: hMain, login: this.randomString(5) })
 
     await socket.on('updateTable', (data) => {
-      let table = setTable(data)
+      let table = setTable(data, people_id)
       this.setState({ table: table, loader: false })
     })
 

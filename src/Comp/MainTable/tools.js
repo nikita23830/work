@@ -1,55 +1,42 @@
-export const setTable = (data) => {
-  let table = {}
-  data.table.map(i => {
-    if (data.people_id === i.people_id) {
-      table[i.cell] = COLORS[0]
-      switch (i.start_end) {
-        case 1: table = cellMyHourtable(table, i.timing_id-12, i.timing_id, data.people_id, i.people_id);
-        case 2: table = cellMyHourtable(table, i.timing_id+1, i.timing_id+13, data.people_id, i.people_id);
-        case 3: {
-          table = cellMyHourtable(table, i.timing_id-12, i.timing_id, data.people_id, i.people_id)
-          table = cellMyHourtable(table, i.timing_id+1, i.timing_id+13, data.people_id, i.people_id)
-        }
+export const setTable = (data, people_id) => {
+  let result = {}
+  let rule_hour = []
+  let rule_hour_data = []
+  let global_rule = { p: 0, d: 0 }
+  data.rules.forEach((i, index) => {
+    if (i.type_rule_id === 3 && global_rule.p === 0)
+      global_rule = { p: 1, d: i.data }
+    if (i.type_rule_id === 4 && rule_hour.indexOf(i.period_rule_id) === -1) {
+      rule_hour.push(i.period_rule_id)
+      rule_hour_data.push(i.data)
+    }
+  })
+  data.table.forEach(i => {
+    if (i.people_id === people_id)
+      result[TIMING[i.timing_id][3]] = COLORS[0]
+    else {
+      let t_zone = -1
+      TIMING_ZONE.forEach((j, ind) => {
+        if (j.indexOf(i.timing_id) !== -1) t_zone = ind
+      })
+      if (rule_hour.indexOf(t_zone) !== -1 && Object.keys(result).indexOf(TIMING[i.timing_id][3]) >= (rule_hour_data[rule_hour.indexOf(t_zone)]-1))
+      {
+        result[TIMING[i.timing_id][3]] = COLORS[3]
       }
-    } else
-      if (Object.keys(table).indexOf(i.cell) === -1) table[i.cell] = COLORS[2]
-  })
-  data.rules.map(i => {
-    if (i.name_rule_id === 0 && i.type_rule_id === 4) {
-      Object.keys(table).map(j => {
-        TIMING_ZONE[i.period_rule_id].map(k => {
-          if (j === TIMING[k][3] && checkColCellType4(table, j) >= i.data && table[TIMING[k][3]] === COLORS[2]) table[j] = COLORS[3]
-        })
-      })
-    }
-    if (i.name_rule_id === 0 && i.type_rule_id === 3) {
-      Object.keys(table).map(j => {
-        if (checkColCellType4(table, j) >= i.data) table[j] = COLORS[3]
-      })
+      else if (global_rule.p !== 0 && Object.keys(result).indexOf(TIMING[i.timing_id][3]) >= (global_rule.d-1))
+        result[TIMING[i.timing_id][3]] = COLORS[3]
+      else
+        result[TIMING[i.timing_id][3]] = COLORS[2]
     }
   })
-  return table
-}
-
-const checkColCellType4 = (table, cell) => {
-  let result = 0
-  Object.keys(table).map(i => { if (i === cell) result++ })
   return result
-}
-
-const cellMyHourtable = (table, t_id_s, t_id_e, d_p_id, i_p_id) => {
-  let temp_table = { ... table }
-  for (let j = t_id_s; j < t_id_e; j++)
-    if (j>-1 && j<205 && Object.keys(temp_table).indexOf(TIMING[j][3]) === -1)
-      temp_table[TIMING[j][3]] = d_p_id === i_p_id ? COLORS[1] : COLORS[2]
-  return temp_table
 }
 
 export const COLORS = [
   '#0099ff',
   '#FFFF00',
   '#FF8000',
-  '#FF6666'
+  '#ff3333'
 ]
 
 export const TIMING_ZONE = [
@@ -276,5 +263,6 @@ export const TIMING = [
   [200, 22, 40, "22_40"],
   [201, 22, 45, "22_45"],
   [202, 22, 50, "22_50"],
-  [203, 22, 55, "22_55"]
+  [203, 22, 55, "22_55"],
+  [204, 23, 0, "XXX"]
 ]

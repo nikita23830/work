@@ -34,6 +34,9 @@ class MyBreak extends Component {
         await this.setState({ list: checkBreakList(data.data), loader: false })
       }
     })
+    await socket.on('send_error', async (data) => {
+      console.log('error', data)
+    })
   }
 
   render () {
