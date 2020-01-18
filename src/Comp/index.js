@@ -20,6 +20,7 @@ import Auth from 'Comp/Auth'
 import { CircularProgress } from '@material-ui/core'
 
 import RouterTest from 'Comp/Testing/router'
+import Administartion from 'Comp/Admin'
 
 
 class Main extends Component {
@@ -167,6 +168,11 @@ const getPageContent = props => {
       return (
         <AdminGame {...props} />
       );
+
+    case 20:
+      return (
+        <Administartion {...props} />
+      )
 
     default: return (<h1>Not dev... Sorry By nikita23830</h1>)
 
