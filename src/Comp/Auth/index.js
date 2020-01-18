@@ -3,23 +3,23 @@ import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 import { Card, Grid, TextField, Button, Typography, CircularProgress, Link, Collapse, Select, MenuItem } from '@material-ui/core'
 
-import { Registration } from 'Comp/Auth/Reg'
+import { Registration } from 'Comp/Auth/reg'
+import { NotActual } from 'Comp/Auth/notActual'
 
 class Auth extends React.Component {
-
   state={
     login: '',
     pass: '',
     loader: false,
     reg: false,
-    loaderReg: true,
     listDept: [],
     manager: [],
     regist: {
       dept: -1,
       manager: -1,
     },
-    errorRegist: {}
+    errorRegist: {},
+    notActual: false
   }
 
   checkAuth = async () => {
@@ -42,15 +42,16 @@ class Auth extends React.Component {
   }
 
   onRequestRegistration = () => {
-    this.setState({ loaderReg: true })
     const { regist, errorRegist } = this.state
     const { socket, enqueueSnackbar } = this.props
     let error = checkRegist(regist, errorRegist)
     if (Object.keys(error).length > 0) {
       enqueueSnackbar(`Не все данные заполнены`, {variant: 'warning',autoHideDuration: 3000})
-      this.setState({ errorRegist: error, loaderReg: false })
+      this.setState({ errorRegist: error })
     } else socket.emit('requestRegistration', regist)
   }
+
+  closeNotActual = () => this.setState({ login: '', pass: '', notActual: false })
 
   async componentDidMount() {
     const { socket, enqueueSnackbar, submit } = this.props
@@ -60,6 +61,7 @@ class Auth extends React.Component {
       this.setState({ loader: false })
       if (!data.true) enqueueSnackbar(`Неверный логин или пароль`, {variant: 'warning',autoHideDuration: 3000})
       else {
+        if (data.actual === 0) { this.setState({ notActual: true }); return 0; }
         enqueueSnackbar(`Успешная авторизация: ${data.surname} ${data.name}. Отдел: ${dept[data.dept]}`, {variant: 'success',autoHideDuration: 5000})
         submit(data.uid, this.state.login)
       }
@@ -67,16 +69,16 @@ class Auth extends React.Component {
     await socket.on('send_error', (data) => { // прием ошибок
       if (data.name) enqueueSnackbar(`${data.severity}: ${data.routine}. Code: ${data.code}`, {variant: data.name,autoHideDuration: 6000})
       else enqueueSnackbar(data, {variant: 'error',autoHideDuration: 6000})
-      this.setState({ loaderReg: false })
+      this.setState({ loader: false })
     })
     await socket.on('getAllToReg', (data) => { // получаем данные для SELECT'ов регистрации
       let manager = []
       data.manager.map(i => {
         if (!manager[i.id_dept]) manager[i.id_dept]= [];
-        manager[i.id_dept].push(`${i.surname} ${i.name}`)
+        manager[i.id_dept].push({ id: i.manager_id, name: `${i.surname} ${i.name}` })
       })
       for (let i = -1; i < manager.length; i++) { if (!manager[i]) manager[i] = [] }
-      this.setState({ listDept: data.dept, loaderReg: false, manager: manager })
+      this.setState({ listDept: data.dept, manager: manager })
     })
     await socket.on('checkLoginInReg', (data) => { // проверка занятости логина
       if (!data.free) {
@@ -84,11 +86,20 @@ class Auth extends React.Component {
         this.setState({ errorRegist: { ...this.state.errorRegist, login: true } })
       }
     })
+    await socket.on('requestRegistration', (data) => {
+      if (data.success) {
+        enqueueSnackbar(`Успешная регистрация`, {variant: 'success',autoHideDuration: 3000})
+        this.setState({ regist:{dept: -1,manager: -1,name:'',surname:'',login:'',pass:''}, errorRegist:{}, reg:false })
+      }
+    })
   }
 
   render () {
-    const { login, pass, loader, reg, loaderReg, manager, listDept, regist, errorRegist } = this.state
-    return (
+    const { login, pass, loader, reg, manager, listDept, regist, errorRegist, notActual } = this.state
+    if (notActual) return (
+      <NotActual closeNotActual={this.closeNotActual} />
+    )
+    else return (
       <>
         <Loader loader={loader}>
           <CircularProgress />
@@ -121,10 +132,8 @@ class Auth extends React.Component {
                   </Grid>
                 </Grid>
               </Collapse>
-
               <CustomCollapse in={reg}>
                 <Registration
-                  loaderReg={loaderReg}
                   manager={manager}
                   listDept={listDept}
                   regist={regist}
