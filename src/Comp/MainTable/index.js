@@ -10,7 +10,7 @@ import { AppBar,
 import styled from 'styled-components'
 import DialogTable from 'Comp/DialogTable'
 import { SocketConsumer } from 'ContextSocket/index'
-import { SnackbarProvider, withSnackbar } from 'notistack';
+import { withSnackbar } from 'notistack';
 import { setTable, TIMING, COLORS } from './tools'
 
 class MainTable extends Component {

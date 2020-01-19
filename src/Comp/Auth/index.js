@@ -75,7 +75,7 @@ class Auth extends React.Component {
       let manager = []
       data.manager.map(i => {
         if (!manager[i.id_dept]) manager[i.id_dept]= [];
-        manager[i.id_dept].push({ id: i.manager_id, name: `${i.surname} ${i.name}` })
+        manager[i.id_dept].push({ id: i.id, name: `${i.surname} ${i.name}` })
       })
       for (let i = -1; i < manager.length; i++) { if (!manager[i]) manager[i] = [] }
       this.setState({ listDept: data.dept, manager: manager })

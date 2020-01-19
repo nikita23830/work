@@ -5,7 +5,6 @@ import { Grid, TextField, Select, MenuItem, Button } from '@material-ui/core'
 export const Registration = (props) => {
   const { regist, errorRegist, listDept, manager } = props
   const FIELD = [{name: 'name', label: 'Имя'},{name: 'surname', label: 'Фамилия'},{name: 'login', label: 'Логин'},{name: 'pass', label: 'Пароль'}]
-  console.log(manager)
   return (
     <>
       <Grid container spacing={2}>
