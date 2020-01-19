@@ -13,7 +13,6 @@ class RuleBreak extends Component {
         <AddRuleBreak />
 
         <MainRuleBreak />
-
       </>
     )
   }
