@@ -98,8 +98,12 @@ class MainTable extends Component {
     })
 
     await socket.on('send_error', (data) => {
-      if (data.name) enqueueSnackbar(`${data.severity}: ${data.routine}. Code: ${data.code}`, {variant: data.name,autoHideDuration: 6000})
-      else enqueueSnackbar(data, {variant: 'error',autoHideDuration: 6000})
+      if (data.name) enqueueSnackbar(`${data.severity}: ${data.routine}. Code: ${data.code}`, {
+        variant: data.name,
+        autoHideDuration: 6000,
+        preventDuplicate: true
+      })
+      else enqueueSnackbar(data, {variant: 'error',autoHideDuration: 6000,preventDuplicate: true})
       this.setState({ loader: false })
     })
     await socket.emit('updateTable', {})

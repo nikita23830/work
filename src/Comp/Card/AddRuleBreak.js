@@ -9,7 +9,7 @@ import {Card,
   InputLabel,
   Select,
   MenuItem,
-
+  Grid
 } from '@material-ui/core'
 import { SocketConsumer } from 'ContextSocket/index'
 import { withSnackbar } from 'notistack';
@@ -26,6 +26,22 @@ class AddRuleBreak extends Component {
     rules: {name: [], type: [], period: []}
   }
 
+  addRule = () => {
+    const { name, type, period, data_rule } = this.state
+    const { socket } = this.context
+    const { enqueueSnackbar } = this.props
+    let error = false
+    if ([name, type, period, data_rule].indexOf(-1) > -1) {
+      if (type === 3 && [name,data_rule].indexOf(-1) === -1) error = false
+      else error = true
+    } else error = false
+    if (!error) {
+      socket.emit('addRule', {name: name, type: type, period: period, data: data_rule})
+    } else {
+      enqueueSnackbar('Некорректно заполнены условия правила', {variant: 'warning',autoHideDuration: 3000})
+    }
+  }
+
   componentDidMount = async () => {
     const { socket } = this.context
     const { enqueueSnackbar } = this.props
@@ -34,7 +50,6 @@ class AddRuleBreak extends Component {
     this.setState({ wMain: wMain })
 
     await socket.on('getRules', (data) => {
-      console.log(data)
       this.setState({ rules: data })
     })
 
@@ -60,71 +75,79 @@ class AddRuleBreak extends Component {
       <>
         <StyledCard w={wMain}>
           <CardContent>
-            <StyledSpan>
-
-              <CustomSelect
-                value={name}
-                onChange={this.handleChange}
-                inputProps={{
-                  name: 'name',
-                  id: 'first',
-                }}
-              >
-				        <MenuItem value={-1} disabled><em>Правило</em></MenuItem>
-                {rules.name.map(i => (
-                  <MenuItem value={i.id}>{i.name_rule}</MenuItem>
-                ))}
-              </CustomSelect>
-
-              <CustomLittleSelect
-                value={type}
-                onChange={this.handleChange}
-                inputProps={{
-                  name: 'type',
-                  id: 'second',
-                }}
-              >
-				        <MenuItem value={-1} disabled><em>Условие</em></MenuItem>
-                {rules.type.map(i=>{
-                  if (i.name_rule_id === name) return (
-                    <MenuItem value={i.id}>{i.type_rule}</MenuItem>
-                  )
-                })}
-              </CustomLittleSelect>
-
-              <CustomLittleSelect
-                value={period}
-                onChange={this.handleChange}
-                inputProps={{
-                  name: 'period',
-                  id: 'third',
-                }}
-              >
-				        <MenuItem value={-1} disabled><em>Период</em></MenuItem>
-                {rules.period.map(i=>{
-                  if (i.type_rule_id === type) return (
-                    <MenuItem value={i.id}>{i.period_rule}</MenuItem>
-                  )
-                })}
-              </CustomLittleSelect>
-
-              <CustomLittleSelect
-                value={data_rule}
-                onChange={this.handleChange}
-                inputProps={{
-                  name: 'data_rule',
-                  id: 'four',
-                }}
-              >
-				        <MenuItem value={-1} disabled><em>Значение</em></MenuItem>
-                {DATE_RULE.map(i=>(
-                  <MenuItem value={i}>{i}</MenuItem>
-                ))}
-              </CustomLittleSelect>
-
-              <StyleButton variant='outlined' color='primary'>Применить</StyleButton>
-
-            </StyledSpan>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <Select
+                  value={name}
+                  onChange={this.handleChange}
+                  inputProps={{
+                    name: 'name',
+                    id: 'first',
+                  }}
+                  fullWidth
+                >
+  				        <MenuItem value={-1} disabled><em>Правило</em></MenuItem>
+                  {rules.name.map(i => (
+                    <MenuItem value={i.id}>{i.name_rule}</MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Select
+                  value={type}
+                  onChange={this.handleChange}
+                  inputProps={{
+                    name: 'type',
+                    id: 'second',
+                  }}
+                  fullWidth
+                >
+  				        <MenuItem value={-1} disabled><em>Условие</em></MenuItem>
+                  {rules.type.map(i=>{
+                    if (i.name_rule_id === name) return (
+                      <MenuItem value={i.id}>{i.type_rule}</MenuItem>
+                    )
+                  })}
+                </Select>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Select
+                  value={period}
+                  onChange={this.handleChange}
+                  inputProps={{
+                    name: 'period',
+                    id: 'third',
+                  }}
+                  fullWidth
+                >
+  				        <MenuItem value={-1} disabled><em>Период</em></MenuItem>
+                  {rules.period.map(i=>{
+                    if (i.type_rule_id === type) return (
+                      <MenuItem value={i.id}>{i.period_rule}</MenuItem>
+                    )
+                  })}
+                </Select>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Select
+                  value={data_rule}
+                  onChange={this.handleChange}
+                  inputProps={{
+                    name: 'data_rule',
+                    id: 'four',
+                  }}
+                  fullWidth
+                >
+  				        <MenuItem value={-1} disabled><em>Значение</em></MenuItem>
+                  {DATE_RULE.map(i=>(
+                    <MenuItem value={i}>{i}</MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <Button variant='outlined' color='primary' fullWidth onClick={this.addRule}>Применить</Button>
+              </Grid>
+            </Grid>
           </CardContent>
         </StyledCard>
       </>

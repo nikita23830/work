@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
-import {Card, CardContent, CardActions, Typography, Button, Table, TableRow, TableBody, TableCell, TableHead, IconButton} from '@material-ui/core'
+import {Card, CardContent, CardActions, Button, Grid, Typography, IconButton} from '@material-ui/core'
 import {Delete} from '@material-ui/icons'
 import { SocketConsumer } from 'ContextSocket/index'
 import { withSnackbar } from 'notistack';
@@ -11,6 +11,11 @@ class MainRuleBreak extends Component {
     height: 100,
 	  width: 100,
     rule: []
+  }
+
+  deleteRule = (id) => async() => {
+    const { socket } = this.context
+    socket.emit('deleteRule', id)
   }
 
   componentDidMount = async () => {
@@ -37,54 +42,45 @@ class MainRuleBreak extends Component {
     return (
       <StyledCard h={height} w={width}>
         <CardContent>
-        <Table>
-          <TableBody>
-            <TableRow>
-              <TableCell align='left'>Макс. отдыхов одновременно</TableCell>
-              <TableCell align='left'>В час</TableCell>
-              <TableCell align='left'>6:00</TableCell>
-              <TableCell align='left'>1</TableCell>
-              <TableCell align='right'>
-                <IconButton aria-label="delete">
+          {rule.map(i => (
+            <Grid container spacing={1}>
+              <Grid item xs={12} sm={4}>
+                <CustomTypography>{i.name_rule}</CustomTypography>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <CustomTypography>{i.type_rule}</CustomTypography>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <CustomTypography>{i.period_rule}</CustomTypography>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <CustomTypography>{i.data}</CustomTypography>
+              </Grid>
+              <Grid item xs={12} sm={2}>
+                <IconButton aria-label="delete" onClick={this.deleteRule(i.gid)}>
                   <Delete color='primary' />
                 </IconButton>
-              </TableCell>
-            </TableRow>
-
-            {rule.map(i => {
-              <TableRow>
-                <TableCell align='left'>Макс. отдыхов одновременно</TableCell>
-                <TableCell align='left'>В час</TableCell>
-                <TableCell align='left'>6:00</TableCell>
-                <TableCell align='left'>1</TableCell>
-                <TableCell align='right'>
-                  <IconButton aria-label="delete">
-                    <Delete color='primary' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            })}
-
-
-          </TableBody>
-        </Table>
+              </Grid>
+            </Grid>
+          ))}
         </CardContent>
       </StyledCard>
     )
   }
 }
 
+const CustomTypography = styled(Typography)` && {
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}`
+
 const StyledCard = styled(Card)` && {
   width: ${p=>p.w}px;
   margin: 20px;
   height: ${p=>p.h}px;
   overflow-y: auto;
-}`
-
-const StyledSpan = styled.span` && {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
 }`
 
 MainRuleBreak.contextType = SocketConsumer;
