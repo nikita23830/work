@@ -31,13 +31,15 @@ class Main extends Component {
     needAuth: true,
     login: '',
     people_id: -1,
-    loader: true
+    loader: true,
+    level: [0,0,0,0,0,0],
+    prev_page: 0
   }
 
   openDrawer = () => this.setState({ drawer: !this.state.drawer })
 
   onChangePage = (index) => () => {
-    this.setState({ page: index, drawer: false })
+    this.setState({ prev_page: this.state.page, page: index, drawer: false })
 	  localStorage.setItem('activePage', index)
   }
 
@@ -47,6 +49,8 @@ class Main extends Component {
     await this.setState({ needAuth: false })
     await socket.emit('addLogin', {type: 'login', login: login})
   }
+
+  onBackPage = () => this.setState({ page: this.state.prev_page })
 
   onExit = () => {
     const { cookies } = this.props
@@ -69,12 +73,17 @@ class Main extends Component {
     await socket.emit('newCon', '')
     if (!needAuth) await socket.emit('addLogin', {type: 'uid', uid: uid})
     await socket.on('addLogin', (data) => {
-      this.setState({ login: data.login, people_id: data.people_id, loader: false })
+      socket.emit('checkLevel', '')
+      this.setState({ login: data.login, people_id: data.people_id })
+    })
+    await socket.on('checkLevel', (data) => {
+      console.log(data)
+      this.setState({ level: data, loader: false })
     })
   }
 
   render () {
-    const { openDialogTable, page, drawer, needAuth, loader, people_id } = this.state
+    const { openDialogTable, page, drawer, needAuth, loader, people_id, level } = this.state
     const { socket } = this.props
     if (needAuth) return (
       <Auth socket={socket} submit={this.onCheckAuth}/>
@@ -88,7 +97,7 @@ class Main extends Component {
       <>
         <DefAppBar openDrawer={this.openDrawer} onExit={this.onExit} onChangePage={this.onChangePage} page={page}/>
 
-        <DefDrawer onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer}/>
+        <DefDrawer onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer} level={level} />
 
         <StyleMainDiv>
 

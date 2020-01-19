@@ -12,13 +12,13 @@ import { ExpandMore, } from '@material-ui/icons'
 class DefDrawer extends Component {
 
   render() {
-    const { onChangePage, drawer, openDrawer } = this.props
+    const { onChangePage, drawer, openDrawer, level } = this.props
     return (
       <Drawer anchor="left" open={drawer} onClose={openDrawer}>
         <StyledDrawer>
           <StyledButton variant='outlined' color='primary' onClick={onChangePage(0)}>Главная</StyledButton>
 
-          <StyledExpansionPanel>
+          {level[1] > 0 && <StyledExpansionPanel>
             <ExpansionPanelSummary
               expandIcon={<ExpandMore />}
               aria-controls="panel1a-content"
@@ -30,13 +30,13 @@ class DefDrawer extends Component {
 
               <StyledButton variant='outlined' color='primary' exp={true} onClick={onChangePage(1)}>Главная</StyledButton>
               <StyledButton variant='outlined' color='primary' exp={true} onClick={onChangePage(2)}>Мои перерывы</StyledButton>
-              <StyledButton variant='outlined' color='primary' exp={true} onClick={onChangePage(3)}>Статистика</StyledButton>
-              <StyledButton variant='outlined' color='primary' exp={true} onClick={onChangePage(4)}>Правила</StyledButton>
+              {level[1] === 2 && <StyledButton variant='outlined' color='primary' exp={true} onClick={onChangePage(3)}>Статистика</StyledButton>}
+              {level[1] === 2 && <StyledButton variant='outlined' color='primary' exp={true} onClick={onChangePage(4)}>Правила</StyledButton>}
 
             </StyledExpansionPanelDetails>
-          </StyledExpansionPanel>
+          </StyledExpansionPanel>}
 
-          <StyledExpansionPanel>
+          {level[2] > 0 && <StyledExpansionPanel>
             <ExpansionPanelSummary
               expandIcon={<ExpandMore />}
               aria-controls="panel1a-content"
@@ -53,9 +53,9 @@ class DefDrawer extends Component {
               <StyledButton variant='outlined' color='primary' exp={true} onClick={onChangePage(9)}>Еженедельные</StyledButton>
 
             </StyledExpansionPanelDetails>
-          </StyledExpansionPanel>
+          </StyledExpansionPanel>}
 
-          <StyledExpansionPanel>
+          {level[3] > 0 && <StyledExpansionPanel>
             <ExpansionPanelSummary
               expandIcon={<ExpandMore />}
               aria-controls="panel1a-content"
@@ -71,9 +71,9 @@ class DefDrawer extends Component {
               <StyledButton variant='outlined' color='primary' exp={true} onClick={onChangePage(13)}>Администрирование</StyledButton>
 
             </StyledExpansionPanelDetails>
-          </StyledExpansionPanel>
+          </StyledExpansionPanel>}
 
-          <StyledExpansionPanel>
+          {level[4] > 0 && <StyledExpansionPanel>
             <ExpansionPanelSummary
               expandIcon={<ExpandMore />}
               aria-controls="panel1a-content"
@@ -91,9 +91,9 @@ class DefDrawer extends Component {
               <StyledButton variant='outlined' color='primary' exp={true} onClick={onChangePage(19)}>Администрирование</StyledButton>
 
             </StyledExpansionPanelDetails>
-          </StyledExpansionPanel>
+          </StyledExpansionPanel>}
 
-          <StyledButton variant='outlined' color='primary' onClick={onChangePage(20)}>Администрирование</StyledButton>
+          {level[0] === 1 && <StyledButton variant='outlined' color='primary' onClick={onChangePage(20)}>Администрирование</StyledButton>}
 
         </StyledDrawer>
       </Drawer>
