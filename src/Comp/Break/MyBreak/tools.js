@@ -1,4 +1,4 @@
-import { TIMING } from 'Comp/MainTable/tools'
+import { TIMING } from 'Comp/Break/MainTable/tools'
 
 export const checkBreakList = (data) => {
   let result = []

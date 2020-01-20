@@ -1,13 +1,12 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 import { withCookies, Cookies } from 'react-cookie';
-import MainTable from 'Comp/MainTable'
+
+import { Break } from 'Comp/Break'
+
 import MainPage from 'Comp/MainPage'
 import DefAppBar from 'Comp/AppBar'
 import DefDrawer from 'Comp/Drawer'
-import MyBreak from 'Comp/MyBreak'
-import StatBreak from 'Comp/StatBreak'
-import RuleBreak from 'Comp/RuleBreak'
 import ChipCheckServer from 'Comp/ChipCheckServer'
 import ReportTask from 'Comp/Report/ReportTask'
 import EveryDayGame from 'Comp/Rating/EveryDayGame'
@@ -73,7 +72,6 @@ class Main extends Component {
     await socket.emit('newCon', '')
     if (!needAuth) await socket.emit('addLogin', {type: 'uid', uid: uid})
     await socket.on('addLogin', (data) => {
-      socket.emit('checkLevel', '')
       this.setState({ login: data.login, people_id: data.people_id })
     })
     await socket.on('checkLevel', (data) => {
@@ -101,7 +99,7 @@ class Main extends Component {
 
         <StyleMainDiv>
 
-          {getPageContent({ page: page, people_id: people_id })}
+          {getPageContent({ page: page, people_id: people_id, level: level })}
 
         <ChipCheckServer />
         </StyleMainDiv>
@@ -118,24 +116,9 @@ const getPageContent = props => {
         <MainPage {...props} />
       );
 
-    case 1:
+    case 1: case 2: case 3: case 4:
       return (
-        <MainTable {...props} />
-      );
-
-    case 2:
-      return (
-        <MyBreak {...props} />
-      );
-
-    case 3:
-      return (
-        <StatBreak {...props} />
-      );
-
-    case 4:
-      return (
-        <RuleBreak {...props} />
+        <Break {...props} />
       );
 
     case 5:

@@ -64,7 +64,9 @@ class Administartion extends React.Component {
 
   render () {
     const { rootHeight, roowWidth, reqList, reqCheckList, disabledButton } = this.state
-    return (
+    const { level } = this.props
+    if (level[0] === 0) return (<>No.</>)
+    else return (
       <Root h={rootHeight} w={roowWidth}>
         <RequestCard h={rootHeight}>
           <ReqCard

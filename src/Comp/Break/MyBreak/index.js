@@ -6,7 +6,7 @@ import MyBreakMain from 'Comp/Card/MyBreakMain'
 import MyBreakGInfo from 'Comp/Card/MyBreakGInfo'
 import MyBreakTemplate from 'Comp/Card/MyBreakTemplate'
 import { SocketConsumer } from 'ContextSocket/index'
-import { checkBreakList } from 'Comp/MyBreak/tools'
+import { checkBreakList } from 'Comp/Break/MyBreak/tools'
 
 class MyBreak extends Component {
 
