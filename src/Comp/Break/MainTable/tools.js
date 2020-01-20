@@ -19,11 +19,10 @@ export const setTable = (data, people_id) => {
       TIMING_ZONE.forEach((j, ind) => {
         if (j.indexOf(i.timing_id) !== -1) t_zone = ind
       })
-      if (rule_hour.indexOf(t_zone) !== -1 && Object.keys(result).indexOf(TIMING[i.timing_id][3]) >= (rule_hour_data[rule_hour.indexOf(t_zone)]-1))
-      {
+      result[TIMING[i.timing_id][3]] = undefined // зарезирвировали
+      if (rule_hour.indexOf(t_zone) !== -1 && Object.keys(result).filter(k=>k===TIMING[i.timing_id][3]).length >= rule_hour_data[rule_hour.indexOf(t_zone)]) {
         result[TIMING[i.timing_id][3]] = COLORS[3]
-      }
-      else if (global_rule.p !== 0 && Object.keys(result).indexOf(TIMING[i.timing_id][3]) >= (global_rule.d-1))
+      } else if (global_rule.p !== 0 && Object.keys(result).filter(k=>k===TIMING[i.timing_id][3]).length >= global_rule.d)
         result[TIMING[i.timing_id][3]] = COLORS[3]
       else
         result[TIMING[i.timing_id][3]] = COLORS[2]

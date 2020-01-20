@@ -40,7 +40,6 @@ class StatBreak extends Component {
     })
 
     await socket.on('updateTable', (data) => {
-      console.log('update пойман')
       socket.emit('fullListBreak', '')
     })
 

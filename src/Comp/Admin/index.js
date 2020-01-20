@@ -5,6 +5,7 @@ import { Cached } from '@material-ui/icons'
 import { SocketConsumer } from 'ContextSocket/index'
 import { withSnackbar } from 'notistack';
 import { ReqCard } from 'Comp/Admin/RequestCard'
+import Forbidden from 'Comp/Forbidden'
 
 class Administartion extends React.Component {
 
@@ -65,7 +66,7 @@ class Administartion extends React.Component {
   render () {
     const { rootHeight, roowWidth, reqList, reqCheckList, disabledButton } = this.state
     const { level } = this.props
-    if (level[0] === 0) return (<>No.</>)
+    if (level[0] === 0) return (<Forbidden {...this.props}/>)
     else return (
       <Root h={rootHeight} w={roowWidth}>
         <RequestCard h={rootHeight}>

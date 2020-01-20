@@ -3,24 +3,17 @@ import styled from 'styled-components'
 import { withCookies, Cookies } from 'react-cookie';
 
 import { Break } from 'Comp/Break'
+import { Report } from 'Comp/Report'
+import { RouterRating } from 'Comp/Rating/Router'
+import RouterTest from 'Comp/Testing/router'
+import Administartion from 'Comp/Admin'
 
 import MainPage from 'Comp/MainPage'
 import DefAppBar from 'Comp/AppBar'
 import DefDrawer from 'Comp/Drawer'
 import ChipCheckServer from 'Comp/ChipCheckServer'
-import ReportTask from 'Comp/Report/ReportTask'
-import EveryDayGame from 'Comp/Rating/EveryDayGame'
-import AdminGame from 'Comp/Rating/AdminGame'
-import Rating from 'Comp/Rating'
-import Profile from 'Comp/Rating/Profile'
-import EveryDayReport from 'Comp/Report/EveryDayReport'
-import RatingShop from 'Comp/Rating/Shop'
 import Auth from 'Comp/Auth'
 import { CircularProgress } from '@material-ui/core'
-
-import RouterTest from 'Comp/Testing/router'
-import Administartion from 'Comp/Admin'
-
 
 class Main extends Component {
 
@@ -72,11 +65,10 @@ class Main extends Component {
     await socket.emit('newCon', '')
     if (!needAuth) await socket.emit('addLogin', {type: 'uid', uid: uid})
     await socket.on('addLogin', (data) => {
-      this.setState({ login: data.login, people_id: data.people_id })
+      this.setState({ login: data.login, people_id: data.people_id, loader: false })
     })
     await socket.on('checkLevel', (data) => {
-      console.log(data)
-      this.setState({ level: data, loader: false })
+      this.setState({ level: data })
     })
   }
 
@@ -99,7 +91,7 @@ class Main extends Component {
 
         <StyleMainDiv>
 
-          {getPageContent({ page: page, people_id: people_id, level: level })}
+          {getPageContent({ page: page, people_id: people_id, level: level, onBackPage: this.onBackPage })}
 
         <ChipCheckServer />
         </StyleMainDiv>
@@ -121,14 +113,9 @@ const getPageContent = props => {
         <Break {...props} />
       );
 
-    case 5:
+    case 5: case 6: case 7: case 8:
       return (
-        <ReportTask {...props} />
-      )
-
-	  case 8:
-      return (
-        <EveryDayReport {...props} />
+        <Report {...props} />
       )
 
     case 10: case 11: case 12: case 13:
@@ -136,30 +123,10 @@ const getPageContent = props => {
         <RouterTest {...props} />
       );
 
-  	case 14:
+  	case 14: case 15: case 16: case 17: case 18:
         return (
-          <Rating {...props} />
+          <RouterRating {...props} />
         );
-
-  	case 15:
-  	  return (
-  		    <Profile {...props} />
-  	  );
-
-    case 16:
-      return (
-        <RatingShop {...props} />
-      )
-
-    case 17:
-      return (
-        <EveryDayGame {...props} />
-      );
-
-    case 18:
-      return (
-        <AdminGame {...props} />
-      );
 
     case 20:
       return (
