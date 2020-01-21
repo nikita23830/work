@@ -7,7 +7,7 @@ import Main from './Comp'
 import { CircularProgress } from '@material-ui/core'
 import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
-const socket = socketIOClient("https://astral-nikita-work-back-end.herokuapp.com:4001")
+const socket = socketIOClient("http://ec2-18-223-184-243.us-east-2.compute.amazonaws.com")
 
 class App extends React.Component {
 
