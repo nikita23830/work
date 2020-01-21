@@ -2,11 +2,11 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { CircularProgress } from '@material-ui/core'
 
-import MyBreakMain from 'Comp/Card/MyBreakMain'
-import MyBreakGInfo from 'Comp/Card/MyBreakGInfo'
-import MyBreakTemplate from 'Comp/Card/MyBreakTemplate'
-import { SocketConsumer } from 'ContextSocket/index'
-import { checkBreakList } from 'Comp/Break/MyBreak/tools'
+import MyBreakMain from '../../Card/MyBreakMain'
+import MyBreakGInfo from '../../Card/MyBreakGInfo'
+import MyBreakTemplate from '../../Card/MyBreakTemplate'
+import { SocketConsumer } from '../../../ContextSocket/index'
+import { checkBreakList } from './tools'
 
 class MyBreak extends Component {
 

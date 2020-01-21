@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
-import AddRuleBreak from 'Comp/Card/AddRuleBreak'
-import MainRuleBreak from 'Comp/Card/MainRuleBreak'
-import MyBreakTemplate from 'Comp/Card/MyBreakTemplate'
+import AddRuleBreak from '../../Card/AddRuleBreak'
+import MainRuleBreak from '../../Card/MainRuleBreak'
+import MyBreakTemplate from '../../Card/MyBreakTemplate'
 
 class RuleBreak extends Component {
 

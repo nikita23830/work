@@ -2,10 +2,10 @@ import React from 'react'
 import styled from 'styled-components'
 import { Card, Grid, Typography, Fab, Button, Checkbox } from '@material-ui/core'
 import { Cached } from '@material-ui/icons'
-import { SocketConsumer } from 'ContextSocket/index'
+import { SocketConsumer } from '../../ContextSocket/index'
 import { withSnackbar } from 'notistack';
-import { ReqCard } from 'Comp/Admin/RequestCard'
-import Forbidden from 'Comp/Forbidden'
+import { ReqCard } from './RequestCard'
+import Forbidden from '../Forbidden'
 
 class Administartion extends React.Component {
 

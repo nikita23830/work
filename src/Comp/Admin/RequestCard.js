@@ -1,7 +1,7 @@
 import React from 'react'
 import { Grid, Typography, Fab, Checkbox, Button } from '@material-ui/core'
 import { Cached } from '@material-ui/icons'
-import { RequestGrid, CustomGrid, CustomTypography } from 'Comp/Admin/Style'
+import { RequestGrid, CustomGrid, CustomTypography } from './Style'
 
 export const ReqCard = (props) => (
   <Grid container spacing={1}>

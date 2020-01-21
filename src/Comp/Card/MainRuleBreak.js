@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import styled from 'styled-components'
 import {Card, CardContent, CardActions, Button, Grid, Typography, IconButton} from '@material-ui/core'
 import {Delete} from '@material-ui/icons'
-import { SocketConsumer } from 'ContextSocket/index'
+import { SocketConsumer } from '../../ContextSocket/index'
 import { withSnackbar } from 'notistack';
 
 class MainRuleBreak extends Component {

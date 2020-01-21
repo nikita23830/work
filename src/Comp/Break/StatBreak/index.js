@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
-import StatBreakMain from 'Comp/Card/StatBreakMain'
-import StatBreakList from 'Comp/Card/StatBreakList'
-import MyBreakTemplate from 'Comp/Card/MyBreakTemplate'
-import { SocketConsumer } from 'ContextSocket/index'
+import StatBreakMain from '../../Card/StatBreakMain'
+import StatBreakList from '../../Card/StatBreakList'
+import MyBreakTemplate from '../../Card/MyBreakTemplate'
+import { SocketConsumer } from '../../../ContextSocket/index'
 import { withSnackbar } from 'notistack';
-import { TIMING_ZONE, TIMING } from 'Comp/Break/MainTable/tools'
+import { TIMING_ZONE, TIMING } from '../MainTable/tools'
 
 class StatBreak extends Component {
 
