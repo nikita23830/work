@@ -103,6 +103,22 @@ class Main extends Component {
 
 const getPageContent = props => {
   const { page } = props
+  /*
+  case 5: case 6: case 7: case 8:
+    return (
+      <Report {...props} />
+    )
+
+  case 10: case 11: case 12: case 13:
+    return (
+      <RouterTest {...props} />>
+    );
+
+  case 14: case 15: case 16: case 17: case 18:
+      return (
+        <RouterRating {...props} />>
+      );
+  */
   switch (page) {
     case 0:
       return (
@@ -113,21 +129,6 @@ const getPageContent = props => {
       return (
         <Break {...props} />
       );
-
-    case 5: case 6: case 7: case 8:
-      return (
-        {/*<Report {...props} />*/}
-      )
-
-    case 10: case 11: case 12: case 13:
-      return (
-        {/*<RouterTest {...props} />>*/}
-      );
-
-  	case 14: case 15: case 16: case 17: case 18:
-        return (
-          {/*<RouterRating {...props} />>*/}
-        );
 
     case 20:
       return (
