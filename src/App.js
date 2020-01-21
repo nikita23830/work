@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import socketIOClient from "socket.io-client";
 import { SocketProvider } from './ContextSocket'
-import Main from 'Comp'
+import Main from './Comp'
 import { CircularProgress } from '@material-ui/core'
 import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
