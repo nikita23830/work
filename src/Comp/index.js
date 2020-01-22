@@ -2,18 +2,17 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { withCookies, Cookies } from 'react-cookie';
 
-import { Break } from './Break'
-import Administartion from './Admin'
-/*
-import { Report } from './Report'
-import { RouterRating } from './Rating/Router'
-import RouterTest from './Testing/router'
-*/
-import MainPage from './MainPage'
-import DefAppBar from './AppBar'
-import DefDrawer from './Drawer'
-import ChipCheckServer from './ChipCheckServer'
-import Auth from './Auth'
+import { Break } from 'Comp/Break'
+import { Report } from 'Comp/Report'
+import { RouterRating } from 'Comp/Rating/Router'
+import RouterTest from 'Comp/Testing/router'
+import Administartion from 'Comp/Admin'
+
+import MainPage from 'Comp/MainPage'
+import DefAppBar from 'Comp/AppBar'
+import DefDrawer from 'Comp/Drawer'
+import ChipCheckServer from 'Comp/ChipCheckServer'
+import Auth from 'Comp/Auth'
 import { CircularProgress } from '@material-ui/core'
 
 class Main extends Component {
@@ -103,22 +102,6 @@ class Main extends Component {
 
 const getPageContent = props => {
   const { page } = props
-  /*
-  case 5: case 6: case 7: case 8:
-    return (
-      <Report {...props} />
-    )
-
-  case 10: case 11: case 12: case 13:
-    return (
-      <RouterTest {...props} />>
-    );
-
-  case 14: case 15: case 16: case 17: case 18:
-      return (
-        <RouterRating {...props} />>
-      );
-  */
   switch (page) {
     case 0:
       return (
@@ -129,6 +112,21 @@ const getPageContent = props => {
       return (
         <Break {...props} />
       );
+
+    case 5: case 6: case 7: case 8:
+      return (
+        <Report {...props} />
+      )
+
+    case 10: case 11: case 12: case 13:
+      return (
+        <RouterTest {...props} />
+      );
+
+  	case 14: case 15: case 16: case 17: case 18:
+        return (
+          <RouterRating {...props} />
+        );
 
     case 20:
       return (

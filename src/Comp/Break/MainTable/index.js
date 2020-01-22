@@ -8,10 +8,10 @@ import { AppBar,
   CircularProgress
 } from '@material-ui/core'
 import styled from 'styled-components'
-import DialogTable from '../../DialogTable'
-import { SocketConsumer } from '../../../ContextSocket/index'
+import DialogTable from 'Comp/DialogTable'
+import { SocketConsumer } from 'ContextSocket/index'
 import { withSnackbar } from 'notistack';
-import { setTable, TIMING, COLORS } from './tools'
+import { setTable, TIMING, COLORS } from 'Comp/Break/MainTable/tools'
 
 class MainTable extends Component {
 

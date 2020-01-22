@@ -1,9 +1,9 @@
 import React from 'react'
-import MainTable from './MainTable'
-import MyBreak from './MyBreak'
-import StatBreak from './StatBreak'
-import RuleBreak from './RuleBreak'
-import Forbidden from '../Forbidden'
+import MainTable from 'Comp/Break/MainTable'
+import MyBreak from 'Comp/Break/MyBreak'
+import StatBreak from 'Comp/Break/StatBreak'
+import RuleBreak from 'Comp/Break/RuleBreak'
+import Forbidden from 'Comp/Forbidden'
 
 export const Break = (props) => {
   switch (props.page) {

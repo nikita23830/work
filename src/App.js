@@ -2,12 +2,14 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import socketIOClient from "socket.io-client";
-import { SocketProvider } from './ContextSocket'
-import Main from './Comp'
+import { SocketProvider } from 'ContextSocket'
+import Main from 'Comp'
 import { CircularProgress } from '@material-ui/core'
 import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
-const socket = socketIOClient("3.136.56.168:4001")
+
+const socket = socketIOClient("localhost:4001")
+/*const socket = socketIOClient("192.168.31.232:4001")*/
 
 class App extends React.Component {
 

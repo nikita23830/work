@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 import { Card, Grid, TextField, Button, Typography, CircularProgress, Link, Collapse, Select, MenuItem } from '@material-ui/core'
 
-import { Registration } from './reg'
-import { NotActual } from './notActual'
+import { Registration } from 'Comp/Auth/reg'
+import { NotActual } from 'Comp/Auth/notActual'
 
 class Auth extends React.Component {
   state={
