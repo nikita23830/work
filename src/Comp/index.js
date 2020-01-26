@@ -7,6 +7,7 @@ import { Report } from 'Comp/Report'
 import { RouterRating } from 'Comp/Rating/Router'
 import RouterTest from 'Comp/Testing/router'
 import Administartion from 'Comp/Admin'
+import News from 'Comp/News'
 
 import MainPage from 'Comp/MainPage'
 import DefAppBar from 'Comp/AppBar'
@@ -105,7 +106,7 @@ const getPageContent = props => {
   switch (page) {
     case 0:
       return (
-        <MainPage {...props} />
+        <News {...props} />
       );
 
     case 1: case 2: case 3: case 4:
