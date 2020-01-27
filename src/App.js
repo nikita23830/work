@@ -8,7 +8,7 @@ import { CircularProgress } from '@material-ui/core'
 import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 
-const socket = socketIOClient("localhost:4001")
+const socket = socketIOClient("192.168.31.232:4001")
 /*const socket = socketIOClient("192.168.31.232:4001")*/
 
 class App extends React.Component {
@@ -24,6 +24,9 @@ class App extends React.Component {
       this.setState({ loader: true })
       sleep(5000);
       window.location.reload()
+    })
+    await socket.on('disconnect', (data) => {
+      console.log('Сервер остановлен!')
     })
   }
 

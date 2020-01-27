@@ -49,6 +49,19 @@ export const Registration = (props) => {
           </Select>
         </Grid>
         <Grid item xs={12} sm={12}>
+          <Select
+            fullWidth
+            value={regist.chart}
+            error={errorRegist.chart}
+            onChange={e=>props.chandeDataRegist('chart', e.target.value)}
+          >
+            <MenuItem value={-1} disabled>График</MenuItem>
+            <MenuItem value={0}>График 5/5</MenuItem>
+            <MenuItem value={1}>График 2/2</MenuItem>
+            <MenuItem value={2}>График "ночник"</MenuItem>
+          </Select>
+        </Grid>
+        <Grid item xs={12} sm={12}>
           <Button
             color='primary'
             variant='outlined'
