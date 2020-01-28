@@ -8,7 +8,7 @@ import { CircularProgress } from '@material-ui/core'
 import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 
-const socket = socketIOClient("192.168.31.232:4001")
+const socket = socketIOClient("3.136.56.168:4001")
 /*const socket = socketIOClient("192.168.31.232:4001")*/
 
 class App extends React.Component {
