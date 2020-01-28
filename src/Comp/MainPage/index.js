@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 
-import MainPageBreak from '../Card/MainPageBreak'
-import MainPageTask from '../Card/MainPageTask'
-import MainPageReport from '../Card/MainPageReport'
-import MainPageDiagram from '../Card/MainPageDiagram'
+import MainPageBreak from 'Comp/Card/MainPageBreak'
+import MainPageTask from 'Comp/Card/MainPageTask'
+import MainPageReport from 'Comp/Card/MainPageReport'
+import MainPageDiagram from 'Comp/Card/MainPageDiagram'
 
 class MainPage extends Component {
 

@@ -94,6 +94,7 @@ class DefDrawer extends Component {
           </StyledExpansionPanel>}
 
           {level[0] === 1 && <StyledButton variant='outlined' color='primary' onClick={onChangePage(20)}>Администрирование</StyledButton>}
+          <StyledButton variant='outlined' color='primary' onClick={onChangePage(21)}>FeedBack</StyledButton>
 
         </StyledDrawer>
       </Drawer>

@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 import { Card, Grid, TextField, Button, Typography, CircularProgress, Link, Collapse, Select, MenuItem } from '@material-ui/core'
 
-import { Registration } from './reg'
-import { NotActual } from './notActual'
+import { Registration } from 'Comp/Auth/reg'
+import { NotActual } from 'Comp/Auth/notActual'
 
 class Auth extends React.Component {
   state={
@@ -17,6 +17,7 @@ class Auth extends React.Component {
     regist: {
       dept: -1,
       manager: -1,
+      chart: -1
     },
     errorRegist: {},
     notActual: false
@@ -166,6 +167,7 @@ const checkRegist = (regist, errorRegist) => {
   if (regist.pass && regist.pass.replace(/\s/g, '') === '') result.pass = true
   if (regist.dept === -1) result.dept = true
   if (regist.manager === -1) result.manager = true
+  if (regist.chart === -1) result.chart = true
   return result
 }
 
@@ -179,7 +181,7 @@ const AuthCard = styled(Card)` && {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 300px;
-  height: ${p=>!p.reg ? '280px' : '310px'};
+  height: ${p=>!p.reg ? '280px' : '360px'};
   padding: 10px;
 }`
 

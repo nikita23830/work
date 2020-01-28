@@ -11,7 +11,7 @@ import {Card,
   MenuItem,
   Grid
 } from '@material-ui/core'
-import { SocketConsumer } from '../../ContextSocket/index'
+import { SocketConsumer } from 'ContextSocket/index'
 import { withSnackbar } from 'notistack';
 
 class AddRuleBreak extends Component {
