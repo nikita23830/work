@@ -125,7 +125,7 @@ class News extends React.Component {
                 <Grid container spacing={1}>
                   <Grid item xs={12} sm={3}>
                     <Styledimg
-                      src={img[i.id].length === 0 ? 'http://localhost:4001/news' : `http://localhost:4001/uploads/${img[i.id][0].filename}`}
+                      src={img[i.id].length === 0 ? 'http://3.136.56.168:4001/news' : `http://3.136.56.168:4001/uploads/${img[i.id][0].filename}`}
                     />
                   </Grid>
                   <Grid item xs={12} sm={9}>
@@ -148,7 +148,7 @@ class News extends React.Component {
           onClose={this.onChangeImgModal(-1, -1)}
         >
           {imgModal && imgModal.news !== -1 &&
-            <CustomBigImg src={`http://localhost:4001/uploads/${img[imgModal.news][imgModal.img].filename}`} h={height} w={width} onClick={this.onChangeImgModal(-1, -1)}/>
+            <CustomBigImg src={`http://3.136.56.168:4001/uploads/${img[imgModal.news][imgModal.img].filename}`} h={height} w={width} onClick={this.onChangeImgModal(-1, -1)}/>
           }
         </Modal>
 

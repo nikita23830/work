@@ -69,7 +69,7 @@ class Main extends Component {
     await socket.on('pushNotifNewNews', (data) => {
       Push.create("Появилась новая новость", {
           body: "Нажмите для открытия сайта",
-          icon: 'http://localhost:4001/push',
+          icon: 'http://3.136.56.168:4001/push',
           timeout: 4000,
           onClick: function () {
               window.focus();

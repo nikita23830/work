@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 import Push from 'push.js'
 
-const socket = socketIOClient("localhost:4001")
+const socket = socketIOClient("3.136.56.168:4001")
 /*const socket = socketIOClient("3.136.56.168:4001")*/
 
 class App extends React.Component {

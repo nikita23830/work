@@ -11,7 +11,7 @@ export const ViewNews = () => (
     <CardViewNews>
       <Grid container spacing={1}>
         <Grid item xs={12} sm={7}>
-          <Styledimg src='http://localhost:4001/newsview' />
+          <Styledimg src='http://3.136.56.168:4001/newsview' />
         </Grid>
         <Grid item xs={12} sm={5}>
           <Typography variant='h6' component='h2'>Коллеги, сегодня наш дружный коллектив покидает Елена Стржемеская!</Typography>
