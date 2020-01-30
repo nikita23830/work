@@ -124,7 +124,7 @@ class News extends React.Component {
         {!openEditor && <Grid container spacing={3}>
           {news.map((i, ind) => (
             <Grid item xs={12} sm={4}>
-              <CustomPaper>
+              <CustomPaper onClick={this.onViewNews}>
                 <Grid container spacing={1}>
                   <Grid item xs={12} sm={3}>
                     <Styledimg
