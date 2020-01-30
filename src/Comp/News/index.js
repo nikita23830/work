@@ -20,8 +20,11 @@ class News extends React.Component {
     last_id: 0,
     aviableMore: true,
     likeNews: [],
-    mylikeNews: []
+    mylikeNews: [],
+    viewNews: false
   }
+
+  onViewNews = () => this.setState({ viewNews: !this.state.viewNews })
 
   onChangeImgModal = (n, i) => () => {
     this.setState({ imgModalVis: !this.state.imgModalVis, imgModal: { news: n, img: i } })
@@ -114,10 +117,10 @@ class News extends React.Component {
   }
 
   render () {
-    const { width, height, news, img, imgModal, imgModalVis, openEditor, aviableMore, likeNews, mylikeNews } = this.state
+    const { width, height, news, img, imgModal, imgModalVis, openEditor, aviableMore, likeNews, mylikeNews, viewNews } = this.state
     return (
       <Root w={width} h={height}>
-        <ViewNews />
+        <ViewNews viewNews={viewNews} onViewNews={this.onViewNews} />
         {!openEditor && <Grid container spacing={3}>
           {news.map((i, ind) => (
             <Grid item xs={12} sm={4}>

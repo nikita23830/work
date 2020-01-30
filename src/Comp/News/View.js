@@ -3,10 +3,10 @@ import { Modal, Card, Grid, Typography, IconButton } from '@material-ui/core'
 import { FavoriteBorder } from '@material-ui/icons'
 import styled from 'styled-components'
 
-export const ViewNews = () => (
+export const ViewNews = ({ viewNews, onViewNews }) => (
   <Modal
-    open={true}
-    onClose={() => {}}
+    open={viewNews}
+    onClose={onViewNews}
   >
     <CardViewNews>
       <Grid container spacing={1}>
