@@ -1,10 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Card, Typography, Button, Modal, Grid, Fab } from '@material-ui/core'
+import { Card, Typography, Button, Modal, Grid, Fab, Paper } from '@material-ui/core'
 import { Favorite, FavoriteBorder, Add, Close, DeleteOutlined } from '@material-ui/icons'
 import { SocketConsumer } from 'ContextSocket/index'
 import { withSnackbar } from 'notistack';
 import EditorNews from 'Comp/News/Editor'
+import { ViewNews } from 'Comp/News/View'
 
 class News extends React.Component {
 
@@ -116,48 +117,29 @@ class News extends React.Component {
     const { width, height, news, img, imgModal, imgModalVis, openEditor, aviableMore, likeNews, mylikeNews } = this.state
     return (
       <Root w={width} h={height}>
-
-        {!openEditor && <ListNews h={height} d={openEditor}>
+        <ViewNews />
+        {!openEditor && <Grid container spacing={3}>
           {news.map((i, ind) => (
-            <WrapNews>
-              <NewsBlock>
-                <Typography variant="h5" component="h2">{i.title}</Typography>
-                {i.text && <>
-                  <hr width="100%" />
-                  <CustomTypography variant="body2" component="p">{i.text}</CustomTypography>
-                </>}
-                <hr width="100%" />
-                <NewsImage data={img} index={i.id} onClick={this.onChangeImgModal} />
-                <BottomNews>
-                  <DateText>{i.date}</DateText>
-                  <LikeButton
-                    variant="outlined"
-                    color={mylikeNews[i.id] ? 'secondary' : "primary"}
-                    endIcon={
-                      mylikeNews[i.id]
-                      ? <Favorite color="secondary" />
-                      : <FavoriteBorder color="secondary" />
-                    }
-                    onClick={!mylikeNews[i.id] ? this.installLike(i.id) : this.deleteLike(i.id)}
-                  >
-                    {likeNews[i.id] ? likeNews[i.id] : 0}
-                  </LikeButton>
-                </BottomNews>
-              </NewsBlock>
-              <DeleteNews
-                color='secondary'
-                size='small'
-                onClick={this.deleteNews(i.id)}
-              >
-                <DeleteOutlined />
-              </DeleteNews>
-              <Author>{i.surname} {i.name}</Author>
-            </WrapNews>
+            <Grid item xs={12} sm={4}>
+              <CustomPaper>
+                <Grid container spacing={1}>
+                  <Grid item xs={12} sm={3}>
+                    <Styledimg
+                      src={img[i.id].length === 0 ? 'http://localhost:4001/news' : `http://localhost:4001/uploads/${img[i.id][0].filename}`}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={9}>
+                    {i.title}
+                  </Grid>
+                  <CustomGrid item xs={12} sm={5}>{i.date}</CustomGrid>
+                </Grid>
+              </CustomPaper>
+            </Grid>
           ))}
-          {aviableMore && <PostLoadNews>
-            <Button color='primary' fullWidth onClick={this.onDownloadNews}>Загрузить еще</Button>
-          </PostLoadNews>}
-        </ListNews>}
+          {aviableMore && <Grid item xs={12} sm={12}>
+            <Button color='primary' onClick={this.onDownloadNews}>Загрузить еще</Button>
+          </Grid>}
+        </Grid>}
 
         {openEditor && <EditorNews onCloseEditor={this.onCloseEditor} />}
 
@@ -182,30 +164,28 @@ class News extends React.Component {
 News.contextType = SocketConsumer;
 export default withSnackbar(News)
 
-const NewsImage = ({ data, index, onClick }) => {
-  if (!data[index]) return '';
-  else if (data[index].length === 0) return '';
-  else {
-    if (data[index].length === 1) {
-      return <Customimg src={`http://localhost:4001/uploads/${data[index][0].filename}`} onClick={onClick(index, 0)} />
-    } else {
-      return (
-        <>
-          <Customimg src={`http://localhost:4001/uploads/${data[index][0].filename}`} onClick={onClick(index, 0)} />
-          <Grid container spacing={2}>
-            {data[index].map((i, ind) => (
-              <Grid item xs={12} sm={3}>
-                {data[index][ind] && ind > 0 &&
-                  <CustomLittleImg src={`http://localhost:4001/uploads/${data[index][ind].filename}`} onClick={onClick(index, ind)} />
-                }
-              </Grid>
-            ))}
-          </Grid>
-        </>
-      )
-    }
-  }
-}
+
+const CustomGrid = styled(Grid)` && {
+  font-size: initial;
+  font-family: monospace;
+}`
+
+const Styledimg = styled.img` {
+  max-height: 64px;
+}`
+
+const CustomPaper = styled(Paper)` && {
+  padding: 10px;
+  font-size: 14pt;
+  font-family: cursive;
+  cursor: pointer;
+  user-select: none;
+} &:hover {
+  color: #3f51b5;
+  background-color: rgba(63, 81, 181, 0.1);
+}`
+
+
 
 const DeleteNews = styled(Fab)` && {
   position: absolute;
@@ -219,7 +199,7 @@ const PostLoadNews = styled.div` {
 }`
 
 const ButAddNews = styled(Fab)` && {
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   right: 10px;
 }`
@@ -304,6 +284,9 @@ const Root = styled.div` {
   width: ${p=>p.w}px;
   height: ${p=>p.h}px;
   padding: 20px;
+  max-height: ${p=>p.h}px;
+  overflow-x: none;
+  overflow-y: auto;
 }`
 
 const ListNews = styled.div` {

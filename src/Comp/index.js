@@ -9,6 +9,7 @@ import DefDrawer from 'Comp/Drawer'
 import ChipCheckServer from 'Comp/ChipCheckServer'
 import Auth from 'Comp/Auth'
 import { CircularProgress } from '@material-ui/core'
+import Push from 'push.js'
 
 class Main extends Component {
 
@@ -64,6 +65,17 @@ class Main extends Component {
     })
     await socket.on('checkLevel', (data) => {
       this.setState({ level: data })
+    })
+    await socket.on('pushNotifNewNews', (data) => {
+      Push.create("Появилась новая новость", {
+          body: "Нажмите для открытия сайта",
+          icon: 'http://localhost:4001/push',
+          timeout: 4000,
+          onClick: function () {
+              window.focus();
+              this.close();
+          }
+      });
     })
   }
 

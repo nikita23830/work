@@ -37,7 +37,7 @@ class EditorNews extends React.Component {
 
       await axios({
         method: "post",
-        url: `http://3.136.56.168:4001/newNews`,
+        url: `http://localhost:4001/newNews`,
         headers: {
           Accept: "application/json",
           "Content-Type": "multipart/form-data"
@@ -87,7 +87,6 @@ class EditorNews extends React.Component {
     })
 
     await socket.on('newNews', (data) => {
-      console.log(data)
       if (data === 'ok') {
         enqueueSnackbar(`Новость успешно опубликована`, {variant: 'success',autoHideDuration: 3000, preventDuplicate: true})
         onCloseEditor()

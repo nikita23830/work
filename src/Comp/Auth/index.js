@@ -20,7 +20,8 @@ class Auth extends React.Component {
       chart: -1
     },
     errorRegist: {},
-    notActual: false
+    notActual: false,
+    needLogin: false
   }
 
   checkAuth = async () => {
@@ -33,6 +34,8 @@ class Auth extends React.Component {
   changeReg = () => this.setState({ reg: !this.state.reg })
 
   checkLoginInReg = (e) => this.props.socket.emit('checkLoginInReg', e.target.value)
+
+  checkEmailInReg = (e) => this.props.socket.emit('checkEmainInReg', e.target.value)
 
   chandeDataRegist = (name, value) => {
     let error = this.state.errorRegist
@@ -50,6 +53,17 @@ class Auth extends React.Component {
       enqueueSnackbar(`Не все данные заполнены`, {variant: 'warning',autoHideDuration: 3000})
       this.setState({ errorRegist: error })
     } else socket.emit('requestRegistration', regist)
+  }
+
+  restorePass = () => {
+    const { login, reg } = this.state
+    const { enqueueSnackbar, socket } = this.props
+    if (reg) this.setState({ reg: false, needLogin: true })
+    if (!login || (login && login.replace(/\s/g, '') === '')) {
+      enqueueSnackbar('Введите логин для восстановления пароля', {variant: 'info', autoHideDuration: 3000})
+      this.setState({ needLogin: true })
+    }
+    else socket.emit('restorePass', login)
   }
 
   closeNotActual = () => this.setState({ login: '', pass: '', notActual: false })
@@ -87,16 +101,25 @@ class Auth extends React.Component {
         this.setState({ errorRegist: { ...this.state.errorRegist, login: true } })
       }
     })
+    await socket.on('checkEmainInReg', (data) => { // проверка занятости логина
+      if (!data.free) {
+        enqueueSnackbar(`Введенный e-mail уже занят`, {variant: 'warning',autoHideDuration: 3000})
+        this.setState({ errorRegist: { ...this.state.errorRegist, email: true } })
+      }
+    })
     await socket.on('requestRegistration', (data) => {
       if (data.success) {
         enqueueSnackbar(`Успешная регистрация`, {variant: 'success',autoHideDuration: 3000})
         this.setState({ regist:{dept: -1,manager: -1,name:'',surname:'',login:'',pass:''}, errorRegist:{}, reg:false })
       }
     })
+    await socket.on('restorePass', (data) => {
+      enqueueSnackbar(`Новый пароль направлен на почту`, {variant: 'success',autoHideDuration: 3000})
+    })
   }
 
   render () {
-    const { login, pass, loader, reg, manager, listDept, regist, errorRegist, notActual } = this.state
+    const { login, pass, loader, reg, manager, listDept, regist, errorRegist, notActual, needLogin } = this.state
     if (notActual) return (
       <NotActual closeNotActual={this.closeNotActual} />
     )
@@ -117,7 +140,8 @@ class Auth extends React.Component {
                     <TextField
                       label='Логин'
                       value={login}
-                      onChange={e => this.setState({ login: e.target.value })}
+                      error={needLogin}
+                      onChange={e => this.setState({ login: e.target.value, needLogin: false })}
                     />
                   </Grid>
                   <Grid item xs={12} sm={12}>
@@ -142,11 +166,15 @@ class Auth extends React.Component {
                   onRequestRegistration={this.onRequestRegistration}
                   errorRegist={errorRegist}
                   checkLoginInReg={this.checkLoginInReg}
+                  checkEmailInReg={this.checkEmailInReg}
                 />
               </CustomCollapse>
             </Grid>
-            <Grid item xs={12} sm={12}>
-              <Link href='#' onClick={this.changeReg}>{reg ? 'Войти' : 'Зарегистрироваться'}</Link>
+            <Grid item xs={12} sm={6}>
+              <Link href='#' onClick={this.changeReg}>{reg ? 'Войти' : 'Регистрация'}</Link>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Link href='#' onClick={this.restorePass}>Забыл(а) пароль</Link>
             </Grid>
           </Grid>
         </AuthCard>
@@ -158,16 +186,19 @@ class Auth extends React.Component {
 export default withSnackbar(Auth)
 
 const checkRegist = (regist, errorRegist) => {
-  const temp = ['name', 'surname', 'login', 'pass']
+  const temp = ['name', 'surname', 'login', 'pass', 'email']
+  const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   let result = { ...errorRegist }
   temp.forEach(i => { if (!regist[i]) result[i] = true })
   if (regist.name && regist.name.replace(/\s/g, '') === '') result.name = true
   if (regist.surname && regist.surname.replace(/\s/g, '') === '') result.surname = true
   if (regist.login && regist.login.replace(/\s/g, '') === '') result.login = true
   if (regist.pass && regist.pass.replace(/\s/g, '') === '') result.pass = true
+  if (regist.email && regist.email.replace(/\s/g, '') === '') result.email = true
   if (regist.dept === -1) result.dept = true
   if (regist.manager === -1) result.manager = true
   if (regist.chart === -1) result.chart = true
+  if (!re.test(regist.email)) result.email = true
   return result
 }
 
@@ -181,7 +212,7 @@ const AuthCard = styled(Card)` && {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 300px;
-  height: ${p=>!p.reg ? '280px' : '360px'};
+  height: ${p=>!p.reg ? '280px' : '430px'};
   padding: 10px;
 }`
 

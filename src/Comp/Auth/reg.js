@@ -21,6 +21,17 @@ export const Registration = (props) => {
             />
           </Grid>
         ))}
+        <Grid item xs={12} sm={12}>
+          <TextField
+            value={regist.email}
+            color='primary'
+            fullWidth
+            onChange={e => props.chandeDataRegist('email', e.target.value)}
+            onBlur={props.checkEmailInReg}
+            label='E-mail'
+            error={errorRegist.email}
+          />
+        </Grid>
         <Grid item xs={12} sm={6}>
           <Select
             fullWidth
@@ -56,7 +67,7 @@ export const Registration = (props) => {
             onChange={e=>props.chandeDataRegist('chart', e.target.value)}
           >
             <MenuItem value={-1} disabled>График</MenuItem>
-            <MenuItem value={0}>График 5/5</MenuItem>
+            <MenuItem value={0}>График 5/2</MenuItem>
             <MenuItem value={1}>График 2/2</MenuItem>
             <MenuItem value={2}>График "ночник"</MenuItem>
           </Select>
