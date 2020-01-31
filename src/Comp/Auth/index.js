@@ -29,7 +29,7 @@ class Auth extends React.Component {
     restoreLogin: '',
     errorRestore: '',
     sendRestore: false,
-    authToReg: true
+    authToReg: false
   }
 
   changeRestore = (e) => this.setState({ restoreLogin: e.target.value, errorRestore: '' })
@@ -138,65 +138,6 @@ class Auth extends React.Component {
     if (notActual) return (
       <NotActual closeNotActual={this.closeNotActual} />
     )
-    /*
-    else return (
-      <>
-        <Loader loader={loader}>
-          <CircularProgress />
-        </Loader>
-        <AuthCard reg={reg}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={12}>
-              <Typography>{reg ? 'Регистрация' : 'Авторизация'}</Typography>
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <Collapse in={!reg}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      label='Логин'
-                      value={login}
-                      error={needLogin}
-                      onChange={e => this.setState({ login: e.target.value, needLogin: false })}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      label='Пароль'
-                      type='password'
-                      value={pass}
-                      onChange={e => this.setState({ pass: e.target.value })}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <Button color='primary' variant='outlined' onClick={this.checkAuth}>Войти</Button>
-                  </Grid>
-                </Grid>
-              </Collapse>
-              <CustomCollapse in={reg}>
-                <Registration
-                  manager={manager}
-                  listDept={listDept}
-                  regist={regist}
-                  chandeDataRegist={this.chandeDataRegist}
-                  onRequestRegistration={this.onRequestRegistration}
-                  errorRegist={errorRegist}
-                  checkLoginInReg={this.checkLoginInReg}
-                  checkEmailInReg={this.checkEmailInReg}
-                />
-              </CustomCollapse>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Link href='#' onClick={this.changeReg}>{reg ? 'Войти' : 'Регистрация'}</Link>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Link href='#' onClick={this.restorePass}>Забыл(а) пароль</Link>
-            </Grid>
-          </Grid>
-        </AuthCard>
-      </>
-    )
-    */
     else return (
       <CustomGrid container spacing={0} h={height}>
         <CustomGrid item xs={12} sm={6}>

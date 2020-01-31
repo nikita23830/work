@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Card, Grid, TextField, Select, MenuItem, FormControl, InputLabel, Button, Link } from '@material-ui/core'
 import { authToRegRegist, authToRegBackRegist } from 'Comp/Auth'
 
-export const Registration = () => {
+export const Registration = ({ onAuthToReg }) => {
   const FIELD = ['Имя', 'Фамилия', 'Логин', 'Пароль', 'E-mail']
   const FIELDSELECT = ['График', 'Руководитель', 'Отдел']
   return (
@@ -35,7 +35,7 @@ export const Registration = () => {
           <CustomText>У вас есть аккаунт?</CustomText>
         </Grid>
         <Grid item xs={12} sm={3}>
-          <CustomLink>Войти</CustomLink>
+          <CustomLink onClick={onAuthToReg}>Войти</CustomLink>
         </Grid>
       </CustomGrid>
     </StyleCard>
