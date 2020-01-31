@@ -6,6 +6,7 @@ import { Logo, LogoName, ErrorCircle, Main } from 'Comp/Auth/logo'
 import { Registration } from 'Comp/Auth/regist'
 import { NotActual } from 'Comp/Auth/notActual'
 import { RestorePassword } from 'Comp/Auth/restore'
+import { SuccessRegistration } from 'Comp/Auth/SuccessReg'
 
 class Auth extends React.Component {
   state={
@@ -17,9 +18,9 @@ class Auth extends React.Component {
     listDept: [],
     manager: [],
     regist: {
-      dept: -1,
-      manager: -1,
-      chart: -1
+      dept: '',
+      manager: '',
+      chart: ''
     },
     errorRegist: {},
     notActual: false,
@@ -43,15 +44,21 @@ class Auth extends React.Component {
 
   changeReg = () => this.setState({ reg: !this.state.reg })
 
-  checkLoginInReg = (e) => this.props.socket.emit('checkLoginInReg', e.target.value)
+  checkLoginInReg = (e) => {
+    if (e.target.value && e.target.value.replace(/\s/g, '') !== '')
+      this.props.socket.emit('checkLoginInReg', e.target.value)
+  }
 
-  checkEmailInReg = (e) => this.props.socket.emit('checkEmainInReg', e.target.value)
+  checkEmailInReg = (e) => {
+    if (e.target.value && e.target.value.replace(/\s/g, '') !== '')
+      this.props.socket.emit('checkEmainInReg', e.target.value)
+  }
 
   chandeDataRegist = (name, value) => {
     let error = this.state.errorRegist
     delete error[name]
     if (name === 'dept')
-      this.setState({ regist: { ...this.state.regist, [name]: value, manager: -1 }, errorRegist: error })
+      this.setState({ regist: { ...this.state.regist, [name]: value, manager: '' }, errorRegist: error })
     else this.setState({ regist: { ...this.state.regist, [name]: value }, errorRegist: error })
   }
 
@@ -60,7 +67,6 @@ class Auth extends React.Component {
     const { socket, enqueueSnackbar } = this.props
     let error = checkRegist(regist, errorRegist)
     if (Object.keys(error).length > 0) {
-      enqueueSnackbar(`Не все данные заполнены`, {variant: 'warning',autoHideDuration: 3000})
       this.setState({ errorRegist: error })
     } else socket.emit('requestRegistration', regist)
   }
@@ -111,16 +117,12 @@ class Auth extends React.Component {
       this.setState({ listDept: data.dept, manager: manager })
     })
     await socket.on('checkLoginInReg', (data) => { // проверка занятости логина
-      if (!data.free) {
-        enqueueSnackbar(`Введенный логин уже занят`, {variant: 'warning',autoHideDuration: 3000})
-        this.setState({ errorRegist: { ...this.state.errorRegist, login: true } })
-      }
+      if (!data.free)
+        this.setState({ errorRegist: { ...this.state.errorRegist, login: 'Введенный логин уже занят' } })
     })
     await socket.on('checkEmainInReg', (data) => { // проверка занятости логина
-      if (!data.free) {
-        enqueueSnackbar(`Введенный e-mail уже занят`, {variant: 'warning',autoHideDuration: 3000})
-        this.setState({ errorRegist: { ...this.state.errorRegist, email: true } })
-      }
+      if (!data.free)
+        this.setState({ errorRegist: { ...this.state.errorRegist, email: 'Введенный e-mail уже занят' } })
     })
     await socket.on('requestRegistration', (data) => {
       if (data.success) {
@@ -135,12 +137,11 @@ class Auth extends React.Component {
 
   render () {
     const { login, pass, loader, reg, manager, listDept, regist, errorRegist, notActual, needLogin, height, errorAuth, authToRestore, restoreLogin, errorRestore, sendRestore, authToReg } = this.state
-    if (notActual) return (
-      <NotActual closeNotActual={this.closeNotActual} />
-    )
-    else return (
+   return (
       <CustomGrid container spacing={0} h={height}>
         <CustomGrid item xs={12} sm={6}>
+
+          {notActual && <SuccessRegistration  closeNotActual={this.closeNotActual} />}
 
           <RestorePassword
             authToRestore={authToRestore}
@@ -153,14 +154,21 @@ class Auth extends React.Component {
           />
 
           {authToReg && <Registration
-            authToReg={authToReg}
             onAuthToReg={this.onAuthToReg}
+            regist={regist}
+            errorRegist={errorRegist}
+            listDept={listDept}
+            manager={manager}
+            checkLoginInReg={this.checkLoginInReg}
+            checkEmailInReg={this.checkEmailInReg}
+            chandeDataRegist={this.chandeDataRegist}
+            onRequestRegistration={this.onRequestRegistration}
           />}
 
           <LogoAndName>
             <Logo /><LogoName />
           </LogoAndName>
-          {!authToReg && <StyleAuthCard error={errorAuth} authToRestore={authToRestore} authToReg={authToReg}>
+          {!authToReg && !notActual && <StyleAuthCard error={errorAuth} authToRestore={authToRestore} authToReg={authToReg}>
             <StyleGrid container spacing={4}>
               <Grid item xs={12} sm={12}>
                 <CustomTypographyTitle>Авторизация</CustomTypographyTitle>
@@ -232,9 +240,9 @@ const checkRegist = (regist, errorRegist) => {
   if (regist.login && regist.login.replace(/\s/g, '') === '') result.login = true
   if (regist.pass && regist.pass.replace(/\s/g, '') === '') result.pass = true
   if (regist.email && regist.email.replace(/\s/g, '') === '') result.email = true
-  if (regist.dept === -1) result.dept = true
-  if (regist.manager === -1) result.manager = true
-  if (regist.chart === -1) result.chart = true
+  if (regist.dept === '') result.dept = true
+  if (regist.manager === '') result.manager = true
+  if (regist.chart === '') result.chart = true
   if (!re.test(regist.email)) result.email = true
   return result
 }
@@ -315,7 +323,7 @@ const CustomError = styled.p` {
 
 const StyleGrid = styled(Grid)` && {
   position: absolute;
-  top: 124px;
+  top: 44px;
   left: 44px;
   width: 467px;
   padding: 0px;
@@ -418,7 +426,7 @@ const StyleAuthCard = styled(Card)` && {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 524px;
-  height: ${p=>!p.error ? '517px' : '565px'};
+  height: ${p=>!p.error ? '437px' : '485px'};
   animation: ${p=>
     p.authToRestore === 1
     ? authToRestoreAuth
@@ -458,6 +466,9 @@ const CustomLink = styled(Link)` && {
   cursor: pointer;
   user-select: none;
 }`
+
+
+
 
 const CustomCollapse = styled(Collapse)` && {
   position: relative;

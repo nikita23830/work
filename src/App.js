@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import './fonts/web/index.css';
 import socketIOClient from "socket.io-client";
 import { SocketProvider } from 'ContextSocket'
 import Main from 'Comp'
