@@ -9,8 +9,9 @@ import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 import Push from 'push.js'
 
-const socket = socketIOClient("3.136.56.168:4001")
-/*const socket = socketIOClient("3.136.56.168:4001")*/
+const URL_SERVER = 'http://3.136.56.168:4001'
+// const URL_SERVER = '3.136.56.168:4001'
+const socket = socketIOClient(URL_SERVER)
 
 class App extends React.Component {
 
@@ -34,12 +35,12 @@ class App extends React.Component {
   render () {
     const { loader } = this.state
     return (
-      <SocketProvider value={{ socket: socket }}>
+      <SocketProvider value={{ socket: socket, URL_SERVER: URL_SERVER }}>
         <Loader loader={loader}>
           <CircularProgress />
         </Loader>
         <div className="App">
-          <Main socket={socket} />
+          <Main socket={socket} URL_SERVER={URL_SERVER} />
         </div>
       </SocketProvider>
     )

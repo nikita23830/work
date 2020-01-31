@@ -118,9 +118,10 @@ class News extends React.Component {
 
   render () {
     const { width, height, news, img, imgModal, imgModalVis, openEditor, aviableMore, likeNews, mylikeNews, viewNews } = this.state
+    const { URL_SERVER } = this.context
     return (
       <Root w={width} h={height}>
-        <ViewNews viewNews={viewNews} onViewNews={this.onViewNews} />
+        <ViewNews viewNews={viewNews} onViewNews={this.onViewNews} URL_SERVER={URL_SERVER} />
         {!openEditor && <Grid container spacing={3}>
           {news.map((i, ind) => (
             <Grid item xs={12} sm={4}>
@@ -128,13 +129,13 @@ class News extends React.Component {
                 <Grid container spacing={1}>
                   <Grid item xs={12} sm={3}>
                     <Styledimg
-                      src={!img[i.id] || (img[i.id] && img[i.id].length === 0) ? 'http://3.136.56.168:4001/news' : `http://3.136.56.168:4001/uploads/${img[i.id][0].filename}`}
+                      src={!img[i.id] || (img[i.id] && img[i.id].length === 0) ? `${URL_SERVER}/news` : `${URL_SERVER}/uploads/${img[i.id][0].filename}`}
                     />
                   </Grid>
                   <Grid item xs={12} sm={9}>
                     {i.title}
                   </Grid>
-                  <CustomGrid item xs={12} sm={5}>{i.date}</CustomGrid>
+                  <CustomGrid item xs={12} sm={3}>{i.date}</CustomGrid>
                 </Grid>
               </CustomPaper>
             </Grid>
@@ -151,7 +152,7 @@ class News extends React.Component {
           onClose={this.onChangeImgModal(-1, -1)}
         >
           {imgModal && imgModal.news !== -1 &&
-            <CustomBigImg src={`http://3.136.56.168:4001/uploads/${img[imgModal.news][imgModal.img].filename}`} h={height} w={width} onClick={this.onChangeImgModal(-1, -1)}/>
+            <CustomBigImg src={`${URL_SERVER}/uploads/${img[imgModal.news][imgModal.img].filename}`} h={height} w={width} onClick={this.onChangeImgModal(-1, -1)}/>
           }
         </Modal>
 

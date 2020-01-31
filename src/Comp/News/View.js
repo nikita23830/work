@@ -3,7 +3,7 @@ import { Modal, Card, Grid, Typography, IconButton } from '@material-ui/core'
 import { FavoriteBorder } from '@material-ui/icons'
 import styled from 'styled-components'
 
-export const ViewNews = ({ viewNews, onViewNews }) => (
+export const ViewNews = ({ viewNews, onViewNews, URL_SERVER }) => (
   <Modal
     open={viewNews}
     onClose={onViewNews}
@@ -11,7 +11,7 @@ export const ViewNews = ({ viewNews, onViewNews }) => (
     <CardViewNews>
       <Grid container spacing={1}>
         <Grid item xs={12} sm={7}>
-          <Styledimg src='http://3.136.56.168:4001/newsview' />
+          <Styledimg src={`${URL_SERVER}/newsview`} />
         </Grid>
         <Grid item xs={12} sm={5}>
           <Typography variant='h6' component='h2'>Коллеги, сегодня наш дружный коллектив покидает Елена Стржемеская!</Typography>

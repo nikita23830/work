@@ -56,7 +56,7 @@ class Main extends Component {
 
   async componentDidMount() {
     const { needAuth } = this.state
-    const { cookies, socket } = this.props
+    const { cookies, socket, URL_SERVER } = this.props
     const uid = cookies.get('token')
     await socket.emit('newCon', '')
     if (!needAuth) await socket.emit('addLogin', {type: 'uid', uid: uid})
@@ -69,7 +69,7 @@ class Main extends Component {
     await socket.on('pushNotifNewNews', (data) => {
       Push.create("Появилась новая новость", {
           body: "Нажмите для открытия сайта",
-          icon: 'http://3.136.56.168:4001/push',
+          icon: `${URL_SERVER}/push`,
           timeout: 4000,
           onClick: function () {
               window.focus();

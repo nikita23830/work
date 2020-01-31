@@ -22,7 +22,7 @@ class EditorNews extends React.Component {
 
   onPublic = async () => {
     const { imgNotModifer, title, text } = this.state
-    const { socket } = this.context
+    const { socket, URL_SERVER } = this.context
     const { enqueueSnackbar, onCloseEditor } = this.props
     if (title.replace(/\s/g, '') === '')
       enqueueSnackbar(`Невозможно опубилковать новость без названия`, {variant: 'warning',autoHideDuration: 3000})
@@ -37,7 +37,7 @@ class EditorNews extends React.Component {
 
       await axios({
         method: "post",
-        url: `http://3.136.56.168:4001/newNews`,
+        url: `${URL_SERVER}/newNews`,
         headers: {
           Accept: "application/json",
           "Content-Type": "multipart/form-data"
