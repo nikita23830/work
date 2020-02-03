@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import {Card, CardContent, CardActions, Button, Grid, Typography, IconButton} from '@material-ui/core'
 import {Delete} from '@material-ui/icons'
 import { SocketConsumer } from 'ContextSocket/index'
@@ -8,8 +8,6 @@ import { withSnackbar } from 'notistack';
 class MainRuleBreak extends Component {
 
   state = {
-    height: 100,
-	  width: 100,
     rule: []
   }
 
@@ -22,9 +20,6 @@ class MainRuleBreak extends Component {
     const { socket } = this.context
     const { enqueueSnackbar } = this.props
     await socket.emit('getListRule', '')
-    let h = document.documentElement.clientHeight - 200
-	  let w = document.documentElement.clientWidth - 40
-    this.setState({ height: h, width: w })
 
     await socket.on('getListRule', (data) => {
       this.setState({ rule: data })
@@ -38,9 +33,10 @@ class MainRuleBreak extends Component {
   }
 
   render () {
-    const { height, width, rule } = this.state
+    const { rule } = this.state
+    const { drawer } = this.props
     return (
-      <StyledCard h={height} w={width}>
+      <StyledCard drawer={drawer}>
         <CardContent>
           {rule.map(i => (
             <Grid container spacing={1}>
@@ -69,6 +65,24 @@ class MainRuleBreak extends Component {
   }
 }
 
+const openDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+`;
+
+const closeDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+`;
+
 const CustomTypography = styled(Typography)` && {
   height: 48px;
   display: flex;
@@ -78,9 +92,12 @@ const CustomTypography = styled(Typography)` && {
 
 const StyledCard = styled(Card)` && {
   width: ${p=>p.w}px;
-  margin: 20px;
-  height: ${p=>p.h}px;
+  height: ${document.documentElement.clientHeight - 155}px;
+  animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
   overflow-y: auto;
+  position: absolute;
+  right: 5px;
+  top: 150px;
 }`
 
 MainRuleBreak.contextType = SocketConsumer;

@@ -10,9 +10,9 @@ class RuleBreak extends Component {
   render () {
     return (
       <>
-        <AddRuleBreak />
+        <AddRuleBreak {...this.props} />
 
-        <MainRuleBreak />
+        <MainRuleBreak {...this.props} />
       </>
     )
   }

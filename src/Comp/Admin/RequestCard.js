@@ -18,7 +18,7 @@ export const ReqCard = (props) => (
       </Fab>
     </Grid>
 
-    <RequestGrid item xs={12} sm={12} h={props.rootHeight}>
+    <RequestGrid item xs={12} sm={12}>
       <Grid container spacing={2}>
       {props.reqList.map(i => (
         <>

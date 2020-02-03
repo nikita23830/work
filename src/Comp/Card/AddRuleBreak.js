@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import {Card,
   CardContent,
   CardActions,
@@ -21,8 +21,6 @@ class AddRuleBreak extends Component {
     type: -1,
     data_rule: -1,
     period: -1,
-  	wMain: 100,
-  	hMain: 100,
     rules: {name: [], type: [], period: []}
   }
 
@@ -46,8 +44,6 @@ class AddRuleBreak extends Component {
     const { socket } = this.context
     const { enqueueSnackbar } = this.props
     await socket.emit('getRules', '')
-    let wMain = document.documentElement.clientWidth - 40
-    this.setState({ wMain: wMain })
 
     await socket.on('getRules', (data) => {
       this.setState({ rules: data })
@@ -69,91 +65,108 @@ class AddRuleBreak extends Component {
   }
 
   render() {
-    const { name, type, data_rule, period, wMain, rules } = this.state
+    const { name, type, data_rule, period, rules } = this.state
+    const { drawer } = this.props
     const DATE_RULE = [1,2,3,4,5,6,7,8,9,10]
     return (
-      <>
-        <StyledCard w={wMain}>
-          <CardContent>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={4}>
-                <Select
+      <StyledCard drawer={drawer}>
+        <CardContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <Select
                   value={name}
-                  onChange={this.handleChange}
-                  inputProps={{
-                    name: 'name',
-                    id: 'first',
-                  }}
-                  fullWidth
-                >
-  				        <MenuItem value={-1} disabled><em>Правило</em></MenuItem>
-                  {rules.name.map(i => (
-                    <MenuItem value={i.id}>{i.name_rule}</MenuItem>
-                  ))}
-                </Select>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Select
-                  value={type}
-                  onChange={this.handleChange}
-                  inputProps={{
-                    name: 'type',
-                    id: 'second',
-                  }}
-                  fullWidth
-                >
-  				        <MenuItem value={-1} disabled><em>Условие</em></MenuItem>
-                  {rules.type.map(i=>{
-                    if (i.name_rule_id === name) return (
-                      <MenuItem value={i.id}>{i.type_rule}</MenuItem>
-                    )
-                  })}
-                </Select>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Select
-                  value={period}
-                  onChange={this.handleChange}
-                  inputProps={{
-                    name: 'period',
-                    id: 'third',
-                  }}
-                  fullWidth
-                >
-  				        <MenuItem value={-1} disabled><em>Период</em></MenuItem>
-                  {rules.period.map(i=>{
-                    if (i.type_rule_id === type) return (
-                      <MenuItem value={i.id}>{i.period_rule}</MenuItem>
-                    )
-                  })}
-                </Select>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Select
-                  value={data_rule}
-                  onChange={this.handleChange}
-                  inputProps={{
-                    name: 'data_rule',
-                    id: 'four',
-                  }}
-                  fullWidth
-                >
-  				        <MenuItem value={-1} disabled><em>Значение</em></MenuItem>
-                  {DATE_RULE.map(i=>(
-                    <MenuItem value={i}>{i}</MenuItem>
-                  ))}
-                </Select>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Button variant='outlined' color='primary' fullWidth onClick={this.addRule}>Применить</Button>
-              </Grid>
+                onChange={this.handleChange}
+                inputProps={{
+                  name: 'name',
+                  id: 'first',
+                }}
+                fullWidth
+              >
+  			        <MenuItem value={-1} disabled><em>Правило</em></MenuItem>
+                {rules.name.map(i => (
+                  <MenuItem value={i.id}>{i.name_rule}</MenuItem>
+                ))}
+              </Select>
             </Grid>
-          </CardContent>
-        </StyledCard>
-      </>
+            <Grid item xs={12} sm={2}>
+              <Select
+                  value={type}
+                onChange={this.handleChange}
+                inputProps={{
+                  name: 'type',
+                  id: 'second',
+                }}
+                fullWidth
+              >
+  			        <MenuItem value={-1} disabled><em>Условие</em></MenuItem>
+                {rules.type.map(i=>{
+                  if (i.name_rule_id === name) return (
+                    <MenuItem value={i.id}>{i.type_rule}</MenuItem>
+                  )
+                })}
+              </Select>
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <Select
+                value={period}
+                onChange={this.handleChange}
+                inputProps={{
+                  name: 'period',
+                  id: 'third',
+                }}
+                fullWidth
+              >
+  			        <MenuItem value={-1} disabled><em>Период</em></MenuItem>
+                {rules.period.map(i=>{
+                  if (i.type_rule_id === type) return (
+                    <MenuItem value={i.id}>{i.period_rule}</MenuItem>
+                  )
+                })}
+              </Select>
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <Select
+                value={data_rule}
+                onChange={this.handleChange}
+                inputProps={{
+                  name: 'data_rule',
+                  id: 'four',
+                }}
+                fullWidth
+              >
+  			        <MenuItem value={-1} disabled><em>Значение</em></MenuItem>
+                {DATE_RULE.map(i=>(
+                  <MenuItem value={i}>{i}</MenuItem>
+                ))}
+              </Select>
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <Button variant='outlined' color='primary' fullWidth onClick={this.addRule}>Применить</Button>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </StyledCard>
     )
   }
 }
+
+const openDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+`;
+
+const closeDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+`;
 
 const StyleButton = styled(Button)` && {
 	width: 150px;
@@ -162,8 +175,10 @@ const StyleButton = styled(Button)` && {
 }`
 
 const StyledCard = styled(Card)` && {
-  width: ${p=>p.w}px;
-  margin: 20px;
+  position: absolute;
+  right: 5px;
+  top: 70px;
+  animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
 }`
 
 const CustomSelect = styled(Select)` && {

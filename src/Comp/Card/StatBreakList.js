@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import {Card,
   CardContent,
   CardActions,
@@ -17,61 +17,69 @@ import { TIMING } from 'Comp/Break/MainTable/tools'
 
 class StatBreakList extends Component {
 
-  state = {
-    heightList: 0
-  }
-
-  componentDidMount () {
-    let height = `${document.documentElement.clientHeight - 370}px`
-    this.setState({ heightList: height })
-  }
-
   render() {
-    const { heightList } = this.state
-    const { list, delBreakWithListStat } = this.props
+    const { list, delBreakWithListStat, drawer } = this.props
     return (
-      <>
-        <StyledCard height={heightList}>
-          <Table>
-            <TableHead>
+      <StyledCard drawer={drawer}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ФИО</TableCell>
+              <TableCell>Начало перерыва</TableCell>
+              <TableCell>Конец перерыва</TableCell>
+              <TableCell>Продолжительность</TableCell>
+              <TableCell>Руководитель</TableCell>
+              <TableCell>Удалить</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {list.map(i => (
               <TableRow>
-                <TableCell>ФИО</TableCell>
-                <TableCell>Начало перерыва</TableCell>
-                <TableCell>Конец перерыва</TableCell>
-                <TableCell>Продолжительность</TableCell>
-                <TableCell>Руководитель</TableCell>
-                <TableCell>Удалить</TableCell>
+                <TableCell>{i.name}</TableCell>
+                <TableCell>{TIMING[i.start][1]}:{addZero(TIMING[i.start][2])}</TableCell>
+                <TableCell>{TIMING[i.end][1]}:{addZero(TIMING[i.end+1][2])}</TableCell>
+                <TableCell>{i.array.length * 5} мин.</TableCell>
+                <TableCell>{i.mName}</TableCell>
+                <TableCell>
+                  <IconButton aria-label="delete" onClick={delBreakWithListStat}>
+                    <Delete color='primary' />
+                  </IconButton>
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {list.map(i => (
-                <TableRow>
-                  <TableCell>{i.name}</TableCell>
-                  <TableCell>{TIMING[i.start][1]}:{addZero(TIMING[i.start][2])}</TableCell>
-                  <TableCell>{TIMING[i.end][1]}:{addZero(TIMING[i.end+1][2])}</TableCell>
-                  <TableCell>{i.array.length * 5} мин.</TableCell>
-                  <TableCell>{i.mName}</TableCell>
-                  <TableCell>
-                    <IconButton aria-label="delete" onClick={delBreakWithListStat}>
-                      <Delete color='primary' />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+            ))}
+          </TableBody>
+        </Table>
 
-        </StyledCard>
-      </>
+      </StyledCard>
     )
   }
 }
 
+const openDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+`;
+
+const closeDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+`;
+
 const StyledCard = styled(Card)` && {
-  width: 100%;
-  margin: 0 20px 20px 20px;
-  height: ${props => props.height};
+  height: ${document.documentElement.clientHeight - 320}px;
   overflow-y: auto;
+  position: absolute;
+  right: 5px;
+  top: 315px;
+  animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
 }`
 
 const StyledSpan = styled.span` && {

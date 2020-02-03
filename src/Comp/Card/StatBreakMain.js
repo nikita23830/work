@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import {Card, CardContent, CardActions, Typography, Button} from '@material-ui/core'
 import { BarChart } from "reaviz";
 import {
@@ -10,25 +10,18 @@ import {
 class MainPageDiagram extends Component {
   state = {
     chartWidth: 0,
-	wMain: 100,
-  }
-
-  componentDidMount() {
-	let wMain = document.documentElement.clientWidth - 40
-    this.setState({ wMain: wMain })
   }
 
   render() {
-    const { diag } = this.props
-    const { wMain } = this.state;
+    const { diag, drawer } = this.props
     return (
-      <StyledCard ref={(card) => { this.card = card; }} w={wMain}>
+      <StyledCard ref={(card) => { this.card = card; }} drawer={drawer}>
         <CardContent>
           <Typography variant="h5" component="h2">
             Количество перерывов
           </Typography> <br />
           <ComposedChart
-            width={wMain - 30}
+            width={drawer ? document.documentElement.clientWidth - 305 : document.documentElement.clientWidth - 115}
             height={150}
             data={diag}
             margin={{
@@ -78,6 +71,24 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+const openDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+`;
+
+const closeDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+`;
+
 const Styletext = styled.text` && {
   font-size: 8pt;
   font-family: 'Times New Roman',
@@ -85,8 +96,10 @@ const Styletext = styled.text` && {
 }`
 
 const StyledCard = styled(Card)` && {
-  width: ${p => p.w}px;
-  margin: 20px;
+  animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
+  position: absolute;
+  top: 70px;
+  right: 5px;
 }`
 
 const Customdiv = styled.div` && {

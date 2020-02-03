@@ -1,20 +1,35 @@
 import React from 'react'
 import styled, {keyframes} from 'styled-components'
 import { withSnackbar } from 'notistack';
-import { Card, Grid, TextField, Button, Typography, CircularProgress, Link, Collapse, Select, MenuItem } from '@material-ui/core'
+import { Grid } from '@material-ui/core'
 import { Logo, LogoName, ErrorCircle, Main } from 'Comp/Auth/logo'
 import { Registration } from 'Comp/Auth/regist'
 import { NotActual } from 'Comp/Auth/notActual'
 import { RestorePassword } from 'Comp/Auth/restore'
-import { SuccessRegistration } from 'Comp/Auth/SuccessReg'
+import SuccessRegistration from 'Comp/Auth/SuccessReg'
+import { LinkRegistration,
+  CustomLink,
+  DivSvg,
+  ErrorGrid,
+  CustomError,
+  StyleGrid,
+  OrgName,
+  BottomDiv,
+  CustomTypography,
+  CustomButton,
+  CustomTextField,
+  CustomTypographyTitle,
+  LogoAndName,
+  CustomGrid,
+  StyleAuthCard,
+  AuthorName
+} from 'Comp/Auth/style'
 
 class Auth extends React.Component {
   state={
     height: 100,
     login: '',
     pass: '',
-    loader: false,
-    reg: false,
     listDept: [],
     manager: [],
     regist: {
@@ -24,13 +39,13 @@ class Auth extends React.Component {
     },
     errorRegist: {},
     notActual: false,
-    needLogin: false,
     errorAuth: false,
     authToRestore: 0,
     restoreLogin: '',
     errorRestore: '',
     sendRestore: false,
-    authToReg: false
+    authToReg: false,
+    notFoundLogin: false,
   }
 
   changeRestore = (e) => this.setState({ restoreLogin: e.target.value, errorRestore: '' })
@@ -38,11 +53,8 @@ class Auth extends React.Component {
   checkAuth = async () => {
     const { login, pass } = this.state
     const { socket } = this.props
-    await this.setState({ loader: true })
     await socket.emit('checkAuth', {login: login, pass: pass})
   }
-
-  changeReg = () => this.setState({ reg: !this.state.reg })
 
   checkLoginInReg = (e) => {
     if (e.target.value && e.target.value.replace(/\s/g, '') !== '')
@@ -76,17 +88,19 @@ class Auth extends React.Component {
     const { socket } = this.props
     if (!restoreLogin || (restoreLogin && restoreLogin.replace(/\s/g, '') === ''))
       this.setState({ errorRestore: 'Необходимо ввести логин' })
-    else {
+    else
       socket.emit('restorePass', restoreLogin)
-      this.setState({ sendRestore: true })
-    }
   }
+
+  changeSendRestore = () => this.setState({ sendRestore: false })
 
   closeNotActual = () => this.setState({ login: '', pass: '', notActual: false })
 
   onAuthToRestore = () => this.setState({ authToRestore: this.state.authToRestore === 1 ? 2 : 1 })
 
   onAuthToReg = () => this.setState({ authToReg: !this.state.authToReg })
+
+  changeNotFoundLogin = () => this.setState({ notFoundLogin: false })
 
   async componentDidMount() {
     this.setState({ height: document.documentElement.clientHeight })
@@ -125,33 +139,24 @@ class Auth extends React.Component {
         this.setState({ errorRegist: { ...this.state.errorRegist, email: 'Введенный e-mail уже занят' } })
     })
     await socket.on('requestRegistration', (data) => {
-      if (data.success) {
-        enqueueSnackbar(`Успешная регистрация`, {variant: 'success',autoHideDuration: 3000})
-        this.setState({ regist:{dept: -1,manager: -1,name:'',surname:'',login:'',pass:''}, errorRegist:{}, reg:false })
-      }
+      if (data.success)
+        this.setState({ regist:{dept: -1,manager: -1,name:'',surname:'',login:'',pass:''}, errorRegist:{}, notActual: true, authToReg: false })
     })
     await socket.on('restorePass', (data) => {
-      enqueueSnackbar(`Новый пароль направлен на почту`, {variant: 'success',autoHideDuration: 3000})
+      if (data.notFount) this.setState({ notFoundLogin: true })
+      else this.setState({ sendRestore: true })
     })
   }
 
   render () {
-    const { login, pass, loader, reg, manager, listDept, regist, errorRegist, notActual, needLogin, height, errorAuth, authToRestore, restoreLogin, errorRestore, sendRestore, authToReg } = this.state
-   return (
+    const { login, notFoundLogin, pass, manager, listDept, regist, errorRegist, notActual, height, errorAuth, authToRestore, restoreLogin, errorRestore, sendRestore, authToReg } = this.state
+    return (
       <CustomGrid container spacing={0} h={height}>
         <CustomGrid item xs={12} sm={6}>
 
           {notActual && <SuccessRegistration  closeNotActual={this.closeNotActual} />}
 
-          <RestorePassword
-            authToRestore={authToRestore}
-            onAuthToRestore={this.onAuthToRestore}
-            restoreLogin={restoreLogin}
-            changeRestore={this.changeRestore}
-            onRestore={this.restorePass}
-            errorRestore={errorRestore}
-            sendRestore={sendRestore}
-          />
+          <RestorePassword {...this} />
 
           {authToReg && <Registration
             onAuthToReg={this.onAuthToReg}
@@ -181,8 +186,8 @@ class Auth extends React.Component {
                 <CustomTextField
                   variant='outlined'
                   label='Логин'
+                  name='login'
                   value={login}
-                  error={needLogin}
                   onChange={e => this.setState({ login: e.target.value })}
                 />
               </Grid>
@@ -191,6 +196,7 @@ class Auth extends React.Component {
                   variant='outlined'
                   label='Пароль'
                   type='password'
+                  name='password'
                   value={pass}
                   onChange={e => this.setState({ pass: e.target.value })}
                 />
@@ -216,6 +222,7 @@ class Auth extends React.Component {
           </StyleAuthCard>}
           <BottomDiv>
             <OrgName>АО «Калуга Астрал», 2020</OrgName>
+            <AuthorName>Developed By N. Zhuravlev. Designer: D. Krylov</AuthorName>
           </BottomDiv>
 
         </CustomGrid>
@@ -246,253 +253,3 @@ const checkRegist = (regist, errorRegist) => {
   if (!re.test(regist.email)) result.email = true
   return result
 }
-
-const authToRestoreAuth = keyframes`
-  0% {
-    transform: translate(-50%, -50%);
-    visibility: visible;
-  }
-  100% {
-    transform: translate(-150%, -50%);
-    visibility: hidden;
-  }
-`;
-
-const authToRestoreBackAuth = keyframes`
-  0% {
-    transform: translate(-150%, -50%);
-    visibility: hidden;
-  }
-  100% {
-    transform: translate(-50%, -50%);
-    visibility: visible;
-  }
-`;
-
-export const authToRestoreRestore = keyframes`
-  0% {
-    transform: translate(50%, -50%);
-    visibility: hidden;
-  }
-  100% {
-    transform: translate(-50%, -50%);
-    visibility: visible;
-  }
-`;
-
-export const authToRestoreBackRestore = keyframes`
-  0% {
-    transform: translate(-50%, -50%);
-    visibility: visible;
-  }
-  100% {
-    transform: translate(50%, -50%);
-    visibility: hidden;
-  }
-`;
-
-const DivSvg = styled.div`{
-  position: absolute;
-  width: 552px;
-  height: 670px;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  top: 50%;
-}`
-
-const ErrorGrid = styled(Grid)` && {
-  display: flex;
-  flex-direction: row;
-}`
-
-const CustomError = styled.p` {
-  margin: 11px 0px 11px 5px;
-  width: 199px;
-  height: 18px;
-  font-family: Manrope3;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 13px;
-  line-height: 18px;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #F24646;
-}`
-
-const StyleGrid = styled(Grid)` && {
-  position: absolute;
-  top: 44px;
-  left: 44px;
-  width: 467px;
-  padding: 0px;
-}`
-
-const OrgName = styled.p`{
-  position: absolute;
-  width: 152px;
-  height: 17px;
-  left: calc(50% - 152px/2 - 127.5px);
-  top: 16px;
-  font-family: Manrope3;
-  font-size: 12px;
-  line-height: 16px;
-  display: flex;
-  align-items: center;
-  font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #99A9BA;
-}`
-
-const BottomDiv = styled.div` {
-  position: absolute;
-  width: 100%;
-  height: 48px;
-  left: 0px;
-  bottom: 0px;
-}`
-
-const CustomTypography = styled(Typography)` && {
-  margin-top: 9px;
-  width: 99px;
-  height: 19px;
-  font-family: Manrope3;
-  font-size: 14px;
-  line-height: 19px;
-  display: flex;
-  align-items: center;
-  font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #99A9BA;
-}`
-
-const CustomButton = styled(Button)` && {
-  width: 164px;
-  height: 40px;
-  background: #2285EE;
-  font-family: Manrope3;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 13px;
-  line-height: 18px;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #FFFFFF;
-  margin-bottom: 44px;
-} &&:hover {
-  background: #2285EE;
-}`
-
-const CustomTextField = styled(TextField)` && {
-  width: 435px;
-  height: 56px;
-}`
-
-const CustomTypographyTitle = styled(Typography)` && {
-  width: 250px;
-  height: 50px;
-  font-family: Manrope3;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 36px;
-  line-height: 49px;
-  font-feature-settings: 'pnum' on, 'lnum' on;
-}`
-
-const LogoAndName = styled.div` {
-  position: absolute;
-  top: 44px;
-  left: 44px;
-  width: 108px;
-  height: 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}`
-
-const CustomGrid = styled(Grid)` && {
-  height: ${p=>p.h}px;
-  width: ${p=>p.item ? '50%' : '100%'};
-  background-color: ${p=>p.left ? '#F5F8FF' : '#fff'};
-  position: relative;
-  overflow-x: none;
-  overflow-y: none;
-}`
-
-const StyleAuthCard = styled(Card)` && {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 524px;
-  height: ${p=>!p.error ? '437px' : '485px'};
-  animation: ${p=>
-    p.authToRestore === 1
-    ? authToRestoreAuth
-    : p.authToRestore === 2
-      ? authToRestoreBackAuth
-      : ''
-  } 0.2s linear both;
-}`
-
-const LinkRegistration = styled(Link)` && {
-  margin-top: 9px;
-  width: 90px;
-  height: 19px;
-  font-family: Manrope3;
-  font-size: 14px;
-  line-height: 19px;
-  display: flex;
-  align-items: center;
-  text-decoration-line: underline;
-  font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #2285EE;
-  cursor: pointer;
-  user-select: none;
-}`
-
-const CustomLink = styled(Link)` && {
-  width: 113px;
-  height: 19px;
-  font-family: Manrope3;
-  font-size: 14px;
-  line-height: 19px;
-  display: flex;
-  align-items: center;
-  text-decoration-line: underline;
-  font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #2285EE;
-  cursor: pointer;
-  user-select: none;
-}`
-
-
-
-
-const CustomCollapse = styled(Collapse)` && {
-  position: relative;
-}`
-
-const AuthCard = styled(Card)` && {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 300px;
-  height: ${p=>!p.reg ? '280px' : '430px'};
-  padding: 10px;
-}`
-
-const Loader = styled.div` {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255,255,255,0.5);
-  display: ${p=>p.loader ? 'flex' : 'none'};
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
-}`

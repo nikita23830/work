@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import styled from 'styled-components'
-import { CircularProgress } from '@material-ui/core'
+import styled, { keyframes } from 'styled-components'
+import { CircularProgress, Grid } from '@material-ui/core'
 
 import MyBreakMain from 'Comp/Card/MyBreakMain'
 import MyBreakGInfo from 'Comp/Card/MyBreakGInfo'
@@ -41,17 +41,23 @@ class MyBreak extends Component {
 
   render () {
     const { list, loader } = this.state
+    const { drawer } = this.props
     return (
-      <StyledDiv>
+      <StyledDiv drawer={drawer}>
         <Loader loader={loader}>
           <CircularProgress />
         </Loader>
 
-        <MyBreakMain deleteMyBreak={this.deleteMyBreak} list={list}/>
-
-        <StyleDivInfo>
-          <MyBreakGInfo list={list}/>
-        </StyleDivInfo>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={6}>
+            <MyBreakMain deleteMyBreak={this.deleteMyBreak} list={list}/>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <StyleDivInfo>
+              <MyBreakGInfo list={list}/>
+            </StyleDivInfo>
+          </Grid>
+        </Grid>
       </StyledDiv>
     )
   }
@@ -60,6 +66,24 @@ class MyBreak extends Component {
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+const openDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+`;
+
+const closeDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+`;
 
 const Loader = styled.div` {
   position: absolute;
@@ -77,6 +101,9 @@ const Loader = styled.div` {
 const StyledDiv = styled.div` && {
   display: flex;
   flex-direction: row;
+  position: absolute;
+  right: 10px;
+  animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
 }`
 
 const StyleDivInfo = styled.div` && {

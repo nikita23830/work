@@ -11,11 +11,13 @@ import Auth from 'Comp/Auth'
 import { CircularProgress } from '@material-ui/core'
 import Push from 'push.js'
 
+import NewMenu from 'Comp/NewMenu'
+
 class Main extends Component {
 
   state = {
     page: 0,
-    drawer: false,
+    drawer: true,
     needAuth: true,
     login: '',
     people_id: -1,
@@ -27,7 +29,7 @@ class Main extends Component {
   openDrawer = () => this.setState({ drawer: !this.state.drawer })
 
   onChangePage = (index) => () => {
-    this.setState({ prev_page: this.state.page, page: index, drawer: false })
+    this.setState({ prev_page: this.state.page, page: index })
 	  localStorage.setItem('activePage', index)
   }
 
@@ -94,11 +96,11 @@ class Main extends Component {
       <>
         <DefAppBar openDrawer={this.openDrawer} onExit={this.onExit} onChangePage={this.onChangePage} page={page}/>
 
-        <DefDrawer onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer} level={level} />
+        <NewMenu onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer} level={level} />
 
         <StyleMainDiv>
 
-          {getPageContent({ page: page, people_id: people_id, level: level, onBackPage: this.onBackPage })}
+          {getPageContent({ page: page, people_id: people_id, level: level, onBackPage: this.onBackPage, drawer: drawer })}
 
         <ChipCheckServer />
         </StyleMainDiv>

@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { Card, Grid, Typography, Fab, Button, Checkbox } from '@material-ui/core'
 import { Cached } from '@material-ui/icons'
 import { SocketConsumer } from 'ContextSocket/index'
@@ -10,8 +10,6 @@ import Forbidden from 'Comp/Forbidden'
 class Administartion extends React.Component {
 
   state = {
-    rootHeight: 100,
-    roowWidth: 100,
     reqList: [],
     reqCheckList: {},
     disabledButton: true
@@ -40,9 +38,6 @@ class Administartion extends React.Component {
     const { socket } = this.context
     const { enqueueSnackbar } = this.props
     await socket.emit('getListRequestReg', '')
-    let h = document.documentElement.clientHeight - 90
-    let w = document.documentElement.clientWidth - 20
-    await this.setState({ rootHeight: h, roowWidth: w })
 
     await socket.on('getListRequestReg', (data) => {
       this.setState({ reqList: data })
@@ -64,15 +59,14 @@ class Administartion extends React.Component {
   }
 
   render () {
-    const { rootHeight, roowWidth, reqList, reqCheckList, disabledButton } = this.state
-    const { level } = this.props
+    const { reqList, reqCheckList, disabledButton } = this.state
+    const { level, drawer } = this.props
     if (level[0] === 0) return (<Forbidden {...this.props}/>)
     else return (
-      <Root h={rootHeight} w={roowWidth}>
-        <RequestCard h={rootHeight}>
+      <Root drawer={drawer}>
+        <RequestCard>
           <ReqCard
             socket={this.context.socket}
-            rootHeight={rootHeight}
             reqList={reqList}
             reqCheckList={reqCheckList}
             changeReqCheckList={this.changeReqCheckList}
@@ -89,14 +83,34 @@ class Administartion extends React.Component {
 Administartion.contextType = SocketConsumer;
 export default withSnackbar(Administartion)
 
+const openDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+`;
+
+const closeDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+`;
+
 const Root = styled.div` {
-  width: ${p=>p.w}px;
-  height: ${p=>p.h}px;
-  padding: 10px;
+  animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
+  height: ${document.documentElement.clientHeight - 95}px;
+  position: absolute;
+  top: 70px;
+  right: 0px;
 }`
 
 const RequestCard = styled(Card)` && {
   width: 480px;
-  height: ${p=>p.h-20}px;
+  height: ${document.documentElement.clientHeight - 95}px;
   padding: 10px;
 }`

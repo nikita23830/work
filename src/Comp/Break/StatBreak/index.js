@@ -51,13 +51,13 @@ class StatBreak extends Component {
 
   render () {
     const { list, diag } = this.state
+    const { drawer } = this.props
     return (
       <>
-
-        <StatBreakMain diag={diag} />
+        <StatBreakMain diag={diag} drawer={drawer} />
         <StyledDiv>
 
-          <StatBreakList list={list} delBreakWithListStat={this.delBreakWithListStat} />
+          <StatBreakList list={list} delBreakWithListStat={this.delBreakWithListStat} drawer={drawer} />
 
         </StyledDiv>
       </>

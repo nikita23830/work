@@ -4,24 +4,12 @@ import {Card, CardContent, CardActions, Typography, Button} from '@material-ui/c
 
 class MyBreakGInfo extends Component {
 
-  state={
-    hMain: 100,
-    wMain: 100,
-  }
-
-  componentDidMount () {
-    let hMain = (document.documentElement.clientHeight - 84) / 2
-    let wMain = (document.documentElement.clientWidth - 20) / 2
-    this.setState({ hMain: hMain, wMain: wMain })
-  }
-
   render() {
-    const { hMain, wMain } = this.state
     const { list } = this.props
     return (
       <>
-        <StyledCard h={hMain} w={wMain}>
-          <StyleCardContent h={hMain}>
+        <StyledCard>
+          <StyleCardContent>
             <Typography variant="h5" component="h2">
               Общая информация
             </Typography> <br />
@@ -88,13 +76,13 @@ const sred = (data) => {
 }
 
 const StyledCard = styled(Card)` && {
-  width: ${p=>p.w}px;
+  width: calc(100% - 5px);
   margin: 5px;
-  height: ${p=>p.h}px;
+  height: ${((document.documentElement.clientHeight - 84) / 2)-15}px;
 }`
 
 const StyleCardContent = styled(CardContent)` && {
-  height: ${p=>p.h - 50}px;
+  height: ${((document.documentElement.clientHeight - 84) / 2)-65}px;
   flex-direction: column;
   justify-content: space-between;
   display: flex;

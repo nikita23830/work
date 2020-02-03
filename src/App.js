@@ -10,7 +10,7 @@ import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 import Push from 'push.js'
 
-const URL_SERVER = 'http://3.136.56.168:4001'
+const URL_SERVER = 'http://192.168.31.232:4001'
 // const URL_SERVER = '3.136.56.168:4001'
 const socket = socketIOClient(URL_SERVER)
 

@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { Grid, Typography } from '@material-ui/core'
 
 export const RequestGrid = styled(Grid)` && {
-  height: ${p=>p.h-100}px;
+  height: ${document.documentElement.clientHeight - 180}px;
   overflow-y: scroll;
   overflow-x: hidden;
 }`

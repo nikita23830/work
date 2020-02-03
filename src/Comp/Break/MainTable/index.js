@@ -7,7 +7,7 @@ import { AppBar,
   TableHead,
   CircularProgress
 } from '@material-ui/core'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import DialogTable from 'Comp/DialogTable'
 import { SocketConsumer } from 'ContextSocket/index'
 import { withSnackbar } from 'notistack';
@@ -114,7 +114,7 @@ class MainTable extends Component {
     const timeH = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
     const timeM = ['00','05','10','15','20','25','30','35','40','45','50','55']
 
-    const { onContextMenu, handleClose, openDialogTable } = this.props
+    const { onContextMenu, handleClose, openDialogTable, drawer } = this.props
     const { loader } = this.state
     return (
       <>
@@ -122,7 +122,7 @@ class MainTable extends Component {
           <CircularProgress />
         </Loader>
 
-        <StyleTable>
+        <StyleTable drawer={drawer}>
           <TableHead>
             <StyleTableRow hCell={hMain} head={true}>
               { timeH.map(i => ( <StyledTableCell head={true} >{i}:00</StyledTableCell> )) }
@@ -159,12 +159,37 @@ class MainTable extends Component {
   }
 }
 
+const openDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 75}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 265}px;
+  }
+`;
+
+const closeDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 265}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 75}px;
+  }
+`;
+
 const StyleTable = styled(Table)` && {
   padding: 0px;
+  position: absolute;
+  right: 0px;
+  top: 65px;
+  animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
+  max-height: ${document.documentElement.clientHeight - 65}px;
+  height: ${document.documentElement.clientHeight - 65}px;
 }`
 
 const StyleTableRow = styled(TableRow)` && {
-  height: ${p => p.hCell}px;
+  max-height: ${(document.documentElement-64)/13}px;
+  height: ${(document.documentElement-64)/13}px;
   border-bottom: ${p => p.head ? '5px solid black' : ''}
 }`
 

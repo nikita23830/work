@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { Card, Grid, TextField, Typography, MenuItem, Button, Collapse, Chip } from '@material-ui/core'
 import { NewFeedBack } from 'Comp/FeedBack/New'
 import { SocketConsumer } from 'ContextSocket'
@@ -53,9 +53,6 @@ class FeedBack extends React.Component {
   componentDidMount = async () => {
     const { socket } = this.context
     await socket.emit('getTickets')
-    let wMain = document.documentElement.clientWidth - 40
-    let hMain = document.documentElement.clientHeight - 110
-    this.setState({ width: wMain, height: hMain })
     await socket.on('getTickets', (data) => {
       let newTickets = { new: [], accept: [], reject: [] }
       data.map(i => {
@@ -71,12 +68,13 @@ class FeedBack extends React.Component {
   }
 
   render () {
-    const { width, height, newFeed, vis, tickets, viewTicket, errorNewFeed } = this.state
-    const multiline = height !== 100 ? Math.round((height - 317) / 19) : 1
+    const { newFeed, vis, tickets, viewTicket, errorNewFeed } = this.state
+    const { drawer } = this.props
+    const multiline = Math.round((document.documentElement.clientHeight - 377) / 19)
     const TYPEFEED = ['Вопрос', 'Предложение', 'Сообщить об ошибке']
     return (
-      <Root w={width} h={height}>
-        <NewFeed  h={height} >
+      <Root drawer={drawer}>
+        <NewFeed>
           <Collapse in={vis === -1}>
             <NewFeedBack
               multiline={multiline}
@@ -107,9 +105,9 @@ class FeedBack extends React.Component {
             </ViewTicket>}
           </Collapse>
         </NewFeed>
-        <HistoryFeed w={width} h={height}>
+        <HistoryFeed drawer={drawer}>
           {TYPE_FEEDBACK.map((j, index) => (
-            <ColumnHistory w={width} h={height}>
+            <ColumnHistory>
               <Typography variant="h5" component="h2">{j.name}</Typography>
               {tickets[j.val].map((i, ind) => (
                 <HistoryFeedBlock type={index} onClick={this.onViewTicket(index,ind)}>{i.title}</HistoryFeedBlock>
@@ -121,6 +119,42 @@ class FeedBack extends React.Component {
     )
   }
 }
+
+const openDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+`;
+
+const closeDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 270}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 80}px;
+  }
+`;
+
+const openDrawerHistory = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 620}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 810}px;
+  }
+`;
+
+const closeDrawerHistory = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 810}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 620}px;
+  }
+`;
 
 const ColumnHistory = styled.div` {
   width: ${p=>(p.w-570)/3}px;
@@ -141,8 +175,8 @@ const HistoryFeedBlock = styled(MenuItem)` && {
 }`
 
 const HistoryFeed = styled(Card)` && {
-  width: ${p=>p.w-530}px;
-  height: ${p=>p.h-20}px;
+  animation: ${p=>p.drawer ? openDrawerHistory : closeDrawerHistory} 0.2s linear both;
+  height: ${document.documentElement.clientHeight - 95}px;
   padding: 10px;
   overflow-y: scroll;
   display: flex;
@@ -151,17 +185,19 @@ const HistoryFeed = styled(Card)` && {
 }`
 
 const Root = styled.div`{
-  width: ${p=>p.w}px;
-  height: ${p=>p.h}px;
-  padding: 20px;
+  animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
+  height: ${document.documentElement.clientHeight - 110}px;
+  position: absolute;
+  right: 5px;
+  top: 70px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
 }`
 
 const NewFeed = styled(Card)` && {
   width: 480px;
-  height: ${p=>p.h-20}px;
+  height: ${document.documentElement.clientHeight - 95}px;
   padding: 10px;
 }`
 
