@@ -23,8 +23,12 @@ class Main extends Component {
     people_id: -1,
     loader: true,
     level: [0,0,0,0,0,0],
-    prev_page: 0
+    prev_page: 0,
+    openNews: false
   }
+
+  onOpenNews = () => this.setState({ openNews: true })
+  onCloseNews = () => this.setState({ openNews: false })
 
   openDrawer = () => this.setState({ drawer: !this.state.drawer })
 
@@ -82,7 +86,7 @@ class Main extends Component {
   }
 
   render () {
-    const { openDialogTable, page, drawer, needAuth, loader, people_id, level } = this.state
+    const { openDialogTable, page, drawer, needAuth, loader, people_id, level, openNews } = this.state
     const { socket } = this.props
     if (needAuth) return (
       <Auth socket={socket} submit={this.onCheckAuth}/>
@@ -94,15 +98,32 @@ class Main extends Component {
     )
     else return (
       <>
-        <DefAppBar openDrawer={this.openDrawer} onExit={this.onExit} onChangePage={this.onChangePage} page={page}/>
+        <DefAppBar
+          openDrawer={this.openDrawer}
+          onExit={this.onExit}
+          onChangePage={this.onChangePage}
+          page={page}
+          drawer={drawer}
+          level={level}
+          onOpenNews={this.onOpenNews}
+        />
 
         <NewMenu onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer} level={level} />
 
         <StyleMainDiv>
 
-          {getPageContent({ page: page, people_id: people_id, level: level, onBackPage: this.onBackPage, drawer: drawer })}
+          {getPageContent({
+            page: page,
+            people_id: people_id,
+            level: level,
+            onBackPage: this.onBackPage,
+            drawer: drawer,
+            openNews: openNews,
+            onOpenNews: this.onOpenNews,
+            onCloseNews: this.onCloseNews
+          })}
 
-        <ChipCheckServer />
+          <ChipCheckServer />
         </StyleMainDiv>
       </>
     )

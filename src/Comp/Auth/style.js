@@ -50,7 +50,6 @@ export const LinkRegistration = styled(Link)` && {
   margin-top: 9px;
   width: 90px;
   height: 19px;
-  font-family: Manrope3;
   font-size: 14px;
   line-height: 19px;
   display: flex;
@@ -65,7 +64,6 @@ export const LinkRegistration = styled(Link)` && {
 export const CustomLink = styled(Link)` && {
   width: 113px;
   height: 19px;
-  font-family: Manrope3;
   font-size: 14px;
   line-height: 19px;
   display: flex;
@@ -95,7 +93,6 @@ export const CustomError = styled.p` {
   margin: 11px 0px 11px 5px;
   width: 199px;
   height: 18px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
@@ -121,7 +118,6 @@ export const OrgName = styled.p`{
   height: 17px;
   left: calc(50% - 152px/2 - 127.5px);
   top: 16px;
-  font-family: Manrope3;
   font-size: 12px;
   line-height: 16px;
   display: flex;
@@ -135,7 +131,6 @@ export const AuthorName = styled.p`{
   height: 17px;
   left: calc(50% - 49px/2 + 102px);
   top: 16px;
-  font-family: Manrope3;
   font-size: 12px;
   line-height: 16px;
   display: flex;
@@ -156,7 +151,6 @@ export const CustomTypography = styled(Typography)` && {
   margin-top: 9px;
   width: 99px;
   height: 19px;
-  font-family: Manrope3;
   font-size: 14px;
   line-height: 19px;
   display: flex;
@@ -169,7 +163,6 @@ export const CustomButton = styled(Button)` && {
   width: 164px;
   height: 40px;
   background: #2285EE;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
@@ -192,7 +185,6 @@ export const CustomTextField = styled(TextField)` && {
 export const CustomTypographyTitle = styled(Typography)` && {
   width: 250px;
   height: 50px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 36px;
@@ -242,7 +234,6 @@ export const TitleNotFound = styled.p`{
   height: 33px;
   left: 44px;
   top: 104px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 24px;
@@ -290,7 +281,6 @@ export const SuccussRestoreText = styled.p`{
   height: 38px;
   left: 44px;
   top: 191px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
@@ -306,7 +296,6 @@ export const SuccussRestoreTitle = styled.p`{
   height: 66px;
   left: 44px;
   top: 113px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 24px;
@@ -330,7 +319,6 @@ export const ButtonRestore = styled(Button)` && {
   height: 40px;
   left: 44px;
   top: 245px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
@@ -358,7 +346,6 @@ export const TitleRestore = styled.p`{
   height: 33px;
   left: 44px;
   top: 88px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 24px;
@@ -373,7 +360,6 @@ export const ArrowText = styled.p` {
   height: 18px;
   margin-top: 11px;
   margin-bottom: 11px;
-  font-family: Manrope3;
   font-size: 13px;
   line-height: 18px;
   display: flex;
@@ -416,7 +402,6 @@ export const AuthButton = styled(Button)` && {
   height: 40px;
   left: 44px;
   top: 295px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
@@ -438,7 +423,6 @@ export const RepeatButton = styled(Button)` && {
   height: 40px;
   left: 44px;
   top: 243px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
@@ -460,7 +444,6 @@ export const TextSuccess = styled.p`{
   height: 57px;
   left: 44px;
   top: 162px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
@@ -476,7 +459,6 @@ export const TitleSuccess = styled.p`{
   height: 66px;
   left: 44px;
   top: 84px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 24px;
@@ -510,7 +492,6 @@ export const StyleTextField = styled(TextField)` && {
 export const CustomLinkReg = styled(Link)` && {
   width: 42px;
   height: 19px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
@@ -527,7 +508,6 @@ export const CustomLinkReg = styled(Link)` && {
 export const CustomText = styled.p`{
   width: 135px;
   height: 20px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
@@ -542,7 +522,6 @@ export const CustomText = styled.p`{
 export const CustomButtonReg = styled(Button)` && {
   height: 40px;
   background: #2285EE;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
@@ -579,7 +558,6 @@ export const RegName = styled.p`{
   height: 33px;
   left: 44px;
   top: 32px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 24px;

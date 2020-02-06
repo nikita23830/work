@@ -1,20 +1,22 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { WhiteLogo, LogoCube, Circle, Vector, VectorDown, LittleCircle } from 'Comp/NewMenu/svg'
+import { WhiteLogo, LogoCube, Circle, Vector, VectorDown, LittleCircle, NewsSvg, BreakSvg, SettingSvg, FeedBackSvg } from 'Comp/NewMenu/svg'
 import { Grid, Collapse } from '@material-ui/core'
 import { animationCollapseOpen, animationCollapseClose } from 'Comp/NewMenu/style'
 
 const PAGES = [
   {
     id: 0,
-    name: 'Главная',
+    name: 'Новости',
     multi: false,
-    level: 1
+    level: 1,
+    svg: <NewsSvg />
   },
   {
     name: 'Перерывы',
     multi: true,
     level: 1,
+    svg: <BreakSvg />,
     page: [
       {
         id: 1,
@@ -46,28 +48,23 @@ const PAGES = [
     id: 20,
     name: 'Администрирование',
     multi: false,
-    level: 1
+    level: 1,
+    svg: <SettingSvg />
   },
   {
     id: 21,
-    name: 'FeedBack',
+    name: 'Обратная связь',
     multi: false,
+    svg: <FeedBackSvg />
   },
 ]
 
 class NewMenu extends React.Component{
 
   state={
-    height: 100,
     collapse: [false,false,false,false,false,false,false,false],
-    collapse2: false
   }
 
-  componentDidMount() {
-    this.setState({
-      height: document.documentElement.clientHeight
-    })
-  }
 
   openCollapse = (i) => () => {
     let newCollapse = this.state.collapse
@@ -79,10 +76,10 @@ class NewMenu extends React.Component{
   changeCollapse2 = () => this.setState({ collapse2: !this.state.collapse2 })
 
   render() {
-    const { height, collapse, collapse2 } = this.state
+    const { collapse } = this.state
     const { drawer, openDrawer, onChangePage } = this.props
     return(
-      <CustomDrawer open={drawer} h={height}>
+      <CustomDrawer open={drawer}>
         <TopDrawer onClick={openDrawer} open={drawer}>
           <WhiteLogo />
           {drawer && <LogoName>Техподдержка</LogoName>}
@@ -94,7 +91,7 @@ class NewMenu extends React.Component{
             <CustomGrid item xs={12} sm={12} drawer={drawer} open={collapse[ind]} col={i.multi ? i.page.length-1 : 1}>
               <ClickedZone onClick={i.id !== undefined ? onChangePage(i.id) : this.openCollapse(ind)} drawer={drawer}>
                 <CustomMenuIcon>
-                  <Circle />
+                  {i.svg}
                 </CustomMenuIcon>
                 {drawer && <CustomMenuText>{i.name}</CustomMenuText>}
                 {(drawer && i.multi) && <CustomVector onClick={i.id !== undefined ? onChangePage(i.id) : this.openCollapse(ind)}>
@@ -178,7 +175,6 @@ const CustomMenuText = styled.span`{
   height: 19px;
   left: 64px;
   top: 14px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 14px;
@@ -191,10 +187,14 @@ const CustomMenuText = styled.span`{
 
 const CustomMenuIcon = styled.span`{
   position: absolute;
+  width: ${p=>p.little ? '4px' : '23px'};
   top: ${p=>p.little ? '22px' : '12px'};
   left: ${p=>p.little ? '34px' : '24px'};
   height: ${p=>p.little ? '4px' : '24px'};
   margin-top: ${p=>p.little ? '-10px' : '0px'};
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }`
 
 const CustomGrid = styled(Grid)` && {
@@ -226,7 +226,6 @@ const LogoName = styled.p`{
   height: 25px;
   right: 52px;
   top: 20px;
-  font-family: Manrope3;
   font-style: normal;
   font-weight: bold;
   font-size: 18px;
@@ -257,10 +256,12 @@ const CustomDrawer = styled.div` {
   top: 0px;
   left: 0px;
   width: ${p=>p.open ? '260px' : '72px'};
-  height: ${p=>p.h}px;
+  height: ${document.documentElement.clientHeight}px;
   z-index: 51;
   background-color: #FFFFFF;
   display: block;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
   animation: ${p=>p.open ? openDrawerAnim : closeDrawerAnim} 0.2s linear both;
+} &&@media {
+  height: ${document.documentElement.clientHeight}px;
 }`

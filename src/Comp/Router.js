@@ -4,7 +4,7 @@ import { Report } from 'Comp/Report'
 import { RouterRating } from 'Comp/Rating/Router'
 import RouterTest from 'Comp/Testing/router'
 import Administartion from 'Comp/Admin'
-import News from 'Comp/News'
+import NewNews from 'Comp/NewNews'
 import FeedBack from 'Comp/FeedBack'
 
 export const getPageContent = props => {
@@ -12,7 +12,7 @@ export const getPageContent = props => {
   switch (page) {
     case 0:
       return (
-        <News {...props} />
+        <NewNews {...props} />
       );
 
     case 1: case 2: case 3: case 4:
