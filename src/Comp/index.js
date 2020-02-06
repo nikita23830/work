@@ -3,9 +3,7 @@ import styled from 'styled-components'
 import { withCookies, Cookies } from 'react-cookie';
 import { getPageContent } from 'Comp/Router'
 
-import MainPage from 'Comp/MainPage'
 import DefAppBar from 'Comp/AppBar'
-import DefDrawer from 'Comp/Drawer'
 import ChipCheckServer from 'Comp/ChipCheckServer'
 import Auth from 'Comp/Auth'
 import { CircularProgress } from '@material-ui/core'

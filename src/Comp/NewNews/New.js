@@ -19,13 +19,23 @@ class NewPost extends React.Component {
     title: '',
     text: '',
     modalDel: false,
-    file: undefined
+    file: [],
+    modifFile: []
   }
 
   onDelete = () => this.setState({ modalDel: true })
 
+  onChangeFiles = (update) => (event) => {
+    const { modifFile, file } = this.state
+    if (event.target.files[0] && !Boolean(modifFile.length)) {
+      file.push(event.target.files[0]);
+      modifFile.push(URL.createObjectURL(event.target.files[0]))
+      this.setState({ file: file, modifFile: modifFile })
+    }
+  }
+
   onPreClose = () => {
-    this.setState({ title: '', text: '', file: undefined })
+    this.setState({ title: '', text: '', file: [], modifFile: [] })
     this.props.onCloseNews()
   }
 
@@ -34,8 +44,9 @@ class NewPost extends React.Component {
   onCloseMenu = () => this.setState({ menu: undefined })
 
   render() {
-    const { menu, title, text, modalDel } = this.state
+    const { menu, title, text, modalDel, modifFile } = this.state
     const { onCloseNews } = this.props
+    console.log(modifFile)
     return (
       <Root>
         <Popper open={Boolean(menu)} anchorEl={menu} role={undefined} transition disablePortal>
@@ -62,11 +73,24 @@ class NewPost extends React.Component {
           <CreateButton>Опубликовать</CreateButton>
         </Header>
         <MainNew>
-          <TitleInput placeholder='Заголовок' fullWidth multiline value={title} onChange={e => this.setState({ title: e.target.value })}/>
-          <TextInput placeholder='Текст' fullWidth multiline value={text} onChange={e => this.setState({ text: e.target.value })} />
+          <div>
+            <TitleInput placeholder='Заголовок' fullWidth multiline value={title} onChange={e => this.setState({ title: e.target.value })}/>
+            <TextInput placeholder='Текст' fullWidth multiline value={text} onChange={e => this.setState({ text: e.target.value })} />
+          </div>
+          {modifFile.map(i => (
+            <CustomImageNews src={i} />
+          ))}
         </MainNew>
 
-        <PhotoEdit><Photo /></PhotoEdit>
+        <PhotoEdit>
+          <Custominput
+            accept=".jpeg,.png,.jpg"
+            id="contained-button-file"
+            type="file"
+            onChange={this.onChangeFiles()}
+          /> 
+          <label htmlFor="contained-button-file"><Photo /></label>
+        </PhotoEdit>
         <ProEdit><Pro /></ProEdit>
 
         <Modal
@@ -85,6 +109,20 @@ class NewPost extends React.Component {
 
 export default NewPost
 
+const TextMain = styled.div`{
+  height: 100%;
+}`
+
+const CustomImageNews = styled.img`{
+  margin: 10px;
+  max-width: 550px;
+  max-height: 550px;
+}`
+
+const Custominput = styled.input`{
+  display: none;
+  cursor: pointer;
+}`
 const NoDelButton = styled(Button)` && {
   position: absolute;
   width: 63px;
@@ -156,8 +194,7 @@ const PhotoEdit = styled.span`{
   width: 24px;
   height: 24px;
   left: calc(50% - 426px);
-  top: 178px;
-  cursor: pointer;
+  top: 181px;
 }`
 
 const ProEdit = styled.span`{
@@ -173,7 +210,7 @@ const TextInput = styled(Input)` && {
   max-height: 256px;
   font-style: normal;
   font-weight: normal;
-
+  flex-wrap: wrap-reverse;
   border-bottom: none;
   font-size: 18px;
   line-height: 25px;
@@ -192,6 +229,7 @@ const TitleInput = styled(Input)` && {
   max-height: 256px;
   border-bottom: none;
   font-style: normal;
+  flex-wrap: wrap-reverse;
   font-weight: bold;
   font-size: 36px;
   line-height: 49px;
@@ -213,6 +251,7 @@ const MainNew = styled.div`{
   transform: translateX(-50%);
   top: 108px;
   overflow-y: auto;
+  text-align: left;
 }`;
 
 const animation = keyframes`
