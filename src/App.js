@@ -1,7 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import './fonts/web/index.css';
 import socketIOClient from "socket.io-client";
 import { SocketProvider } from 'ContextSocket'
 import Main from 'Comp'
@@ -10,8 +9,9 @@ import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 import Push from 'push.js'
 
-const URL_SERVER = 'http://localhost:4001'
-// const URL_SERVER = '3.136.56.168:4001'
+const URL_SERVER = 'http://10.254.4.41:4001'
+
+// const URL_SERVER = '10.254.4.41:4001'
 const socket = socketIOClient(URL_SERVER)
 
 class App extends React.Component {

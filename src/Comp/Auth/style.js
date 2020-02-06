@@ -2,6 +2,7 @@ import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { Card, Link, Grid, Typography, Button, TextField, FormControl, InputLabel, Select } from '@material-ui/core'
 
+
 export const authToRestoreAuth = keyframes`
   0% {
     transform: translate(-50%, -50%);
@@ -109,7 +110,7 @@ export const StyleGrid = styled(Grid)` && {
   top: 44px;
   left: 44px;
   width: 467px;
-  padding: 0px;
+  padding: 17px;
 }`
 
 export const OrgName = styled.p`{
@@ -204,12 +205,14 @@ export const LogoAndName = styled.div` {
 }`
 
 export const CustomGrid = styled(Grid)` && {
-  height: ${p=>p.h}px;
+  height: ${document.documentElement.clientHeight-20}px;
   width: ${p=>p.item ? '50%' : '100%'};
   background-color: ${p=>p.left ? '#F5F8FF' : '#fff'};
   position: relative;
   overflow-x: none;
   overflow-y: none;
+  padding: 0px;
+  max-height: ${document.documentElement.clientHeight-20}px;
 }`
 
 export const StyleAuthCard = styled(Card)` && {

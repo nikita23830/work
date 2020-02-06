@@ -108,7 +108,7 @@ class Main extends Component {
           onOpenNews={this.onOpenNews}
         />
 
-        <NewMenu onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer} level={level} />
+        <NewMenu onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer} level={level} page={page}/>
 
         <StyleMainDiv>
 
