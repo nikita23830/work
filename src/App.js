@@ -7,9 +7,8 @@ import Main from 'Comp'
 import { CircularProgress } from '@material-ui/core'
 import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
-import Push from 'push.js'
 
-const URL_SERVER = 'http://10.254.4.41:4001'
+const URL_SERVER = 'http://localhost:4001'
 
 // const URL_SERVER = '10.254.4.41:4001'
 const socket = socketIOClient(URL_SERVER)
@@ -41,7 +40,7 @@ class App extends React.Component {
           <CircularProgress />
         </Loader>
         <div className="App">
-          <Main socket={socket} URL_SERVER={URL_SERVER} />
+          <Main socket={socket} URL_SERVER={URL_SERVER} {...this.props} />
         </div>
       </SocketProvider>
     )

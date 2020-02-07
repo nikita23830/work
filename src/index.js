@@ -4,11 +4,15 @@ import App from './App';
 import './index.css';
 import { SnackbarProvider } from 'notistack';
 import * as serviceWorker from './serviceWorker';
+import {BrowserRouter as Router} from 'react-router-dom';
+import Route from 'react-router-dom/Route'
 
 render(
-  <SnackbarProvider maxSnack={5} >
-    <App />
-  </SnackbarProvider>,
+  <Router>
+    <SnackbarProvider maxSnack={5} >
+        <Route path='/' component={App} />   
+    </SnackbarProvider>
+  </Router>,
   document.getElementById("root")
 );
 

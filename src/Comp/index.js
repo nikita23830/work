@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 import { withCookies, Cookies } from 'react-cookie';
-import { getPageContent } from 'Comp/Router'
+import GetPageContent from 'Comp/Router'
 
 import DefAppBar from 'Comp/AppBar'
 import ChipCheckServer from 'Comp/ChipCheckServer'
@@ -85,7 +85,7 @@ class Main extends Component {
 
   render () {
     const { openDialogTable, page, drawer, needAuth, loader, people_id, level, openNews } = this.state
-    const { socket } = this.props
+    const { socket, location } = this.props
     if (needAuth) return (
       <Auth socket={socket} submit={this.onCheckAuth}/>
     )
@@ -110,18 +110,17 @@ class Main extends Component {
 
         <StyleMainDiv>
 
-          {getPageContent({
-            page: page,
-            people_id: people_id,
-            level: level,
-            onBackPage: this.onBackPage,
-            drawer: drawer,
-            openNews: openNews,
-            onOpenNews: this.onOpenNews,
-            onCloseNews: this.onCloseNews
-          })}
+          <GetPageContent 
+            page={location}
+            people_id={people_id}
+            level={level}
+            onBackPage={this.onBackPage}
+            drawer={drawer}
+            openNews={openNews}
+            onOpenNews={this.onOpenNews}
+            onCloseNews={this.onCloseNews}
+          />
 
-          <ChipCheckServer />
         </StyleMainDiv>
       </>
     )

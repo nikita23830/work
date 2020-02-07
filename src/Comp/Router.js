@@ -7,40 +7,39 @@ import Administartion from 'Comp/Admin'
 import NewNews from 'Comp/NewNews'
 import FeedBack from 'Comp/FeedBack'
 
-export const getPageContent = props => {
+const GetPageContent = props => {
   const { page } = props
-  switch (page) {
-    case 0:
+  switch (page.pathname) {
+    case '/': case '/news':
       return (
         <NewNews {...props} />
       );
 
-    case 1: case 2: case 3: case 4:
+    case '/break': 
       return (
         <Break {...props} />
       );
-
-    case 5: case 6: case 7: case 8:
+    case '/report/:units':
       return (
         <Report {...props} />
       )
 
-    case 10: case 11: case 12: case 13:
+    case '/test/:units':
       return (
         <RouterTest {...props} />
       );
 
-  	case 14: case 15: case 16: case 17: case 18:
+  	case '/rating/:units':
         return (
           <RouterRating {...props} />
         );
 
-    case 20:
+    case '/administration':
       return (
         <Administartion {...props} />
       )
 
-    case 21:
+    case '/feedback':
       return (
         <FeedBack {...props} />
       )
@@ -48,3 +47,5 @@ export const getPageContent = props => {
     default: return (<h1>Not dev... Sorry By nikita23830</h1>)
   }
 }
+
+export default GetPageContent

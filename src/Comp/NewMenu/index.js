@@ -3,12 +3,14 @@ import styled, { keyframes } from 'styled-components'
 import { WhiteLogo, LogoCube, Circle, Vector, VectorDown, LittleCircle, NewsSvg, BreakSvg, SettingSvg, FeedBackSvg } from 'Comp/NewMenu/svg'
 import { Grid, Collapse } from '@material-ui/core'
 import { animationCollapseOpen, animationCollapseClose } from 'Comp/NewMenu/style'
+import { Link } from 'react-router-dom'
 
 const PAGES = [
   {
     id: 0,
     name: 'Новости',
     multi: false,
+    link: '/news',
     level: 1,
     svg: <NewsSvg />
   },
@@ -22,24 +24,28 @@ const PAGES = [
         id: 1,
         name: 'Главная',
         multi: false,
+        link: '/break',
         level: 1
       },
       {
         id: 2,
         name: 'Мои перерывы',
         multi: false,
+        link: '/break?my',
         level: 1
       },
       {
         id: 3,
         name: 'Статистика',
         multi: false,
+        link: '/break?stat',
         level: 2
       },
       {
         id: 4,
         name: 'Правила',
         multi: false,
+        link: '/break?rule',
         level: 2
       }
     ]
@@ -48,6 +54,7 @@ const PAGES = [
     id: 20,
     name: 'Администрирование',
     multi: false,
+    link: '/administration',
     level: 1,
     svg: <SettingSvg />
   },
@@ -55,6 +62,7 @@ const PAGES = [
     id: 21,
     name: 'Обратная связь',
     multi: false,
+    link: '/feedback',
     svg: <FeedBackSvg />
   },
 ]
@@ -89,12 +97,12 @@ class NewMenu extends React.Component{
 
           {PAGES.map((i, ind) => (
             <CustomGrid item xs={12} sm={12} drawer={drawer} open={collapse[ind]} col={i.multi ? i.page.length-1 : 1}>
-              <ClickedZone onClick={i.id !== undefined ? onChangePage(i.id) : this.openCollapse(ind)} drawer={drawer}>
+              <ClickedZone onClick={i.id === undefined && this.openCollapse(ind)} drawer={drawer} to={i.link && i.link}>
                 <CustomMenuIcon>
                   {i.svg}
                 </CustomMenuIcon>
                 {drawer && <CustomMenuText>{i.name}</CustomMenuText>}
-                {(drawer && i.multi) && <CustomVector onClick={i.id !== undefined ? onChangePage(i.id) : this.openCollapse(ind)}>
+                {(drawer && i.multi) && <CustomVector onClick={this.openCollapse(ind)}>
                   {collapse[ind] ? <VectorDown /> : <Vector />}
                 </CustomVector>}
               </ClickedZone>
@@ -102,12 +110,14 @@ class NewMenu extends React.Component{
                 <CollapsedGrid container spacing={1} open={drawer}>
 
                   {i.page.map((i, ind) => (
-                    <CustomGrid item xs={12} sm={12} onClick={onChangePage(i.id)}>
-                      <CustomMenuIcon little={true} >
-                        <LittleCircle />
-                      </CustomMenuIcon>
-                      <CustomMenuText>{i.name}</CustomMenuText>
-                    </CustomGrid>
+                      <CustomGrid item xs={12} sm={12}>
+                        <ClickedZoneLittle to={i.link && i.link}>
+                          <CustomMenuIcon little={true} >
+                            <LittleCircle />
+                          </CustomMenuIcon>
+                          <CustomMenuText>{i.name}</CustomMenuText>
+                        </ClickedZoneLittle>
+                      </CustomGrid>
                   ))}
 
                 </CollapsedGrid>
@@ -143,7 +153,7 @@ const closeDrawerAnim = keyframes`
   }
 `;
 
-const ClickedZone = styled.div`{
+const ClickedZone = styled(Link)`{
   z-index: 2;
   position: absolute;
   width: ${p=>p.drawer ? '260px' : '72px'};
@@ -165,7 +175,7 @@ const CustomVector = styled.span`{
   position: absolute;
   width: 12px;
   height: 6px;
-  top: 16px;
+  top: 12px;
   right: 21px;
 }`
 
@@ -188,7 +198,7 @@ const CustomMenuText = styled.span`{
 const CustomMenuIcon = styled.span`{
   position: absolute;
   width: ${p=>p.little ? '4px' : '23px'};
-  top: ${p=>p.little ? '22px' : '12px'};
+  top: ${p=>p.little ? '31px' : '12px'};
   left: ${p=>p.little ? '34px' : '24px'};
   height: ${p=>p.little ? '4px' : '24px'};
   margin-top: ${p=>p.little ? '-10px' : '0px'};
@@ -197,12 +207,21 @@ const CustomMenuIcon = styled.span`{
   align-items: center;
 }`
 
+const ClickedZoneLittle = styled(Link)` && {
+  min-height: 48px;
+  height: 48px;
+  position: relative;
+  cursor: pointer;
+  width: 72px;
+}`;
+
 const CustomGrid = styled(Grid)` && {
   min-height: 48px;
   height: 48px;
   position: relative;
   width: ${p=>p.open ? '260px' : '72px'};
   cursor: pointer;
+  text-align: left;
   animation: ${p=> (p.open && p.drawer) ? animationCollapseOpen[p.col] : animationCollapseClose[p.col]} 0.2s linear both;
 }`;
 
