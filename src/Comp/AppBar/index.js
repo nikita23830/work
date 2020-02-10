@@ -35,7 +35,7 @@ class DefAppBar extends Component {
   }
 
   render() {
-    const { openDrawer, onExit, onChangePage, page, drawer, level, onOpenNews } = this.props
+    const { openDrawer, onExit, onChangePage, page, drawer, level, onOpenNews, people_name } = this.props
     const { notif, anchorMenu } = this.state
     const LEVEL_NEWS = level.dev // поправить как внесу поправки в БД
     return (
@@ -60,7 +60,7 @@ class DefAppBar extends Component {
             <Add />
           </StyleFab>}
           <StyleNotif><Notif /></StyleNotif>
-          <StyleAvatar sizes='small' onClick={this.onMenuOpen}>TT</StyleAvatar>
+          <StyleAvatar sizes='small' onClick={this.onMenuOpen}>{people_name[1].charAt(0)}{people_name[0].charAt(0)}</StyleAvatar>
 
         </CustomToolbar>
 

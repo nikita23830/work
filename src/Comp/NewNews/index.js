@@ -4,12 +4,17 @@ import { FirstModal } from 'Comp/NewNews/FirstModal'
 import { SocketConsumer } from 'ContextSocket/index'
 import { CircleNews } from 'Comp/NewNews/svg'
 import NewPost from 'Comp/NewNews/New'
+import { withSnackbar } from 'notistack';
+import { ListNews } from 'Comp/NewNews/ListNews'
 
 class NewNews extends React.Component {
 
   state = {
     newUser: localStorage.getItem('newUser'),
-    newPost: false
+    newPost: false,
+    news: [],
+    imgNews: [],
+    lastID: 0
   }
 
   onNewUser = () => {
@@ -17,20 +22,28 @@ class NewNews extends React.Component {
     localStorage.setItem('newUser', true)
   }
 
-  onCreatePost = () => this.setState({ newPost: true })
+  componentDidMount = async() => {
+    const { socket } = this.context
+    await socket.emit('getNews', {})
+    await socket.on('getNews', data => {
+      let lastID = Math.min.apply(null, data.news.map(i => i.id))
+      console.log(data.news)
+      this.setState({ news: data.news, imgNews: data.img, lastID: lastID })
+    })
+  }
 
   render () {
-    const { drawer, level, openNews, onOpenNews, onCloseNews } = this.props
+    const { drawer, level, openNews, onOpenNews, onCloseNews, people_name, enqueueSnackbar } = this.props
     const { socket, URL_SERVER } = this.context
-    const { newUser, newPost } = this.state
+    const { newUser, news, imgNews } = this.state
     const LEVEL_NEWS = level.dev // поправить как внесу поправки в БД
     return (
       <>
-        {openNews && <NewPost onCloseNews={onCloseNews} />}
+        {openNews && <NewPost onCloseNews={onCloseNews} people_name={people_name} />}
 
         <RootNews drawer={drawer}>
           <FirstModal URL_SERVER={URL_SERVER} newUser={newUser} onNewUser={this.onNewUser} />
-          <NotNews>
+          {!Boolean(news.length) && <NotNews>
             <CircleNews level={LEVEL_NEWS}/>
             <StyleText>
               {LEVEL_NEWS === 2 ? <>Новости отсутствую.<br />
@@ -38,7 +51,10 @@ class NewNews extends React.Component {
               ,<br /> чтобы она тут появилась</> :
               <>Новости отсутствую. <br />Администратор еще не добавил статьи и новости,<br /> пожалуйста напомните :)</>}
             </StyleText>
-          </NotNews>
+          </NotNews>}
+          {Boolean(news.length) && 
+            <ListNews />
+          }
         </RootNews>
       </>
     )
@@ -46,7 +62,7 @@ class NewNews extends React.Component {
 }
 
 NewNews.contextType = SocketConsumer;
-export default NewNews
+export default withSnackbar(NewNews)
 
 const openDrawer = keyframes`
   0% {

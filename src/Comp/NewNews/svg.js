@@ -1,6 +1,12 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 
+export const LittleCirclePost = () => (
+  <Stylesvg width="2" height="2" viewBox="0 0 2 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="1" cy="1" r="1" fill="#B7C2CE"/>
+  </Stylesvg>
+)
+
 export const CircleNews = ({ level }) => (
   <Customsvg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" cur={level === 2 ? true : false}>
     <circle cx="128" cy="128" r="128" fill="#D5EAFF"/>
@@ -191,6 +197,14 @@ const animation4 = keyframes`
     top: 20px;
   }
 `;
+
+const Stylesvg = styled.svg`{
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  left: 98px;
+  top: 68px;
+}`
 
 const Circle1svg = styled.svg`{
   animation: ${animation1} 1s linear infinite;

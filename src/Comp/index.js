@@ -4,9 +4,8 @@ import { withCookies, Cookies } from 'react-cookie';
 import GetPageContent from 'Comp/Router'
 
 import DefAppBar from 'Comp/AppBar'
-import ChipCheckServer from 'Comp/ChipCheckServer'
 import Auth from 'Comp/Auth'
-import { CircularProgress } from '@material-ui/core'
+import Loader from 'Comp/loader'
 import Push from 'push.js'
 
 import NewMenu from 'Comp/NewMenu'
@@ -22,7 +21,8 @@ class Main extends Component {
     loader: true,
     level: [0,0,0,0,0,0],
     prev_page: 0,
-    openNews: false
+    openNews: false,
+    people_name: ['', '']
   }
 
   onOpenNews = () => this.setState({ openNews: true })
@@ -65,7 +65,7 @@ class Main extends Component {
     await socket.emit('newCon', '')
     if (!needAuth) await socket.emit('addLogin', {type: 'uid', uid: uid})
     await socket.on('addLogin', (data) => {
-      this.setState({ login: data.login, people_id: data.people_id, loader: false })
+      this.setState({ login: data.login, people_id: data.people_id, loader: false, people_name: [data.name, data.surname] })
     })
     await socket.on('checkLevel', (data) => {
       this.setState({ level: data })
@@ -84,15 +84,13 @@ class Main extends Component {
   }
 
   render () {
-    const { openDialogTable, page, drawer, needAuth, loader, people_id, level, openNews } = this.state
+    const { openDialogTable, page, drawer, needAuth, loader, people_id, level, openNews, people_name } = this.state
     const { socket, location } = this.props
     if (needAuth) return (
       <Auth socket={socket} submit={this.onCheckAuth}/>
     )
     else if (loader) return (
-      <Loader loader={true}>
-        <CircularProgress />
-      </Loader>
+      <Loader />
     )
     else return (
       <>
@@ -104,6 +102,7 @@ class Main extends Component {
           drawer={drawer}
           level={level}
           onOpenNews={this.onOpenNews}
+          people_name={people_name}
         />
 
         <NewMenu onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer} level={level} page={page}/>
@@ -111,6 +110,7 @@ class Main extends Component {
         <StyleMainDiv>
 
           <GetPageContent 
+            people_name={people_name}
             page={location}
             people_id={people_id}
             level={level}
@@ -133,19 +133,6 @@ const StyleMainDiv = styled.div` && {
   min-width: 600px;
   height: 100%;
   margin-top: 5px;
-}`
-
-const Loader = styled.div` {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255,255,255,0.5);
-  display: ${p=>p.loader ? 'flex' : 'none'};
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
 }`
 
 export default withCookies(Main)

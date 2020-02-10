@@ -2,6 +2,10 @@ import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { Arrow, Dots, Circle1, Circle2, Circle3, Circle4, Pro, Photo } from 'Comp/NewNews/svg'
 import { Avatar, Button, Input, Menu, MenuItem, Popper, Grow, Paper, ClickAwayListener, MenuList, Modal } from '@material-ui/core'
+import axios from "axios";
+import { SocketConsumer } from 'ContextSocket/index'
+import { withSnackbar } from 'notistack';
+import { AddTags } from 'Comp/NewNews/tag'
 
 /*
 <Loader>
@@ -20,18 +24,27 @@ class NewPost extends React.Component {
     text: '',
     modalDel: false,
     file: [],
-    modifFile: []
+    modifFile: [],
+    tag: '',
+    showTags: false,
+    sendLike: true
   }
 
   onDelete = () => this.setState({ modalDel: true })
 
   onChangeFiles = (update) => (event) => {
     const { modifFile, file } = this.state
-    if (event.target.files[0] && !Boolean(modifFile.length)) {
-      file.push(event.target.files[0]);
-      modifFile.push(URL.createObjectURL(event.target.files[0]))
+    if (event.target.files[0]) {
+      file[0] = event.target.files[0];
+      modifFile[0] = URL.createObjectURL(event.target.files[0])
       this.setState({ file: file, modifFile: modifFile })
     }
+  }
+
+  onSendNewPost = () => {
+    const { title, text, tag, sendLike } = this.state;
+    const { socket } = this.context
+    socket.emit('sendNewPost', {title: title, text: text, tag: tag, like: sendLike});
   }
 
   onPreClose = () => {
@@ -43,12 +56,59 @@ class NewPost extends React.Component {
   onOpenMenu = (e) => this.setState({ menu: e.currentTarget })
   onCloseMenu = () => this.setState({ menu: undefined })
 
+  componentDidMount = async () => {
+    const { enqueueSnackbar, onCloseNews } = this.props
+    const { file } = this.state
+    const { socket } = this.context
+    await socket.on('sendNewPost', async (data) => {
+      if (file.cound === 0) { 
+        enqueueSnackbar(`Новость успешно опубликована`, {variant: 'success',autoHideDuration: 3000})
+        this.props.onCloseNews()
+      }
+      let dataForm = new FormData();
+      dataForm.set("data", JSON.stringify({ id: data.id }));
+      dataForm.append("img", file[0]);
+      await axios({
+        method: "post",
+        url: `http://localhost:4001/newNews`,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+        data: dataForm
+      }).then(function (res) {
+        switch (res.data.status) {
+          case 0: {
+            enqueueSnackbar(`Новость успешно опубликована`, {variant: 'success',autoHideDuration: 3000});
+            onCloseNews();
+            return 0;
+          }
+          default: {
+            enqueueSnackbar(res.data.text, {variant: 'warning',autoHideDuration: 3000})
+            return 0;
+          }
+        }
+        return 0;
+      }).catch(function (err) {
+        if (Boolean(Object.keys(err).lenght)) enqueueSnackbar(JSON.stringify(err), {variant: 'warning',autoHideDuration: 3000})
+      })
+    })
+  }
+
   render() {
-    const { menu, title, text, modalDel, modifFile } = this.state
-    const { onCloseNews } = this.props
-    console.log(modifFile)
+    const { menu, title, text, modalDel, modifFile, tag, showTags, sendLike } = this.state
+    const { onCloseNews, people_name } = this.props
     return (
       <Root>
+        <AddTags 
+          onChange={e => this.setState({ tag: e.target.value })} 
+          value={tag}
+          show={showTags}
+          valueLike={sendLike}
+          changeLike={e => this.setState({ sendLike: e.target.checked })}
+          sendPost={this.onSendNewPost}
+          cancelTags={() => this.setState({ showTags: false, tag: '', sendLike: true })}
+        />
         <Popper open={Boolean(menu)} anchorEl={menu} role={undefined} transition disablePortal>
           {({ TransitionProps, placement }) => (
             <Grow
@@ -67,10 +127,10 @@ class NewPost extends React.Component {
         </Popper>
         <Header>
           <ArrowDiv onClick={this.onDelete}><Arrow /></ArrowDiv>
-          <CustomAvatar>TT</CustomAvatar>
-          <NameAuthor>Тестов Тест</NameAuthor>
+          <CustomAvatar>{people_name[1].charAt(0)}{people_name[0].charAt(0)}</CustomAvatar>
+          <NameAuthor>{people_name[1]} {people_name[0]}</NameAuthor>
           <MenuDots onClick={this.onOpenMenu}><Dots /></MenuDots>
-          <CreateButton>Опубликовать</CreateButton>
+          <CreateButton onClick={() => this.setState({ showTags: true })}>Опубликовать</CreateButton>
         </Header>
         <MainNew>
           <div>
@@ -107,7 +167,8 @@ class NewPost extends React.Component {
   }
 }
 
-export default NewPost
+NewPost.contextType = SocketConsumer;
+export default withSnackbar(NewPost)
 
 const TextMain = styled.div`{
   height: 100%;

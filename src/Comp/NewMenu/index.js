@@ -157,9 +157,9 @@ const ClickedZone = styled(Link)`{
   z-index: 2;
   position: absolute;
   width: ${p=>p.drawer ? '260px' : '72px'};
-  top: 0px;
+  top: 4px;
   left: 0px;
-  height: 48px;
+  height: 40px;
 }`;
 
 const CustomCollapse = styled(Collapse)` && {
@@ -181,10 +181,10 @@ const CustomVector = styled.span`{
 
 const CustomMenuText = styled.span`{
   position: absolute;
-  width: 150px;
-  height: 19px;
+  width: 190px;
+  height: 40px;
   left: 64px;
-  top: 14px;
+  top: 0px;
   font-style: normal;
   font-weight: bold;
   font-size: 14px;
@@ -193,14 +193,16 @@ const CustomMenuText = styled.span`{
   color: #2285EE;
   user-select: none;
   text-align: left;
+  display: flex;
+  align-items: center;
 }`
 
 const CustomMenuIcon = styled.span`{
   position: absolute;
   width: ${p=>p.little ? '4px' : '23px'};
-  top: ${p=>p.little ? '31px' : '12px'};
+  top: ${p=>p.little ? '11px' : '0px'};
   left: ${p=>p.little ? '34px' : '24px'};
-  height: ${p=>p.little ? '4px' : '24px'};
+  height: ${p=>p.little ? '40px' : '40px'};
   margin-top: ${p=>p.little ? '-10px' : '0px'};
   display: flex;
   justify-content: center;

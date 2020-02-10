@@ -8,11 +8,11 @@ import {BrowserRouter as Router} from 'react-router-dom';
 import Route from 'react-router-dom/Route'
 
 render(
-  <Router>
-    <SnackbarProvider maxSnack={5} >
-        <Route path='/' component={App} />   
-    </SnackbarProvider>
-  </Router>,
+  <SnackbarProvider maxSnack={5} >
+    <Router>
+      <Route path='/' component={App} />   
+    </Router>
+  </SnackbarProvider>,
   document.getElementById("root")
 );
 
