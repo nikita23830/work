@@ -41,6 +41,15 @@ class NewPost extends React.Component {
     }
   }
 
+  onShowError = () => {
+    const { enqueueSnackbar } = this.props
+    const { title } = this.state
+    if (!title || !title.replace(/\s/g, ''))
+      enqueueSnackbar('Поле "Заголовок" обязательное для заполнения', { variant: 'warning', autoHideDuration: 3000 })
+    else
+      this.setState({ showTags: true })
+  }
+
   onSendNewPost = () => {
     const { title, text, tag, sendLike } = this.state;
     const { socket } = this.context
@@ -61,9 +70,10 @@ class NewPost extends React.Component {
     const { file } = this.state
     const { socket } = this.context
     await socket.on('sendNewPost', async (data) => {
-      if (file.cound === 0) { 
-        enqueueSnackbar(`Новость успешно опубликована`, {variant: 'success',autoHideDuration: 3000})
-        this.props.onCloseNews()
+      if (file.length === 0) { 
+        enqueueSnackbar(`Новость успешно опубликована`, {variant: 'success',autoHideDuration: 3000});
+        this.props.onCloseNews();
+        return 0;
       }
       let dataForm = new FormData();
       dataForm.set("data", JSON.stringify({ id: data.id }));
@@ -130,7 +140,7 @@ class NewPost extends React.Component {
           <CustomAvatar>{people_name[1].charAt(0)}{people_name[0].charAt(0)}</CustomAvatar>
           <NameAuthor>{people_name[1]} {people_name[0]}</NameAuthor>
           <MenuDots onClick={this.onOpenMenu}><Dots /></MenuDots>
-          <CreateButton onClick={() => this.setState({ showTags: true })}>Опубликовать</CreateButton>
+          <CreateButton onClick={this.onShowError}>Опубликовать</CreateButton>
         </Header>
         <MainNew>
           <div>

@@ -27,7 +27,7 @@ class NewNews extends React.Component {
     await socket.emit('getNews', {})
     await socket.on('getNews', data => {
       let lastID = Math.min.apply(null, data.news.map(i => i.id))
-      console.log(data.news)
+      console.log(data.news, data.img)
       this.setState({ news: data.news, imgNews: data.img, lastID: lastID })
     })
   }
@@ -53,7 +53,7 @@ class NewNews extends React.Component {
             </StyleText>
           </NotNews>}
           {Boolean(news.length) && 
-            <ListNews />
+            <ListNews news={news} imgNews={imgNews} />
           }
         </RootNews>
       </>
