@@ -2,6 +2,11 @@ import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { CalendarIcon, VectorBack, VectorNext } from 'Comp/Break/NewTable/Svg'
 import { AllBreak } from 'Comp/Break/NewTable/All'
+import { SocketConsumer } from 'ContextSocket/index'
+import { setTable, TIMING } from 'Comp/Break/NewTable/tools'
+import { Circle1, Circle2, Circle3, Circle4 } from 'Comp/NewNews/svg'
+import { ModalBreak } from 'Comp/Break/NewTable/Modal'
+import { withSnackbar } from 'notistack';
 
 function addZero(n) {
     return String("00" + n).slice(-2);
@@ -22,33 +27,92 @@ const isDateMonth = {
     '12': 'Декабря',
 }
 
-class NewTableBreak extends React.Component{
+class NewTableBreak extends React.PureComponent{
 
     state = {
         date: new Date(),
         activeTab: 0,
+        loader: true,
+        table: {},
+        variantTime: 2,
+        modalTime: false,
+        tempTime: '',
+        blockedTime: 0 // 0 -ничего не блочим, 1 - блочим 15 минут, 2 - блочим 10 минут и 15 минут
     }
 
     onChangeTab = (id) => () => this.setState({ activeTab: id })
 
     onNextDate = () => {
         const { date } = this.state
+        const { socket } = this.context
         let newDate = +date + 86400000
-        this.setState({ date: new Date(newDate) })
+        socket.emit('updateTable', newDate)
+        this.setState({ date: new Date(newDate), loader: true })
     }
 
     onPrevDate = () => {
         const { date } = this.state
+        const { socket } = this.context
         let newDate = +date - 86400000
-        this.setState({ date: new Date(newDate) })
+        socket.emit('updateTable', newDate)
+        this.setState({ date: new Date(newDate), loader: true })
+    }
+
+    onChangeModal = () => this.setState({ modalTime: !this.state.modalTime })
+
+    onChangeVariantTime = (i) => () => this.setState({ variantTime: i })
+
+    onClickedTime = (id) => () => {
+        const { table } = this.state
+        let index = TIMING.filter(i => i[3] === id)[0][0] // ID timing
+        let count = [table[TIMING[index+1][3]].key, table[TIMING[index+2][3]].key].filter(i=>i>0)
+        let variantTime = 2 - count.length
+        this.setState({ modalTime: true, tempTime: id, blockedTime: count.length, variantTime: variantTime })
+    }
+
+    onSendMyBreak = () => {
+        const { socket } = this.context
+        const { tempTime, variantTime } = this.state
+        socket.emit('SetInTableBreak', { type: variantTime+1 , set: tempTime })
+        this.setState({ modalTime: false, loader: true })
+    }
+
+    componentDidMount = async () => {
+        const { enqueueSnackbar, people_id } = this.props
+        const { socket } = this.context
+        await socket.emit('updateTable', undefined)
+        socket.on('updateTable', (data) => {
+            let table = setTable(data, people_id)
+            this.setState({ table: table, loader: false })
+        })
+        socket.on('send_error', (data) => {
+            if (data.name) enqueueSnackbar(`${data.severity}: ${data.routine}. Code: ${data.code}`, {
+              variant: data.name,
+              autoHideDuration: 6000,
+              preventDuplicate: true
+            })
+            else enqueueSnackbar(data, {variant: 'error',autoHideDuration: 6000,preventDuplicate: true})
+            this.setState({ loader: false })
+        })
     }
 
     render () {
         const { drawer } = this.props
-        const { date, activeTab } = this.state
+        const { date, activeTab, table, loader, variantTime, modalTime, blockedTime } = this.state
         let dateToCalendarDate = [addZero(date.getDate()), isDateMonth[date.getMonth()+1], date.getFullYear()]
         return (
             <Root drawer={drawer}>
+
+                <ModalBreak 
+                    time={variantTime}
+                    onChange={this.onChangeVariantTime} 
+                    modalTime={modalTime} 
+                    onChangeModal={this.onChangeModal}
+                    blockedTime={blockedTime}
+                    onSendMyBreak={this.onSendMyBreak}
+                />
+
+                {loader && <Loader><Circle1 /><Circle2 /><Circle3 /><Circle4 /></Loader>}
                 <DivHead>
                     <Calendar><CalendarIcon /></Calendar>
                     <CalendarText>
@@ -66,14 +130,37 @@ class NewTableBreak extends React.Component{
                     </CalendarText>
                 </DivHead>
                 <DivBody>
-                    {!Boolean(activeTab) && <AllBreak />}
+                    {!Boolean(activeTab) && !loader && <AllBreak table={table} onClickedTime={this.onClickedTime} />}
                 </DivBody>
             </Root>
         )
     }
 }
 
-export default NewTableBreak
+NewTableBreak.contextType = SocketConsumer;
+export default withSnackbar(NewTableBreak)
+
+const animation = keyframes`
+  0% {
+    transform: rotate(0)
+  }
+  50% {
+    transform: rotate(180deg)
+  }
+  100% {
+    transform: rotate(360deg)
+  }
+`;
+
+const Loader = styled.div`{
+    position: absolute;
+    width: 96px;
+    height: 96px;
+    top: 50%;
+    left: 50%;
+    animation: ${animation} 3s linear infinite;
+    z-index: 10
+  }`
 
 const MyTab = styled.span`{
     position: absolute;

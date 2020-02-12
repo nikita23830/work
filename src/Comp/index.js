@@ -105,7 +105,7 @@ class Main extends Component {
           people_name={people_name}
         />
 
-        <NewMenu onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer} level={level} page={page}/>
+        <NewMenu onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer} level={level} page={location}/>
 
         <StyleMainDiv>
 

@@ -79,7 +79,7 @@ class NewMenu extends React.Component{
 
   render() {
     const { collapse } = this.state
-    const { drawer, openDrawer, onChangePage } = this.props
+    const { drawer, openDrawer, onChangePage, page } = this.props
     return(
       <CustomDrawer open={drawer}>
         <TopDrawer onClick={openDrawer} open={drawer}>
@@ -91,7 +91,7 @@ class NewMenu extends React.Component{
 
           {PAGES.map((i, ind) => (
             <CustomGrid item xs={12} sm={12} drawer={drawer} open={collapse[ind]} col={i.multi ? i.page.length-1 : 1}>
-              <ClickedZone onClick={i.id === undefined && this.openCollapse(ind)} drawer={drawer} to={!i.multi && i.link}>
+              <ClickedZone onClick={i.id === undefined && this.openCollapse(ind)} drawer={drawer} to={!i.multi && page.pathname !== i.link && i.link}>
                 <CustomMenuIcon>
                   {i.svg}
                 </CustomMenuIcon>
@@ -105,7 +105,7 @@ class NewMenu extends React.Component{
 
                   {i.page.map((i, ind) => (
                       <CustomGrid item xs={12} sm={12}>
-                        <ClickedZoneLittle to={i.link && i.link}>
+                        <ClickedZoneLittle to={i.link && page.pathname !== i.link && i.link}>
                           <CustomMenuIcon little={true} >
                             <LittleCircle />
                           </CustomMenuIcon>

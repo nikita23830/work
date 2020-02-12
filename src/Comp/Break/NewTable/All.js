@@ -1,44 +1,88 @@
 import React from 'react'
 import { Grid } from '@material-ui/core'
 import styled from 'styled-components'
-import { People, Coffee } from 'Comp/Break/NewTable/Svg'
+import { People, Coffee, Lock } from 'Comp/Break/NewTable/Svg'
 
-export const AllBreak = () => (
-    <Container container spacing={1}>
-        {Hour.map(i => (
-            <>
-                <CustomGrid item xs={12} sm={12}>
-                        <TimeZone>{i}:00</TimeZone>
-                </CustomGrid>
-                {Minuts.map(j=>(
-                    <CustomGrid item xs={12} sm={2}>
-                        {i !== '07' && <Free i={i} j={j} />}
-                        {i === '07' && <My i={i} j={j} />}
+export const AllBreak = React.memo(function AllBreak({ table, onClickedTime }){
+    return (
+        <Container container spacing={1}>
+            {Hour.map(i => (
+                <>
+                    <CustomGrid item xs={12} sm={12}>
+                            <TimeZone>{i}:00</TimeZone>
                     </CustomGrid>
-                ))}
-            </>
-        ))}
-    </Container>
-)
+                    {Minuts.map(j => {
+                        let foundInTable = table[Object.keys(table).filter(k => k === `${i}_${j}`)[0]]
+                        return (
+                            <CustomGrid item xs={12} sm={2}>
+                                {foundInTable.key === 0 && <Free i={i} j={j} ind={foundInTable.data.length} onClickedTime={onClickedTime}/>}
+                                {foundInTable.key === 1 && <My i={i} j={j} />}
+                                {foundInTable.key === 2 && <NotFree i={i} j={j} ind={foundInTable.data.length} />}
+                            </CustomGrid>
+                        )
+                    })}
+                </>
+            ))}
+        </Container>
+    )
+})
 
 const My = ({ i, j }) => (
     <MyTable>
         <IconCoffee><Coffee /></IconCoffee>
-        
         <TextCoffee>Можно выпить кофейку</TextCoffee>
     </MyTable>
 )
 
-const Free = ({ i, j }) => (
-    <TableButton>
+const Free = ({ i, j, ind, onClickedTime }) => (
+    <TableButton onClick={onClickedTime(`${i}_${j}`)}>
         <IconPeople><People /></IconPeople>
-        <CountPeople>10</CountPeople>
+        <CountPeople>{ind}</CountPeople>
         <TimeButton>{i}:{j}</TimeButton>
     </TableButton>
 )
 
+const NotFree = ({ i, j, ind }) => (
+    <NotFreeButton>
+        <LockIcon><Lock /></LockIcon>
+        <LockText>Свободных  мест  не  осталось</LockText>
+    </NotFreeButton>
+)
+
 const Minuts = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55']
-const Hour = ['06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22']
+const Hour = ['6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22']
+
+const LockText = styled.span`{
+    position: absolute;
+    left: 30.67%;
+    right: 10.43%;
+    top: 21.15%;
+    bottom: 21.15%;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 15px;
+    letter-spacing: -0.4px;
+    font-feature-settings: 'pnum' on, 'lnum' on;
+    color: #99A9BA;
+}`
+
+const LockIcon = styled.span`{
+    position: absolute;
+    left: 11.04%;
+    top: 25%;
+}`
+
+const NotFreeButton = styled.div`{
+    width: 100%;
+    height: 52px;
+    min-width: 163px;
+    background: #DDE2E8;
+    box-shadow: inset 4px 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    cursor: not-allowed;
+    user-select: none;
+}`
 
 const TextCoffee = styled.span`{
     position: absolute;
@@ -68,6 +112,8 @@ const MyTable = styled.div`{
     box-sizing: border-box;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.12);
     border-radius: 8px;
+    cursor: default;
+    user-select: none;
 }`
 
 const TimeButton = styled.span`{

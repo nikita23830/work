@@ -1,20 +1,11 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { Arrow, Dots, Circle1, Circle2, Circle3, Circle4, Pro, Photo } from 'Comp/NewNews/svg'
+import { Arrow, Dots, Pro, Photo } from 'Comp/NewNews/svg'
 import { Avatar, Button, Input, Menu, MenuItem, Popper, Grow, Paper, ClickAwayListener, MenuList, Modal } from '@material-ui/core'
 import axios from "axios";
 import { SocketConsumer } from 'ContextSocket/index'
 import { withSnackbar } from 'notistack';
 import { AddTags } from 'Comp/NewNews/tag'
-
-/*
-<Loader>
-  <Circle1 />
-  <Circle2 />
-  <Circle3 />
-  <Circle4 />
-</Loader>
-*/
 
 class NewPost extends React.Component {
 
@@ -324,28 +315,6 @@ const MainNew = styled.div`{
   overflow-y: auto;
   text-align: left;
 }`;
-
-const animation = keyframes`
-  0% {
-    transform: rotate(0)
-  }
-  50% {
-    transform: rotate(180deg)
-  }
-  100% {
-    transform: rotate(360deg)
-  }
-`;
-
-const Loader = styled.div`{
-  position: absolute;
-  width: 96px;
-  height: 96px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation: ${animation} 3s linear infinite;
-}`
 
 const CreateButton = styled(Button)` && {
   display: flex;
