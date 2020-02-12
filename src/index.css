@@ -1,5 +1,6 @@
 body {
   margin: 0px;
+  overflow: hidden;
 }
 html {
   font-family: 'Manrope VF', Manrope, sans-serif;

@@ -1,214 +1,244 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { Card, Grid, TextField, Typography, MenuItem, Button, Collapse, Chip } from '@material-ui/core'
-import { NewFeedBack } from 'Comp/FeedBack/New'
 import { SocketConsumer } from 'ContextSocket'
 import { withSnackbar } from 'notistack';
-import { TYPE_FEEDBACK, STATUS_FEEDBACK, SECTION_FEEDBACK } from 'Comp/FeedBack/constants'
+import { Send, NoMessage, MailBox, DeleteIcon } from 'Comp/FeedBack/Svg'
+import { Grid } from '@material-ui/core'
 
 class FeedBack extends React.Component {
 
   state={
-    width: 100,
-    height: 100,
-    newFeed: { type: -1, section: -1 },
-    errorNewFeed: {},
-    vis: -1,
-    tickets: {
-      new: [],
-      accept: [],
-      reject: []
-    },
-    viewTicket: {}
+    activeTab: 0,
+    message: [
+      [{
+        id: 0,
+        title: 'test',
+        text: 'test text'
+      }],
+      []
+    ]
   }
 
-  onCreateTicket = () => {
-    const { newFeed } = this.state
-    const { enqueueSnackbar } = this.props
-    const { socket } = this.context
-    let errorNewFeed = checkFieldFeed(newFeed)
-    if (Object.keys(errorNewFeed).length > 0) {
-      this.setState({ errorNewFeed: errorNewFeed })
-      enqueueSnackbar('Обязательные поля не заполнены', {variant: 'warning',autoHideDuration: 6000})
-    } else {
-      this.setState({ newFeed: { type: -1, section: -1, text: '', title: '' } })
-      socket.emit('onCreateTicket', newFeed)
-    }
-  }
-
-  onChangeNewFeed = (name) => (e) => {
-    let errorNewFeed = this.state.errorNewFeed
-    delete errorNewFeed[name]
-    this.setState({
-      newFeed: { ...this.state.newFeed, [name]: e.target.value },
-      errorNewFeed: errorNewFeed
-    })
-  }
-
-  onViewTicket = (sec, i) => (e) => {
-    const { tickets } = this.state
-    this.setState({ vis: i, viewTicket: tickets[TYPE_FEEDBACK[sec].val][i] })
-  }
-
-  componentDidMount = async () => {
-    const { socket } = this.context
-    await socket.emit('getTickets')
-    await socket.on('getTickets', (data) => {
-      let newTickets = { new: [], accept: [], reject: [] }
-      data.map(i => {
-        switch (i.type) {
-          case 0: { newTickets['new'].push(i); return 0; }
-          case 1: { newTickets['accept'].push(i); return 0; }
-          case 2: { newTickets['reject'].push(i); return 0; }
-          default: return 0;
-        }
-      })
-      this.setState({ tickets: newTickets })
-    })
-  }
+  onChangeTabs = (id) => () => this.setState({ activeTab: id })
 
   render () {
-    const { newFeed, vis, tickets, viewTicket, errorNewFeed } = this.state
     const { drawer } = this.props
-    const multiline = Math.round((document.documentElement.clientHeight - 377) / 19)
-    const TYPEFEED = ['Вопрос', 'Предложение', 'Сообщить об ошибке']
+    const { activeTab, message } = this.state
     return (
-      <Root drawer={drawer}>
-        <NewFeed>
-          <Collapse in={vis === -1}>
-            <NewFeedBack
-              multiline={multiline}
-              onChangeNewFeed={this.onChangeNewFeed}
-              newFeed={newFeed}
-              errorNewFeed={errorNewFeed}
-              onCreateTicket={this.onCreateTicket}
-            />
-          </Collapse>
-          <Collapse in={vis !== -1}>
-            {vis !== -1 && <ViewTicket>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}><Chip label={STATUS_FEEDBACK[viewTicket.status][0]} color={STATUS_FEEDBACK[viewTicket.status][1]}/></Grid>
-                <Grid item xs={12} sm={6}>
-                  <Button color='primary' onClick={this.onViewTicket(0, -1)}>Создать новый</Button>
-                </Grid>
-                <Grid item xs={12} sm={6}><Chip label={TYPEFEED[viewTicket.typefeed]} color='primary'/></Grid>
-                <Grid item xs={12} sm={6}><Chip label={SECTION_FEEDBACK[viewTicket.section][0]} color='primary'/></Grid>
-                <hr width="100%" />
-                <Grid item xs={12} sm={12}>
-                  <TextField multiline label="Обращение" InputProps={{readOnly: true}} fullWidth value={viewTicket.text}/>
-                </Grid>
-                <hr width="100%" />
-                {viewTicket.answerg === 1 && <Grid item xs={12} sm={12}>
-                  <TextField multiline label="Ответ" InputProps={{readOnly: true}} fullWidth value={viewTicket.answer}/>
-                </Grid>}
-              </Grid>
-            </ViewTicket>}
-          </Collapse>
-        </NewFeed>
-        <HistoryFeed drawer={drawer}>
-          {TYPE_FEEDBACK.map((j, index) => (
-            <ColumnHistory>
-              <Typography variant="h5" component="h2">{j.name}</Typography>
-              {tickets[j.val].map((i, ind) => (
-                <HistoryFeedBlock type={index} onClick={this.onViewTicket(index,ind)}>{i.title}</HistoryFeedBlock>
-              ))}
-            </ColumnHistory>
-          ))}
-        </HistoryFeed>
-      </Root>
+      <Body drawer={drawer}>
+        <Header>
+          <SendTab index={0} activeTab={activeTab} onClick={this.onChangeTabs(0)}>
+            <StyleSend>
+              <Send active={activeTab === 0} />
+            </StyleSend>
+            <TextSendTab>Открытые</TextSendTab>
+          </SendTab>
+          <SendTab index={1} activeTab={activeTab} onClick={this.onChangeTabs(1)}>
+            <TextSendTab>Закрытые</TextSendTab>
+          </SendTab>
+        </Header>
+        {!Boolean(message[activeTab].length) && <NoMessage />}
+
+        {Boolean(message[activeTab].length) && <StyleGrid container spacing={1} drawer={drawer}>
+          <CustomGrid items xs={12} sm={12}>
+            <SpanMail><MailBox /></SpanMail>
+            <SpanTitle>Не добавлено ни одного приложения</SpanTitle>
+            <SpanText>Здраствуйте, pingwin4iks@gmail.com! Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались</SpanText>
+            <SpanDelete><DeleteIcon /></SpanDelete>
+          </CustomGrid>
+          <CustomGrid items xs={12} sm={12}>
+            <SpanMail><MailBox /></SpanMail>
+            <SpanTitle>Не добавлено ни одного приложения</SpanTitle>
+            <SpanText>Здраствуйте, pingwin4iks@gmail.com! Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались</SpanText>
+            <SpanDelete><DeleteIcon /></SpanDelete>
+          </CustomGrid>
+          <CustomGrid items xs={12} sm={12}>
+            <SpanMail><MailBox /></SpanMail>
+            <SpanTitle>Не добавлено ни одного приложения</SpanTitle>
+            <SpanText>Здраствуйте, pingwin4iks@gmail.com! Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались</SpanText>
+            <SpanDelete><DeleteIcon /></SpanDelete>
+          </CustomGrid>
+          <CustomGrid items xs={12} sm={12}>
+            <SpanMail><MailBox /></SpanMail>
+            <SpanTitle>Не добавлено ни одного приложения</SpanTitle>
+            <SpanText>Здраствуйте, pingwin4iks@gmail.com! Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались</SpanText>
+            <SpanDelete><DeleteIcon /></SpanDelete>
+          </CustomGrid>
+          <CustomGrid items xs={12} sm={12}>
+            <SpanMail><MailBox /></SpanMail>
+            <SpanTitle>Не добавлено ни одного приложения</SpanTitle>
+            <SpanText>Здраствуйте, pingwin4iks@gmail.com! Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались</SpanText>
+            <SpanDelete><DeleteIcon /></SpanDelete>
+          </CustomGrid>
+        </StyleGrid>}
+      </Body> 
     )
   }
 }
 
-const openDrawer = keyframes`
+const SpanDelete = styled.span`{
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: none;
+  cursor: pointer;
+}`
+
+const SpanText = styled.span`{
+  position: absolute;
+  width: ${document.documentElement.clientWidth - 739}px;
+  height: 19px;
+  left: 384px;
+  top: 23px;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  font-feature-settings: 'pnum' on, 'lnum' on;
+  color: #99A9BA
+}`
+
+const SpanTitle = styled.span`{
+  position: absolute;
+  width: 300px;
+  height: 19px;
+  left: 68px;
+  top: 23px;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 19px;
+  font-feature-settings: 'pnum' on, 'lnum' on;
+  color: #072D57;
+}`
+
+const SpanMail = styled.span`{
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  left: 20px;
+  top: 20px;
+}`
+
+const CustomGrid = styled(Grid)` && {
+  height: 65px;
+  position: relative;
+  background: #FFFFFF;
+} &&:hover {
+  ${SpanDelete} {
+    display: block;
+  }
+}`
+
+const onOpenDrawerStyleGrid = keyframes`
   0% {
-    width: ${document.documentElement.clientWidth - 80}px;
+    width: ${document.documentElement.clientWidth - 97}px;
   }
   100% {
-    width: ${document.documentElement.clientWidth - 270}px;
+    width: ${document.documentElement.clientWidth - 287}px;
+  }
+`
+
+const onCloseDrawerStyleGrid = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 287}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 97}px;
+  }
+`
+
+const StyleGrid = styled(Grid)` && {
+  position: absolute;
+  animation: ${p=>p.drawer ? onOpenDrawerStyleGrid : onCloseDrawerStyleGrid} 0.2s linear both;
+  height: ${document.documentElement.clientHeight - 155}px;
+  left: 16px;
+  top: 80px;
+  border-radius: 4px;
+  overflow-y: auto;
+  overflow-x: none;
+}`
+
+const StyleSend = styled.span`{
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  left: 24px;
+  top: 20px;
+}`
+
+const TextSendTab = styled.span`{
+  position: absolute;
+  width: 106px;
+  height: 19px;
+  left: 56px;
+  top: 22px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
+  font-feature-settings: 'pnum' on, 'lnum' on;
+  text-align: left;
+}`
+
+const SendTab = styled.span`{
+  position: absolute;
+  width: 186px;
+  height: 63px;
+  left: ${p=>p.index * 186}px;
+  top: 0px;
+  border-bottom: ${p=>p.activeTab === p.index ? 2 : 0}px solid #2285EE;
+  color: ${p=>p.activeTab === p.index ? '#2285EE' : '#99A9BA'};
+  cursor: pointer;
+  user-select: none;
+}`
+
+const openDrawer = keyframes`
+  0% {
+    width: ${document.documentElement.clientWidth - 70}px;
+  }
+  100% {
+    width: ${document.documentElement.clientWidth - 260}px;
   }
 `;
 
 const closeDrawer = keyframes`
   0% {
-    width: ${document.documentElement.clientWidth - 270}px;
+    width: ${document.documentElement.clientWidth - 260}px;
   }
   100% {
-    width: ${document.documentElement.clientWidth - 80}px;
+    width: ${document.documentElement.clientWidth - 70}px;
   }
 `;
 
-const openDrawerHistory = keyframes`
-  0% {
-    width: ${document.documentElement.clientWidth - 620}px;
-  }
-  100% {
-    width: ${document.documentElement.clientWidth - 810}px;
-  }
-`;
-
-const closeDrawerHistory = keyframes`
-  0% {
-    width: ${document.documentElement.clientWidth - 810}px;
-  }
-  100% {
-    width: ${document.documentElement.clientWidth - 620}px;
-  }
-`;
-
-const ColumnHistory = styled.div` {
-  width: ${p=>(p.w-570)/3}px;
-  overflow-y: none;
-  overflow-x: none;
-}`
-
-const ViewTicket = styled.div` {
-
-}`
-
-const HistoryFeedBlock = styled(MenuItem)` && {
-  border: 1px solid ${p=>p.type === 0 ? '#949494' : p.type === 1 ? '#3f51b5' : '#f50057' };
-  background-color: ${p=>p.type === 0 ? 'rgba(148,148,148,0.3)' : p.type === 1 ? 'rgba(63,81,181,0.3)' : 'rgba(245,0,87,0.3)' };
-  border-radius: 15px;
-  white-space: pre-wrap;
-  margin: 10px 0 10px 0;
-}`
-
-const HistoryFeed = styled(Card)` && {
-  animation: ${p=>p.drawer ? openDrawerHistory : closeDrawerHistory} 0.2s linear both;
-  height: ${document.documentElement.clientHeight - 95}px;
-  padding: 10px;
-  overflow-y: scroll;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}`
-
-const Root = styled.div`{
-  animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
-  height: ${document.documentElement.clientHeight - 110}px;
+const Body = styled.div`{
   position: absolute;
-  right: 5px;
-  top: 70px;
+  height: ${document.documentElement.scrollHeight - 64}px;
+  right: 0px;
+  top: 64px;
+  background: #E5E5E5;
+  animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
+  align-items: center;
 }`
 
-const NewFeed = styled(Card)` && {
-  width: 480px;
-  height: ${document.documentElement.clientHeight - 95}px;
-  padding: 10px;
+const Header = styled.div`{
+  position: absolute;
+  width: 100%
+  height: 65px;
+  left: 0px;
+  top: 1px;
+  background: #FFFFFF;
 }`
-
-const checkFieldFeed = (data) => {
-  let result = {}
-  if (data.type === -1) result.type = true
-  if (data.section === -1) result.section = true
-  if (!data.title || (data.title && data.title.replace(/\s/g, '') === '')) result.title = true
-  if (!data.text || (data.text && data.text.replace(/\s/g, '') === '')) result.text = true
-  return result
-}
 
 FeedBack.contextType = SocketConsumer;
 export default withSnackbar(FeedBack)

@@ -53,7 +53,7 @@ class NewNews extends React.Component {
             </StyleText>
           </NotNews>}
           {Boolean(news.length) && 
-            <ListNews news={news} imgNews={imgNews} />
+            <ListNews news={news} imgNews={imgNews} URL_SERVER={URL_SERVER}/>
           }
         </RootNews>
       </>

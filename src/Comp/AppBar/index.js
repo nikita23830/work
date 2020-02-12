@@ -16,6 +16,7 @@ import { AppBar,
 import { Search, Add, Notifications, NotificationsOff } from '@material-ui/icons';
 import styled, { keyframes } from 'styled-components'
 import { Notif } from 'Comp/AppBar/svg'
+import { PAGES } from 'Comp/NewMenu/index'
 
 
 class DefAppBar extends Component {
@@ -38,10 +39,12 @@ class DefAppBar extends Component {
     const { openDrawer, onExit, onChangePage, page, drawer, level, onOpenNews, people_name } = this.props
     const { notif, anchorMenu } = this.state
     const LEVEL_NEWS = level.dev // поправить как внесу поправки в БД
+    let currentPage = PAGES.filter(i => i.link === page.pathname)[0] && PAGES.filter(i => i.link === page.pathname)[0].name
+    if (!currentPage) currentPage = page.pathname === '/' ? 'Новости' : '404 Not Found'
     return (
       <CustomAppBar position="static">
         <CustomToolbar>
-          <PageName drawer={drawer}>Лента новостей</PageName>
+          <PageName drawer={drawer}>{currentPage}</PageName>
           <StyleInput
             level={LEVEL_NEWS}
             drawer={drawer}

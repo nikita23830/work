@@ -98,7 +98,7 @@ class Main extends Component {
           openDrawer={this.openDrawer}
           onExit={this.onExit}
           onChangePage={this.onChangePage}
-          page={page}
+          page={location}
           drawer={drawer}
           level={level}
           onOpenNews={this.onOpenNews}

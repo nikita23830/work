@@ -4,13 +4,14 @@ import { Grid, Card } from '@material-ui/core'
 import { LittleCirclePost } from 'Comp/NewNews/svg'
 import { FavoriteBorderOutlined } from '@material-ui/icons'
 
-export const ListNews = ({ news, imgNews }) => {
+export const ListNews = ({ news, imgNews, URL_SERVER }) => {
     const data = '...'
     const trit = false
     return (
-        <ContainerGrid container spacing={2}>
+        <ContainerGrid container spacing={1}>
             {news.map(i => {
                 let noImg = !Boolean(imgNews.filter(j => j.id_news === i.id).length)
+                let img = imgNews.filter(j => j.id_news === i.id) 
                 return (
                     <CustomGrid item xs={12} sm={noImg ? 6 : 12}>
                         <CardNews noImg={noImg}>
@@ -24,7 +25,9 @@ export const ListNews = ({ news, imgNews }) => {
                                 <ColLike>666</ColLike>
                             </>}
                             {i.tags && <StyleTags noImg={noImg}>#{i.tags}</StyleTags>}
-                            {!noImg && <StyleImg src='http://10.254.4.41:4001/uploads/1' />}
+                            {!noImg && <StyleImg 
+                                src={Boolean(img.length) ? `${URL_SERVER}/uploads/${img[0].filename}` : ''}
+                            />}
                         </CardNews>
                     </CustomGrid>
                 )
@@ -157,7 +160,7 @@ const Title = styled.span`{
 }`
 
 const CardNews = styled(Card)` && {
-    width: ${p=>p.noImg ? '323px' : '658px'};
+    width: ${p=>p.noImg ? '323px' : '666px'};
     height: 216px;
     position: relative;
 }`

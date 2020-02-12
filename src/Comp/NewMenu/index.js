@@ -5,7 +5,7 @@ import { Grid, Collapse } from '@material-ui/core'
 import { animationCollapseOpen, animationCollapseClose } from 'Comp/NewMenu/style'
 import { Link } from 'react-router-dom'
 
-const PAGES = [
+export const PAGES = [
   {
     id: 0,
     name: 'Новости',
@@ -18,6 +18,7 @@ const PAGES = [
     name: 'Перерывы',
     multi: true,
     level: 1,
+    link: '/break',
     svg: <BreakSvg />,
     page: [
       {
@@ -25,13 +26,6 @@ const PAGES = [
         name: 'Главная',
         multi: false,
         link: '/break',
-        level: 1
-      },
-      {
-        id: 2,
-        name: 'Мои перерывы',
-        multi: false,
-        link: '/break?my',
         level: 1
       },
       {
@@ -97,7 +91,7 @@ class NewMenu extends React.Component{
 
           {PAGES.map((i, ind) => (
             <CustomGrid item xs={12} sm={12} drawer={drawer} open={collapse[ind]} col={i.multi ? i.page.length-1 : 1}>
-              <ClickedZone onClick={i.id === undefined && this.openCollapse(ind)} drawer={drawer} to={i.link && i.link}>
+              <ClickedZone onClick={i.id === undefined && this.openCollapse(ind)} drawer={drawer} to={!i.multi && i.link}>
                 <CustomMenuIcon>
                   {i.svg}
                 </CustomMenuIcon>
