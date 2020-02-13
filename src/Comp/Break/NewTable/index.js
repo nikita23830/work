@@ -7,6 +7,7 @@ import { setTable, TIMING } from 'Comp/Break/NewTable/tools'
 import { Circle1, Circle2, Circle3, Circle4 } from 'Comp/NewNews/svg'
 import { ModalBreak } from 'Comp/Break/NewTable/Modal'
 import { withSnackbar } from 'notistack';
+import MyBreak from 'Comp/Break/NewTable/MyBreak'
 
 function addZero(n) {
     return String("00" + n).slice(-2);
@@ -31,7 +32,7 @@ class NewTableBreak extends React.PureComponent{
 
     state = {
         date: new Date(),
-        activeTab: 0,
+        activeTab: 1,
         loader: true,
         table: {},
         variantTime: 2,
@@ -83,6 +84,7 @@ class NewTableBreak extends React.PureComponent{
         await socket.emit('updateTable', undefined)
         socket.on('updateTable', (data) => {
             let table = setTable(data, people_id)
+            let my = 
             this.setState({ table: table, loader: false })
         })
         socket.on('send_error', (data) => {
@@ -131,6 +133,7 @@ class NewTableBreak extends React.PureComponent{
                 </DivHead>
                 <DivBody>
                     {!Boolean(activeTab) && !loader && <AllBreak table={table} onClickedTime={this.onClickedTime} />}
+                    {activeTab === 1 && !loader && <MyBreak />}
                 </DivBody>
             </Root>
         )
