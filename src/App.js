@@ -8,9 +8,9 @@ import { CircularProgress } from '@material-ui/core'
 import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 
-const URL_SERVER = 'http://10.254.4.41:4001'
+const URL_SERVER = 'http://localhost:4001'
 
-// const URL_SERVER = '192.168.31.232:4001'
+// const URL_SERVER = '10.254.4.41:4001'
 const socket = socketIOClient(URL_SERVER)
 
 class App extends React.Component {
