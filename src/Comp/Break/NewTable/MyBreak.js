@@ -3,45 +3,38 @@ import styled from 'styled-components'
 import { Grid } from '@material-ui/core'
 import { Coffee, Delete } from 'Comp/Break/NewTable/Svg'
 import { EmojiFoodBeverageOutlined } from '@material-ui/icons'
+import { addZero, TIMING, isDateMonth } from 'Comp/Break/NewTable/tools'
+import { SocketConsumer } from 'ContextSocket/index'
 
-class MyBreak extends React.PureComponent{
+class MyBreak extends React.PureComponent {
+
+    state = {
+        curDate: new Date(),
+    }
+
+    onDelete = (i) => () => {
+        const { socket } = this.context
+        socket.emit('deleteMyBreak', i.ids)
+    }
+
     render() {
+        const { myBreak, date } = this.props
+        const { curDate } = this.state
+        let dateToDeleteDate = [addZero(curDate.getDate()), isDateMonth[curDate.getMonth()+1], curDate.getFullYear()]
         return (
             <Container container spacing={3}>
                 <GridList item xs={12} sm={6}>
                     <TextTitle>Установленные перерывы</TextTitle>
                     <ListGrid container spacing={0}>
-                        <Grid item xs={12} sm={12}>
-                            <ColorTime>
-                                <CoffeeIcon><EmojiFoodBeverageOutlined/></CoffeeIcon>
-                                <Timing>в 9:10 на 15 минут</Timing>
-                                <DeleteIcon><Delete /></DeleteIcon>
-                            </ColorTime>
-                        </Grid>
-
-                        <Grid item xs={12} sm={12}>
-                            <ColorTime>
-                                <CoffeeIcon><EmojiFoodBeverageOutlined/></CoffeeIcon>
-                                <Timing>в 9:10 на 15 минут</Timing>
-                                <DeleteIcon><Delete /></DeleteIcon>
-                            </ColorTime>
-                        </Grid>
-
-                        <Grid item xs={12} sm={12}>
-                            <ColorTime>
-                                <CoffeeIcon><EmojiFoodBeverageOutlined/></CoffeeIcon>
-                                <Timing>в 9:10 на 15 минут</Timing>
-                                <DeleteIcon><Delete /></DeleteIcon>
-                            </ColorTime>
-                        </Grid>
-
-                        <Grid item xs={12} sm={12}>
-                            <ColorTime>
-                                <CoffeeIcon><EmojiFoodBeverageOutlined/></CoffeeIcon>
-                                <Timing>в 9:10 на 15 минут</Timing>
-                                <DeleteIcon><Delete /></DeleteIcon>
-                            </ColorTime>
-                        </Grid>
+                        {myBreak.map(i => (
+                            <Grid item xs={12} sm={12}>
+                                <ColorTime>
+                                    <CoffeeIcon><EmojiFoodBeverageOutlined/></CoffeeIcon>
+                                    <Timing>в {addZero(TIMING[i.timing[0]][1])}:{addZero(TIMING[i.timing[0]][2])} на {i.ids.length * 5} минут</Timing>
+                                    {date.join(",") === dateToDeleteDate.join(",") && <DeleteIcon onClick={this.onDelete(i)}><Delete /></DeleteIcon>}
+                                </ColorTime>
+                            </Grid>
+                        ))}
                     </ListGrid>
                 </GridList>
             </Container>
@@ -49,6 +42,7 @@ class MyBreak extends React.PureComponent{
     }
 }
 
+MyBreak.contextType = SocketConsumer;
 export default MyBreak
 
 const DeleteIcon = styled.span`{
@@ -71,6 +65,7 @@ const Timing = styled.span`{
     font-size: 14px;
     line-height: 19px;
     font-feature-settings: 'pnum' on, 'lnum' on;
+    text-align: left;
 }`
 
 const CoffeeIcon = styled.span`{

@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components'
 import { CalendarIcon, VectorBack, VectorNext } from 'Comp/Break/NewTable/Svg'
 import { AllBreak } from 'Comp/Break/NewTable/All'
 import { SocketConsumer } from 'ContextSocket/index'
-import { setTable, TIMING } from 'Comp/Break/NewTable/tools'
+import { setTable, TIMING, isDateMonth } from 'Comp/Break/NewTable/tools'
 import { Circle1, Circle2, Circle3, Circle4 } from 'Comp/NewNews/svg'
 import { ModalBreak } from 'Comp/Break/NewTable/Modal'
 import { withSnackbar } from 'notistack';
@@ -11,21 +11,6 @@ import MyBreak from 'Comp/Break/NewTable/MyBreak'
 
 function addZero(n) {
     return String("00" + n).slice(-2);
-}
-
-const isDateMonth = {
-    '1': 'Января',
-    '2': 'Февраля',
-    '3': 'Марта',
-    '4': 'Апреля',
-    '5': 'Мая',
-    '6': 'Июня',
-    '7': 'Июля',
-    '8': 'Августа',
-    '9': 'Сентября',
-    '10': 'Октября',
-    '11': 'Ноября',
-    '12': 'Декабря',
 }
 
 class NewTableBreak extends React.PureComponent{
@@ -38,7 +23,8 @@ class NewTableBreak extends React.PureComponent{
         variantTime: 2,
         modalTime: false,
         tempTime: '',
-        blockedTime: 0 // 0 -ничего не блочим, 1 - блочим 15 минут, 2 - блочим 10 минут и 15 минут
+        blockedTime: 0, // 0 -ничего не блочим, 1 - блочим 15 минут, 2 - блочим 10 минут и 15 минут,
+        myBreak: []
     }
 
     onChangeTab = (id) => () => this.setState({ activeTab: id })
@@ -84,8 +70,22 @@ class NewTableBreak extends React.PureComponent{
         await socket.emit('updateTable', undefined)
         socket.on('updateTable', (data) => {
             let table = setTable(data, people_id)
-            let my = 
-            this.setState({ table: table, loader: false })
+            let temp_my = Object.keys(table).filter(i => table[i].key === 1) // выделили ячейки в которых есть мои перерывы
+            temp_my = temp_my.map(i => {
+                let t_return = table[i].data.filter(j => j.people_id == people_id)
+                return t_return[0]
+            }) // получили массив именно моих перерывов
+            let my = [] 
+            let temp_id = 0
+            temp_my.forEach(i => {
+                switch (i.start_end) {
+                    case 1: { my[temp_id] = { ids: [i.id], timing: [i.timing_id] }; return 0; }
+                    case 0: { my[temp_id].ids.push(i.id); my[temp_id].timing.push(i.timing_id); return 0; }
+                    case 2: { my[temp_id].ids.push(i.id); my[temp_id].timing.push(i.timing_id); temp_id = temp_id + 1; return 0; }
+                    case 3: { my[temp_id] = { ids: [i.id], timing: [i.timing_id] }; temp_id = temp_id + 1; return 0; }
+                }
+            }) // немного преобразовали для удобства
+            this.setState({ table: table, loader: false, myBreak: my })
         })
         socket.on('send_error', (data) => {
             if (data.name) enqueueSnackbar(`${data.severity}: ${data.routine}. Code: ${data.code}`, {
@@ -100,7 +100,7 @@ class NewTableBreak extends React.PureComponent{
 
     render () {
         const { drawer } = this.props
-        const { date, activeTab, table, loader, variantTime, modalTime, blockedTime } = this.state
+        const { date, activeTab, table, loader, variantTime, modalTime, blockedTime, myBreak } = this.state
         let dateToCalendarDate = [addZero(date.getDate()), isDateMonth[date.getMonth()+1], date.getFullYear()]
         return (
             <Root drawer={drawer}>
@@ -133,7 +133,7 @@ class NewTableBreak extends React.PureComponent{
                 </DivHead>
                 <DivBody>
                     {!Boolean(activeTab) && !loader && <AllBreak table={table} onClickedTime={this.onClickedTime} />}
-                    {activeTab === 1 && !loader && <MyBreak />}
+                    {activeTab === 1 && !loader && <MyBreak myBreak={myBreak} date={dateToCalendarDate}/>}
                 </DivBody>
             </Root>
         )

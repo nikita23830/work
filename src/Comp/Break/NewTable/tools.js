@@ -1,29 +1,49 @@
 export const setTable = (data, people_id) => {
-    let result = {}
-    let rule_hour = []
-    let rule_hour_data = []
-    let global_rule = { p: 0, d: 0 }
-    data.rules.forEach((i, index) => {
-      if (i.type_rule_id === 3 && global_rule.p === 0)
-        global_rule = { p: 1, d: i.data }
-      if (i.type_rule_id === 4 && rule_hour.indexOf(i.period_rule_id) === -1) {
-        rule_hour.push(i.period_rule_id)
-        rule_hour_data.push(i.data)
-      }
-    })
-    TIMING.forEach((i, ind) => { result[i[3]] = { data: data.table.filter(j => j.timing_id === ind) } })
-    Object.keys(result).forEach((i, ind) => {
-        result[i].key = 0
-        let timing_zone_temp = -1
-        TIMING_ZONE.forEach((j, index) => { if (j.indexOf(ind) !== -1) timing_zone_temp = index })
-        let rule_hour_temp = rule_hour.indexOf( timing_zone_temp ) // есть ли текущий час в правилах
-        result[i].key = global_rule.p === 1 && result[i].data.length >= global_rule.d ? 2 : result[i].key // проверка на глобал правило
-        result[i].key = rule_hour_temp !== -1 && result[i].data.length >= rule_hour_data[rule_hour_temp] ? 2 : result[i].key // проверка на правило по часам
-        result[i].key = result[i].data.filter(j => j.people_id === people_id).length > 0 ? 1 : result[i].key
-    })
+  let result = {}
+  let rule_hour = []
+  let rule_hour_data = []
+  let global_rule = { p: 0, d: 0 }
+  data.rules.forEach((i, index) => {
+    if (i.type_rule_id === 3 && global_rule.p === 0)
+      global_rule = { p: 1, d: i.data }
+    if (i.type_rule_id === 4 && rule_hour.indexOf(i.period_rule_id) === -1) {
+      rule_hour.push(i.period_rule_id)
+      rule_hour_data.push(i.data)
+    }
+  })
+  TIMING.forEach((i, ind) => { result[i[3]] = { data: data.table.filter(j => j.timing_id === ind) } })
+  Object.keys(result).forEach((i, ind) => {
+      result[i].key = 0
+      let timing_zone_temp = -1
+      TIMING_ZONE.forEach((j, index) => { if (j.indexOf(ind) !== -1) timing_zone_temp = index })
+      let rule_hour_temp = rule_hour.indexOf( timing_zone_temp ) // есть ли текущий час в правилах
+      result[i].key = global_rule.p === 1 && result[i].data.length >= global_rule.d ? 2 : result[i].key // проверка на глобал правило
+      result[i].key = rule_hour_temp !== -1 && result[i].data.length >= rule_hour_data[rule_hour_temp] ? 2 : result[i].key // проверка на правило по часам
+      result[i].key = result[i].data.filter(j => j.people_id === people_id).length > 0 ? 1 : result[i].key
+  })
     // 0 - свободной, 1 - мое, 2 - занято
-    return result
-  }
+  return result
+}
+
+export function addZero(n) {
+  return String("00" + n).slice(-2);
+}
+
+export const isDateMonth = {
+  '1': 'Января',
+  '2': 'Февраля',
+  '3': 'Марта',
+  '4': 'Апреля',
+  '5': 'Мая',
+  '6': 'Июня',
+  '7': 'Июля',
+  '8': 'Августа',
+  '9': 'Сентября',
+  '10': 'Октября',
+  '11': 'Ноября',
+  '12': 'Декабря',
+}
+
   
   export const TIMING_ZONE = [
     [0,1,2,3,4,5,6,7,8,9,10,11],
