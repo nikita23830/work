@@ -3,15 +3,11 @@ import styled, { keyframes } from 'styled-components'
 import { CalendarIcon, VectorBack, VectorNext } from 'Comp/Break/NewTable/Svg'
 import { AllBreak } from 'Comp/Break/NewTable/All'
 import { SocketConsumer } from 'ContextSocket/index'
-import { setTable, TIMING, isDateMonth } from 'Comp/Break/NewTable/tools'
+import { setTable, TIMING, isDateMonth, addZero } from 'Comp/Break/NewTable/tools'
 import { Circle1, Circle2, Circle3, Circle4 } from 'Comp/NewNews/svg'
 import { ModalBreak } from 'Comp/Break/NewTable/Modal'
 import { withSnackbar } from 'notistack';
 import MyBreak from 'Comp/Break/NewTable/MyBreak'
-
-function addZero(n) {
-    return String("00" + n).slice(-2);
-}
 
 class NewTableBreak extends React.PureComponent{
 
@@ -104,7 +100,7 @@ class NewTableBreak extends React.PureComponent{
         let dateToCalendarDate = [addZero(date.getDate()), isDateMonth[date.getMonth()+1], date.getFullYear()]
         return (
             <Root drawer={drawer}>
-
+                {loader && <Loader><Circle1 /><Circle2 /><Circle3 /><Circle4 /></Loader>}
                 <ModalBreak 
                     time={variantTime}
                     onChange={this.onChangeVariantTime} 
@@ -113,8 +109,6 @@ class NewTableBreak extends React.PureComponent{
                     blockedTime={blockedTime}
                     onSendMyBreak={this.onSendMyBreak}
                 />
-
-                {loader && <Loader><Circle1 /><Circle2 /><Circle3 /><Circle4 /></Loader>}
                 <DivHead>
                     <Calendar><CalendarIcon /></Calendar>
                     <CalendarText>
@@ -132,7 +126,7 @@ class NewTableBreak extends React.PureComponent{
                     </CalendarText>
                 </DivHead>
                 <DivBody>
-                    {!Boolean(activeTab) && !loader && <AllBreak table={table} onClickedTime={this.onClickedTime} />}
+                    {!Boolean(activeTab) && !loader && <AllBreak table={table} onClickedTime={this.onClickedTime} date={dateToCalendarDate} />}
                     {activeTab === 1 && !loader && <MyBreak myBreak={myBreak} date={dateToCalendarDate}/>}
                 </DivBody>
             </Root>
