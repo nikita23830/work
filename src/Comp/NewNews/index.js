@@ -6,6 +6,7 @@ import { CircleNews } from 'Comp/NewNews/svg'
 import NewPost from 'Comp/NewNews/New'
 import { withSnackbar } from 'notistack';
 import { ListNews } from 'Comp/NewNews/ListNews'
+import { OpenNewsRead } from 'Comp/NewNews/OpenNewsRead'
 
 class NewNews extends React.Component {
 
@@ -14,12 +15,33 @@ class NewNews extends React.Component {
     newPost: false,
     news: [],
     imgNews: [],
-    lastID: 0
+    lastID: 0,
+    readNews: 0,
+    aviableMore: true,
+    like: []
   }
+
+  onClickNews = (id) => () => this.setState({ readNews: id })
 
   onNewUser = () => {
     this.setState({ newUser: true })
     localStorage.setItem('newUser', true)
+  }
+
+  getMoreNews = () => {
+    const { socket } = this.context
+    const { lastID } = this.state
+    socket.emit('moreNews', lastID)
+  }
+
+  installLike = (id) => () => {
+    const { socket } = this.context
+    socket.emit('installLike', id)
+  }
+
+  deleteLike = (id) => () => {
+    const { socket } = this.context
+    socket.emit('deleteLike', id)
   }
 
   componentDidMount = async() => {
@@ -27,16 +49,49 @@ class NewNews extends React.Component {
     await socket.emit('getNews', {})
     await socket.on('getNews', data => {
       let lastID = Math.min.apply(null, data.news.map(i => i.id))
-      console.log(data.news, data.img)
       this.setState({ news: data.news, imgNews: data.img, lastID: lastID })
+    })
+    await socket.on('moreNews', (data) => {
+      if (data.news.length === 0) { this.setState({ aviableMore: false }); return 0; }
+      let lastID = Math.min.apply(null, data.news.map(i => i.id))
+      this.setState({ news: [...this.state.news, ...data.news], imgNews: [...this.state.imgNews, ...data.img], lastID: lastID })
+    })
+    await socket.on('getLike', (data) => {
+      const { news } = this.state
+      let like = []
+      news.map((i, ind) => {
+        if (!like[ind]) like[ind] = []
+        like[ind] = data.filter(j => j.news_id === i.id)
+      })
+      this.setState({ like: [...this.state.like, ...like] })
+    })
+    await socket.on('send_error', (data) => {
+      console.log(data)
+    })
+    await socket.on('newLike', (data) => {
+      const { news } = this.state
+      let newLike = [...this.state.like]
+      news.forEach((i, ind) => {
+        if (i.id === data.news_id) { if (!newLike[ind]) newLike[ind] = []; newLike[ind].push(data); }
+      })
+      this.setState({ like: newLike })
+    })
+    await socket.on('deleteLike', (data) => {
+      const { news } = this.state
+      let newLike = [...this.state.like]
+      news.forEach((i, ind) => {
+        if (i.id === data.id) { newLike[ind] = newLike[ind].filter(j => j.people_id !== data.people_id) }
+      })
+      this.setState({ like: newLike })
     })
   }
 
   render () {
-    const { drawer, level, openNews, onOpenNews, onCloseNews, people_name, enqueueSnackbar } = this.props
+    const { drawer, level, openNews, onOpenNews, onCloseNews, people_name, people_id } = this.props
     const { socket, URL_SERVER } = this.context
-    const { newUser, news, imgNews } = this.state
+    const { newUser, news, imgNews, readNews, aviableMore, like } = this.state
     const LEVEL_NEWS = level.dev // поправить как внесу поправки в БД
+    let imgReadNews = imgNews.filter(i => i.id_news === news[readNews].id)
     return (
       <>
         {openNews && <NewPost onCloseNews={onCloseNews} people_name={people_name} />}
@@ -52,9 +107,20 @@ class NewNews extends React.Component {
               <>Новости отсутствую. <br />Администратор еще не добавил статьи и новости,<br /> пожалуйста напомните :)</>}
             </StyleText>
           </NotNews>}
-          {Boolean(news.length) && 
-            <ListNews news={news} imgNews={imgNews} URL_SERVER={URL_SERVER}/>
-          }
+          {Boolean(news.length) && <>
+            <ListNews news={news} imgNews={imgNews} URL_SERVER={URL_SERVER} onClickNews={this.onClickNews} getMoreNews={this.getMoreNews} aviableMore={aviableMore} like={like} />
+            <OpenNewsRead 
+              URL_SERVER={URL_SERVER} 
+              LEVEL_NEWS={LEVEL_NEWS} 
+              news={news[readNews]} 
+              imgReadNews={imgReadNews} 
+              like={like} 
+              readNews={readNews}
+              people_id={people_id}
+              installLike={this.installLike}
+              deleteLike={this.deleteLike}
+            />
+          </>}
         </RootNews>
       </>
     )

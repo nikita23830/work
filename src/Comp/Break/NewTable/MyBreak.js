@@ -8,19 +8,14 @@ import { SocketConsumer } from 'ContextSocket/index'
 
 class MyBreak extends React.PureComponent {
 
-    state = {
-        curDate: new Date(),
-    }
-
     onDelete = (i) => () => {
         const { socket } = this.context
+        console.log(i)
         socket.emit('deleteMyBreak', i.ids)
     }
 
     render() {
-        const { myBreak, date } = this.props
-        const { curDate } = this.state
-        let dateToDeleteDate = [addZero(curDate.getDate()), isDateMonth[curDate.getMonth()+1], curDate.getFullYear()]
+        const { myBreak } = this.props
         const count = myBreak.reduce((res, el) => res + el.ids.length, 0)
         let srvr = Math.round(myBreak.reduce((res, el) => res + el.ids.length, 0) / myBreak.length * 5) // среднее время
         return (
@@ -33,7 +28,7 @@ class MyBreak extends React.PureComponent {
                                 <ColorTime>
                                     <CoffeeIcon><EmojiFoodBeverageOutlined/></CoffeeIcon>
                                     <Timing>в {addZero(TIMING[i.timing[0]][1])}:{addZero(TIMING[i.timing[0]][2])} на {i.ids.length * 5} минут</Timing>
-                                    {date.join(",") === dateToDeleteDate.join(",") && <DeleteIcon onClick={this.onDelete(i)}><Delete /></DeleteIcon>}
+                                    <DeleteIcon onClick={this.onDelete(i)}><Delete /></DeleteIcon>
                                 </ColorTime>
                             </Grid>
                         ))}

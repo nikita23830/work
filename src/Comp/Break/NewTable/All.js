@@ -4,9 +4,7 @@ import styled from 'styled-components'
 import { People, Coffee, Lock } from 'Comp/Break/NewTable/Svg'
 import { isDateMonth, addZero } from 'Comp/Break/NewTable/tools'
 
-export const AllBreak = React.memo(function AllBreak({ table, onClickedTime, date }) {
-    const tDate = new Date
-    const curDate = [addZero(tDate.getDate()), isDateMonth[tDate.getMonth()+1], tDate.getFullYear()]
+export const AllBreak = React.memo(function AllBreak({ table, onClickedTime }) {
     return (
         <Container container spacing={1}>
             {Hour.map(i => (
@@ -18,7 +16,7 @@ export const AllBreak = React.memo(function AllBreak({ table, onClickedTime, dat
                         let foundInTable = table[Object.keys(table).filter(k => k === `${i}_${j}`)[0]]
                         return (
                             <CustomGrid item xs={12} sm={2}>
-                                {foundInTable.key === 0 && <Free i={i} j={j} ind={foundInTable.data.length} onClickedTime={onClickedTime} date={date} curDate={curDate}/>}
+                                {foundInTable.key === 0 && <Free i={i} j={j} ind={foundInTable.data.length} onClickedTime={onClickedTime}/>}
                                 {foundInTable.key === 1 && <My i={i} j={j} />}
                                 {foundInTable.key === 2 && <NotFree i={i} j={j} ind={foundInTable.data.length} />}
                             </CustomGrid>
@@ -37,8 +35,8 @@ const My = ({ i, j }) => (
     </MyTable>
 )
 
-const Free = ({ i, j, ind, onClickedTime, date, curDate }) => (
-    <TableButton onClick={date === curDate && onClickedTime(`${i}_${j}`)}>
+const Free = ({ i, j, ind, onClickedTime }) => (
+    <TableButton onClick={onClickedTime(`${i}_${j}`)}>
         <IconPeople><People /></IconPeople>
         <CountPeople>{ind}</CountPeople>
         <TimeButton>{i}:{j}</TimeButton>

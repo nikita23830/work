@@ -55,8 +55,8 @@ class NewTableBreak extends React.PureComponent{
 
     onSendMyBreak = () => {
         const { socket } = this.context
-        const { tempTime, variantTime } = this.state
-        socket.emit('SetInTableBreak', { type: variantTime+1 , set: tempTime })
+        const { tempTime, variantTime, date } = this.state
+        socket.emit('SetInTableBreak', { type: variantTime+1 , set: tempTime, date: +date })
         this.setState({ modalTime: false, loader: true })
     }
 
@@ -126,8 +126,8 @@ class NewTableBreak extends React.PureComponent{
                     </CalendarText>
                 </DivHead>
                 <DivBody>
-                    {!Boolean(activeTab) && !loader && <AllBreak table={table} onClickedTime={this.onClickedTime} date={dateToCalendarDate} />}
-                    {activeTab === 1 && !loader && <MyBreak myBreak={myBreak} date={dateToCalendarDate}/>}
+                    {!Boolean(activeTab) && !loader && <AllBreak table={table} onClickedTime={this.onClickedTime} />}
+                    {activeTab === 1 && !loader && <MyBreak myBreak={myBreak} date={date}/>}
                 </DivBody>
             </Root>
         )

@@ -61,7 +61,7 @@ export const PAGES = [
   },
 ]
 
-class NewMenu extends React.Component{
+class NewMenu extends React.PureComponent{
 
   state={
     collapse: [false,false,false,false,false,false,false,false],

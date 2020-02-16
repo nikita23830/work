@@ -2,116 +2,181 @@ import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import { SocketConsumer } from 'ContextSocket'
 import { withSnackbar } from 'notistack';
-import { Send, NoMessage, MailBox, DeleteIcon } from 'Comp/FeedBack/Svg'
-import { Grid } from '@material-ui/core'
+import { Send, NoMessage, MailBox, DeleteIcon, CreateTicketIcon } from 'Comp/FeedBack/Svg'
+import { Grid, Avatar, Input, InputAdornment } from '@material-ui/core'
+import { LockOutlined } from '@material-ui/icons'
+import { MessageBodyPlace } from 'Comp/FeedBack/MessageBody';
+import NewModalChats from 'Comp/FeedBack/New'
 
-class FeedBack extends React.Component {
+class FeedBack extends React.PureComponent {
 
   state={
     activeTab: 0,
-    message: [
-      [{
-        id: 0,
-        title: 'test',
-        text: 'test text'
-      }],
-      []
-    ]
+    textOpenMessage: '',
+    chats: [],
+    createModal: false
   }
 
-  onChangeTabs = (id) => () => this.setState({ activeTab: id })
+  onChangeTabs = (id) => () => {
+    const { chats, activeTab } = this.state
+    this.setState({ activeTab: id })
+    if (chats[id].msg.length > 0 && this.message) this.message.scrollTo(0, 10000000)
+  }
+
+  sendMessage = () => {
+    const { textOpenMessage, activeTab, chats } = this.state
+    const { socket } = this.context
+    socket.emit('sendMessageToChat', {chat: chats[activeTab].id, text: textOpenMessage, date: +new Date()})
+  }
+
+  componentDidMount = async () => {
+    const { socket } = this.context
+    await socket.emit('getChatList', '');
+    await socket.on('getChatList', (data) => {
+      if (data.empty) { return 0; }
+      let chats = [...data.chats]
+      chats.forEach(i => {
+        if (!i.msg) i.msg = data.message.filter(j => j.feedback_id === i.id)
+      })
+      this.setState({ chats: chats, textOpenMessage: '', createModal: false })
+      if (chats[0].msg.length > 0 && this.message) this.message.scrollTo(0, 10000000)
+    })
+    await socket.on('getNewMessage', (data) => {
+      let chats = [...this.state.chats]
+      chats.forEach(i => { if (i.id === data.chat) i.msg.push(data) }) 
+      this.setState({ chats: chats, textOpenMessage: '' })
+      if (chats[this.state.activeTab].msg.length > 0 && this.message) this.message.scrollTo(0, 10000000)
+    })
+  }
 
   render () {
     const { drawer } = this.props
-    const { activeTab, message } = this.state
+    const { activeTab, chats, textOpenMessage, createModal } = this.state
     return (
       <Body drawer={drawer}>
+        {createModal && <NewModalChats onClose={() => this.setState({ createModal: false})} socket={this.context.socket} />}
         <Header>
-          <SendTab index={0} activeTab={activeTab} onClick={this.onChangeTabs(0)}>
+          <SendTab>
             <StyleSend>
-              <Send active={activeTab === 0} />
+              <Send active={true} />
             </StyleSend>
-            <TextSendTab>Открытые</TextSendTab>
+            <TextSendTab>Сообщения</TextSendTab>
           </SendTab>
-          <SendTab index={1} activeTab={activeTab} onClick={this.onChangeTabs(1)}>
-            <TextSendTab>Закрытые</TextSendTab>
-          </SendTab>
+          <CreateTicket onClick={() => this.setState({ createModal: true })}>
+            <CreateTicketIcon />
+          </CreateTicket>
         </Header>
-        {!Boolean(message[activeTab].length) && <NoMessage />}
+        {!Boolean(chats.length) && <NoMessage />}
+        {Boolean(chats.length) && <BodyTickets>
+            <ListTicket container spacing={1}>
+              {chats.map((i, ind) => {
+                return (
+                  <ListItem item xs={12} sm={12} active={activeTab === ind} onClick={this.onChangeTabs(ind)}>
+                    <TitleList active={activeTab === ind}>{i.title}</TitleList>
+                    {i.close && <LockOutlinedIcon active={activeTab === ind} />}
+                  </ListItem>
+                )
+              })}
 
-        {Boolean(message[activeTab].length) && <StyleGrid container spacing={1} drawer={drawer}>
-          <CustomGrid items xs={12} sm={12}>
-            <SpanMail><MailBox /></SpanMail>
-            <SpanTitle>Не добавлено ни одного приложения</SpanTitle>
-            <SpanText>Здраствуйте, pingwin4iks@gmail.com! Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались</SpanText>
-            <SpanDelete><DeleteIcon /></SpanDelete>
-          </CustomGrid>
-          <CustomGrid items xs={12} sm={12}>
-            <SpanMail><MailBox /></SpanMail>
-            <SpanTitle>Не добавлено ни одного приложения</SpanTitle>
-            <SpanText>Здраствуйте, pingwin4iks@gmail.com! Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались</SpanText>
-            <SpanDelete><DeleteIcon /></SpanDelete>
-          </CustomGrid>
-          <CustomGrid items xs={12} sm={12}>
-            <SpanMail><MailBox /></SpanMail>
-            <SpanTitle>Не добавлено ни одного приложения</SpanTitle>
-            <SpanText>Здраствуйте, pingwin4iks@gmail.com! Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались</SpanText>
-            <SpanDelete><DeleteIcon /></SpanDelete>
-          </CustomGrid>
-          <CustomGrid items xs={12} sm={12}>
-            <SpanMail><MailBox /></SpanMail>
-            <SpanTitle>Не добавлено ни одного приложения</SpanTitle>
-            <SpanText>Здраствуйте, pingwin4iks@gmail.com! Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались</SpanText>
-            <SpanDelete><DeleteIcon /></SpanDelete>
-          </CustomGrid>
-          <CustomGrid items xs={12} sm={12}>
-            <SpanMail><MailBox /></SpanMail>
-            <SpanTitle>Не добавлено ни одного приложения</SpanTitle>
-            <SpanText>Здраствуйте, pingwin4iks@gmail.com! Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались Вы зарегистрировались</SpanText>
-            <SpanDelete><DeleteIcon /></SpanDelete>
-          </CustomGrid>
-        </StyleGrid>}
+            </ListTicket>
+            <LineTickets />
+            <HeaderTicket>
+              <StyledAvatar>КР</StyledAvatar>
+              <HeaderName>Команда разработчиков</HeaderName>
+            </HeaderTicket>
+            <MessagesTicket container spacing={1} ref={message => this.message = message}>
+              <MessageBodyPlace chats={chats} activeTab={activeTab} />              
+            </MessagesTicket>
+            <SendMessage>
+              <StyleTextField 
+                placeholder='Напишите Ваше сообщение...' 
+                fullWidth 
+                value={textOpenMessage}
+                onChange={e => this.setState({ textOpenMessage: e.target.value })}
+                disabled={chats[activeTab].close}
+                endAdornment={
+                  <StyleInputAdornment position="end" onClick={this.sendMessage}>
+                    <Send />
+                  </StyleInputAdornment>
+                }
+                onKeyPress = {press => press.key === 'Enter' && this.sendMessage()}
+              />
+            </SendMessage>
+        </BodyTickets>}
       </Body> 
     )
   }
 }
 
-const SpanDelete = styled.span`{
+const LockOutlinedIcon = styled(LockOutlined)` && {
   position: absolute;
   top: 20px;
   right: 20px;
-  display: none;
+  color: ${p=>p.active ? '#2285EE' : '#072D57'};
+}`
+
+
+const TitleList = styled.span`{
+  position: absolute;
+  width: 250px;
+  height: 20px;
+  left: 16px;
+  top: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 19px;
+  font-feature-settings: 'pnum' on, 'lnum' on;
+  color: ${p=>p.active ? '#2285EE' : '#072D57'};
+  text-align: left;
+}`
+
+const StyleInputAdornment = styled(InputAdornment)` && {
   cursor: pointer;
 }`
 
-const SpanText = styled.span`{
-  position: absolute;
-  width: ${document.documentElement.clientWidth - 739}px;
-  height: 19px;
-  left: 384px;
-  top: 23px;
-  text-align: left;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 17px;
-  font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #99A9BA
+const StyleTextField = styled(Input)` && {
+  padding: 2px 10px 2px 10px;
+  border-bottom: none;
+  background: #EBEEF1;
+  border-radius: 4px;
+  color: #072D57;
+} &&:before {
+  border-bottom: none;
+} &&:after {
+  border-bottom: none;
+} &&:hover:not(.Mui-disabled):before {
+  border-bottom: none;
 }`
 
-const SpanTitle = styled.span`{
+const SendMessage = styled.div`{
   position: absolute;
-  width: 300px;
-  height: 19px;
-  left: 68px;
-  top: 23px;
-  text-align: left;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  bottom: 0px;
+  right: 0px;
+  height: 41px;
+  max-height: 41px;
+  width: calc(100% - 359px);
+  border-top: 1px solid #E9F3FD;
+  padding: 12px 16px 12px 16px;
+}`
+
+const MessagesTicket = styled(Grid)` && {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  max-height: ${document.documentElement.clientHeight - 290}px;
+  width: calc(100% - 358px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}`
+
+const HeaderName = styled.span`{
+  position: absolute;
+  top: 22px;
+  left: 64px; 
   font-style: normal;
   font-weight: bold;
   font-size: 14px;
@@ -120,51 +185,75 @@ const SpanTitle = styled.span`{
   color: #072D57;
 }`
 
-const SpanMail = styled.span`{
+const StyledAvatar = styled(Avatar)` && {
   position: absolute;
-  width: 24px;
-  height: 24px;
-  left: 20px;
-  top: 20px;
-}`
-
-const CustomGrid = styled(Grid)` && {
-  height: 65px;
-  position: relative;
-  background: #FFFFFF;
-} &&:hover {
-  ${SpanDelete} {
-    display: block;
-  }
-}`
-
-const onOpenDrawerStyleGrid = keyframes`
-  0% {
-    width: ${document.documentElement.clientWidth - 97}px;
-  }
-  100% {
-    width: ${document.documentElement.clientWidth - 287}px;
-  }
-`
-
-const onCloseDrawerStyleGrid = keyframes`
-  0% {
-    width: ${document.documentElement.clientWidth - 287}px;
-  }
-  100% {
-    width: ${document.documentElement.clientWidth - 97}px;
-  }
-`
-
-const StyleGrid = styled(Grid)` && {
-  position: absolute;
-  animation: ${p=>p.drawer ? onOpenDrawerStyleGrid : onCloseDrawerStyleGrid} 0.2s linear both;
-  height: ${document.documentElement.clientHeight - 155}px;
   left: 16px;
-  top: 80px;
-  border-radius: 4px;
+  top: 12px;
+  background: #E9F3FD;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
+  font-feature-settings: 'pnum' on, 'lnum' on;
+  color: #2285EE;
+}`
+
+const HeaderTicket = styled.span`{
+  position: absolute;
+  width: calc(100% - 325px);
+  height: 64px;
+  left: 325px;
+  top: 0px;
+  border-bottom: 1px solid #E9F3FD;
+}`
+
+const LineTickets = styled.div`{
+  position: absolute;
+  width: 1px;
+  height: ${document.documentElement.clientHeight - 160}px;
+  left: 325px;
+  top: 0px;
+  background: #E9F3FD;
+}`
+
+const ListItem = styled(Grid)` && {
+  width: 320px;
+  height: 64px;
+  border-left: 4px solid ${p=>p.active ? '#2285EE' : '#F8FBFF'};
+  margin: 2px 0 2px 0;
+  cursor: pointer;
+  background: ${p=>p.active ? '#F8FBFF' : '#FAFAFA'};
+  position: relative;
+  user-select: none;
+}`
+
+const ListTicket = styled(Grid)` && {
+  position: absolute;
+  left: 5px;
+  width: 324px;
+  top: 5px;
+  max-height: ${document.documentElement.clientHeight - 160}px;
   overflow-y: auto;
-  overflow-x: none;
+}`
+
+const BodyTickets = styled.div`{
+  position: absolute;
+  top: 81px;
+  left: 16px;
+  background: #fff;
+  width: calc(100% - 32px);
+  height: ${document.documentElement.clientHeight - 160}px;
+  border-radius: 4px;
+}`
+
+const CreateTicket = styled.div`{
+  cursor: pointer;
+  position: absolute;
+  width: 162px;
+  height: 64px;
+  top: 0px;
+  right: 0px;
 }`
 
 const StyleSend = styled.span`{
@@ -193,10 +282,10 @@ const SendTab = styled.span`{
   position: absolute;
   width: 186px;
   height: 63px;
-  left: ${p=>p.index * 186}px;
+  left: 0px;
   top: 0px;
-  border-bottom: ${p=>p.activeTab === p.index ? 2 : 0}px solid #2285EE;
-  color: ${p=>p.activeTab === p.index ? '#2285EE' : '#99A9BA'};
+  border-bottom: 2px solid #2285EE;
+  color: #2285EE;
   cursor: pointer;
   user-select: none;
 }`

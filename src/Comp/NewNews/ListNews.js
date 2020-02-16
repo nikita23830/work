@@ -4,17 +4,19 @@ import { Grid, Card } from '@material-ui/core'
 import { LittleCirclePost } from 'Comp/NewNews/svg'
 import { FavoriteBorderOutlined } from '@material-ui/icons'
 
-export const ListNews = ({ news, imgNews, URL_SERVER }) => {
-    const data = '...'
-    const trit = false
+export const ListNews = ({ news, imgNews, URL_SERVER, onClickNews, getMoreNews, aviableMore, like }) => {
     return (
-        <ContainerGrid container spacing={1}>
-            {news.map(i => {
+        <ContainerGrid 
+            container 
+            spacing={1}
+            onScroll={e => e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight && aviableMore && getMoreNews()}
+        >
+            {news.map((i, index) => {
                 let noImg = !Boolean(imgNews.filter(j => j.id_news === i.id).length)
                 let img = imgNews.filter(j => j.id_news === i.id) 
                 return (
-                    <CustomGrid item xs={12} sm={noImg ? 6 : 12}>
-                        <CardNews noImg={noImg}>
+                    <CustomGrid item xs={12} sm={noImg ? 6 : 12} >
+                        <CardNews noImg={noImg} onClick={onClickNews(index)}>
                             <Title noImg={noImg}>{i.title}</Title>
                             <AuthorPost>{i.surname} {i.name}</AuthorPost>
                             <LittleCirclePost />
@@ -22,7 +24,7 @@ export const ListNews = ({ news, imgNews, URL_SERVER }) => {
                             <DataPost noImg={noImg}>{i.text.substr(0, 125)}{i.text.length > 125 && '...'}</DataPost>
                             {i.islike && <>
                                 <StyleLike><FavoriteBorderOutlined /></StyleLike>
-                                <ColLike>666</ColLike>
+                                <ColLike>{like[index] ? like[index].length : 0}</ColLike>
                             </>}
                             {i.tags && <StyleTags noImg={noImg}>#{i.tags}</StyleTags>}
                             {!noImg && <StyleImg 
@@ -115,7 +117,7 @@ const DatePost = styled.span`{
     position: absolute;
     width: 52px;
     height: 14px;
-    left: 108px;
+    left: 250px;
     top: 61px;
     font-family: Manrope3;
     font-style: normal;
@@ -128,7 +130,7 @@ const DatePost = styled.span`{
 
 const AuthorPost = styled.span`{
     position: absolute;
-    width: 66px;
+    width: 200px;
     height: 14px;
     left: 24px;
     top: 61px;
@@ -163,6 +165,7 @@ const CardNews = styled(Card)` && {
     width: ${p=>p.noImg ? '323px' : '666px'};
     height: 216px;
     position: relative;
+    cursor: pointer;
 }`
 
 const ContainerGrid = styled(Grid)` && {

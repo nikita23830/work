@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { AppBar,
   Toolbar,
   IconButton,
@@ -19,7 +19,7 @@ import { Notif } from 'Comp/AppBar/svg'
 import { PAGES } from 'Comp/NewMenu/index'
 
 
-class DefAppBar extends Component {
+class DefAppBar extends React.PureComponent {
 
   state = {
     notif: true,
