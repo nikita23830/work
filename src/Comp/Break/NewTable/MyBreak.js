@@ -10,7 +10,6 @@ class MyBreak extends React.PureComponent {
 
     onDelete = (i) => () => {
         const { socket } = this.context
-        console.log(i)
         socket.emit('deleteMyBreak', i.ids)
     }
 

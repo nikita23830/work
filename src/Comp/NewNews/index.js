@@ -90,7 +90,7 @@ class NewNews extends React.Component {
     const { drawer, level, openNews, onOpenNews, onCloseNews, people_name, people_id } = this.props
     const { socket, URL_SERVER } = this.context
     const { newUser, news, imgNews, readNews, aviableMore, like } = this.state
-    const LEVEL_NEWS = level.dev // поправить как внесу поправки в БД
+    const LEVEL_NEWS = level.news_lvl // поправить как внесу поправки в БД
     let imgReadNews = imgNews.filter(i => i.id_news === news[readNews].id)
     return (
       <>

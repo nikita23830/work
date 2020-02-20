@@ -11,13 +11,13 @@ export const PAGES = [
     name: 'Новости',
     multi: false,
     link: '/news',
-    level: 1,
+    level: 'news_lvl',
     svg: <NewsSvg />
   },
   {
     name: 'Перерывы',
     multi: true,
-    level: 1,
+    level: 'break_lvl',
     link: '/break',
     svg: <BreakSvg />,
     page: [
@@ -49,7 +49,7 @@ export const PAGES = [
     name: 'Администрирование',
     multi: false,
     link: '/administration',
-    level: 1,
+    level: 'manager',
     svg: <SettingSvg />
   },
   {
@@ -79,9 +79,9 @@ class NewMenu extends React.PureComponent{
 
   render() {
     const { collapse } = this.state
-    const { drawer, openDrawer, onChangePage, page } = this.props
+    const { drawer, openDrawer, onChangePage, page, level } = this.props
     return(
-      <CustomDrawer open={drawer}>
+      <CustomDrawer open={drawer} lvl={level.level_id}>
         <TopDrawer onClick={openDrawer} open={drawer}>
           <WhiteLogo />
           {drawer && <LogoName>Техподдержка</LogoName>}
@@ -89,37 +89,37 @@ class NewMenu extends React.PureComponent{
         </TopDrawer>
         <StyleGridMenu container spacing={1} open={drawer}>
 
-          {PAGES.map((i, ind) => (
-            <CustomGrid item xs={12} sm={12} drawer={drawer} open={collapse[ind]} col={i.multi ? i.page.length-1 : 1}>
-              <ClickedZone onClick={i.id === undefined && this.openCollapse(ind)} drawer={drawer} to={!i.multi && page.pathname !== i.link && i.link}>
-                <CustomMenuIcon>
-                  {i.svg}
-                </CustomMenuIcon>
-                {drawer && <CustomMenuText>{i.name}</CustomMenuText>}
-                {(drawer && i.multi) && <CustomVector onClick={this.openCollapse(ind)}>
-                  {collapse[ind] ? <VectorDown /> : <Vector />}
-                </CustomVector>}
-              </ClickedZone>
-              {(drawer && i.multi) && <CustomCollapse in={collapse[ind]}>
-                <CollapsedGrid container spacing={1} open={drawer}>
-
-                  {i.page.map((i, ind) => (
-                      <CustomGrid item xs={12} sm={12}>
-                        <ClickedZoneLittle to={i.link && page.pathname !== i.link && i.link}>
-                          <CustomMenuIcon little={true} >
-                            <LittleCircle />
-                          </CustomMenuIcon>
-                          <CustomMenuText>{i.name}</CustomMenuText>
-                        </ClickedZoneLittle>
-                      </CustomGrid>
-                  ))}
-
-                </CollapsedGrid>
-              </CustomCollapse>}
-
-
-            </CustomGrid>
-          ))}
+          {PAGES.map((i, ind) => {
+            let collapseBreak = (drawer && i.name === 'Перерывы' && level.break_lvl === 2) ? true : false
+            let visible = i.level === 'manager' ? Boolean(level[i.level]) ? true : false : true
+            if (visible) return (
+              <CustomGrid item xs={12} sm={12} drawer={drawer} open={collapse[ind]} col={i.multi ? i.page.length-1 : 1}>
+                <ClickedZone onClick={collapseBreak && this.openCollapse(ind)} drawer={drawer} to={!collapseBreak && i.link}>
+                  <CustomMenuIcon>
+                    {i.svg}
+                  </CustomMenuIcon>
+                  {drawer && <CustomMenuText lvl={level.level_id}>{i.name}</CustomMenuText>}
+                  {(drawer && i.multi) && <CustomVector onClick={this.openCollapse(ind)}>
+                    {collapseBreak && <> {collapse[ind] ? <VectorDown /> : <Vector />} </>}
+                  </CustomVector>}
+                </ClickedZone>
+                {collapseBreak && <CustomCollapse in={collapse[ind]}>
+                  <CollapsedGrid container spacing={1} open={drawer}>
+                    {i.page.map((i, ind) => (
+                        <CustomGrid item xs={12} sm={12}>
+                          <ClickedZoneLittle to={i.link && page.pathname !== i.link && i.link}>
+                            <CustomMenuIcon little={true} >
+                              <LittleCircle />
+                            </CustomMenuIcon>
+                            <CustomMenuText lvl={level.level_id}>{i.name}</CustomMenuText>
+                          </ClickedZoneLittle>
+                        </CustomGrid>
+                    ))}
+                  </CollapsedGrid>
+                </CustomCollapse>}
+              </CustomGrid>
+            )
+          })}
 
         </StyleGridMenu>
       </CustomDrawer>
@@ -184,7 +184,7 @@ const CustomMenuText = styled.span`{
   font-size: 14px;
   line-height: 19px;
   font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #2285EE;
+  color: ${p=>p.lvl === 1 ? '#FFFFFF' : '#2285EE'};
   user-select: none;
   text-align: left;
   display: flex;
@@ -273,7 +273,7 @@ const CustomDrawer = styled.div` {
   width: ${p=>p.open ? '260px' : '72px'};
   height: ${document.documentElement.clientHeight}px;
   z-index: 51;
-  background-color: #FFFFFF;
+  background-color: ${p=>p.lvl === 1 ? '#2F363A' : '#FFFFFF'};
   display: block;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
   animation: ${p=>p.open ? openDrawerAnim : closeDrawerAnim} 0.2s linear both;

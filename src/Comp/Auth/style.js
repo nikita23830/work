@@ -115,7 +115,7 @@ export const StyleGrid = styled(Grid)` && {
 
 export const OrgName = styled.p`{
   position: absolute;
-  width: 152px;
+  width: 170px;
   height: 17px;
   left: calc(50% - 152px/2 - 127.5px);
   top: 16px;

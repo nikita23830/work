@@ -38,13 +38,13 @@ class DefAppBar extends React.PureComponent {
   render() {
     const { openDrawer, onExit, onChangePage, page, drawer, level, onOpenNews, people_name } = this.props
     const { notif, anchorMenu } = this.state
-    const LEVEL_NEWS = level.dev // поправить как внесу поправки в БД
+    const LEVEL_NEWS = level.news_lvl // поправить как внесу поправки в БД
     let currentPage = PAGES.filter(i => i.link === page.pathname)[0] && PAGES.filter(i => i.link === page.pathname)[0].name
     if (!currentPage) currentPage = page.pathname === '/' ? 'Новости' : '404 Not Found'
     return (
-      <CustomAppBar position="static">
+      <CustomAppBar position="static" lvl={level.level_id}>
         <CustomToolbar>
-          <PageName drawer={drawer}>{currentPage}</PageName>
+          <PageName drawer={drawer} lvl={level.level_id}>{currentPage}</PageName>
           <StyleInput
             level={LEVEL_NEWS}
             drawer={drawer}
@@ -63,7 +63,7 @@ class DefAppBar extends React.PureComponent {
             <Add />
           </StyleFab>}
           <StyleNotif><Notif /></StyleNotif>
-          <StyleAvatar sizes='small' onClick={this.onMenuOpen}>{people_name[1].charAt(0)}{people_name[0].charAt(0)}</StyleAvatar>
+          <StyleAvatar sizes='small' onClick={this.onMenuOpen} lvl={level.level_id}>{people_name[1].charAt(0)}{people_name[0].charAt(0)}</StyleAvatar>
 
         </CustomToolbar>
 
@@ -145,8 +145,8 @@ const StyleNotif = styled.span` && {
 }`;
 
 const StyleAvatar = styled(Avatar)` && {
-  background: #E9F3FD;
-  color: #2285EE;
+  background: ${p=>p.lvl === 1 ? '#2285EE' : '#E9F3FD'};
+  color: ${p=>p.lvl === 1 ? '#fff' : '#2285EE'};
   width: 40px;
   height: 40px;
   cursor: pointer;
@@ -198,7 +198,7 @@ const PageName = styled.span`{
   font-size: 18px;
   line-height: 25px;
   font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #072D57;
+  color: ${p=>p.lvl === 1 ? '#fff' : '#072D57'};
   position: absolute;
   width: 276px;
   left: ${p=>p.drawer ? '270px' : '80px'};
@@ -218,7 +218,7 @@ const CustomGrid = styled(Grid)` && {
 }`;
 
 const CustomAppBar = styled(AppBar)` && {
-  background: #FFFFFF;
+  background: ${p=>p.lvl === 1 ? '#2F363A' : '#FFFFFF'};
 }`;
 
 const CustomBreadcrumbs = styled(Breadcrumbs)` && {

@@ -88,7 +88,7 @@ class FeedBack extends React.PureComponent {
               <MessageBodyPlace chats={chats} activeTab={activeTab} />              
             </MessagesTicket>
             <SendMessage>
-              <StyleTextField 
+              {!chats[activeTab].close && <StyleTextField 
                 placeholder='Напишите Ваше сообщение...' 
                 fullWidth 
                 value={textOpenMessage}
@@ -100,13 +100,31 @@ class FeedBack extends React.PureComponent {
                   </StyleInputAdornment>
                 }
                 onKeyPress = {press => press.key === 'Enter' && this.sendMessage()}
-              />
+              />}
+              {chats[activeTab].close && <CloseText>Вы больше не можете писать по этому вопросу, так как Ваша проблема решена. Пожалуйста создайте новое обращение.</CloseText>}
             </SendMessage>
         </BodyTickets>}
       </Body> 
     )
   }
 }
+
+const CloseText = styled.span`{
+  position: absolute;
+  max-width: calc(100% - 407px);
+  height: 33px;
+  left: 24px;
+  bottom: 19px;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 16px;
+  font-feature-settings: 'pnum' on, 'lnum' on;
+  color: #072D57;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}`
 
 const LockOutlinedIcon = styled(LockOutlined)` && {
   position: absolute;

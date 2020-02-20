@@ -13,7 +13,7 @@ class NewTableBreak extends React.PureComponent{
 
     state = {
         date: new Date(),
-        activeTab: 1,
+        activeTab: 0,
         loader: true,
         table: {},
         variantTime: 2,

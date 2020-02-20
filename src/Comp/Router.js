@@ -7,6 +7,8 @@ import Administartion from 'Comp/Admin'
 import NewNews from 'Comp/NewNews'
 import FeedBack from 'Comp/FeedBack'
 
+import { Redirect } from 'react-router-dom'
+
 const GetPageContent = props => {
   const { page } = props
   switch (page.pathname) {
@@ -19,17 +21,17 @@ const GetPageContent = props => {
       return (
         <Break {...props} />
       );
-    case '/report/:units':
+    case '/report/:id':
       return (
         <Report {...props} />
       )
 
-    case '/test/:units':
+    case '/test/:id':
       return (
         <RouterTest {...props} />
       );
 
-  	case '/rating/:units':
+  	case '/rating/:id':
         return (
           <RouterRating {...props} />
         );
@@ -44,7 +46,7 @@ const GetPageContent = props => {
         <FeedBack {...props} />
       )
 
-    default: return (<h1>Not dev... Sorry By nikita23830</h1>)
+    default: return (<Redirect to='/' />)
   }
 }
 
