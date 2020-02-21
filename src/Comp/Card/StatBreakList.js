@@ -13,7 +13,7 @@ import {Card,
   IconButton
 } from '@material-ui/core'
 import { Delete } from '@material-ui/icons'
-import { TIMING } from 'Comp/Break/MainTable/tools'
+import { TIMING } from 'Comp/Break/NewTable/tools'
 
 class StatBreakList extends Component {
 

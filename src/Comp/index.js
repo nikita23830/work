@@ -25,7 +25,10 @@ class Main extends Component {
     people_name: ['', '']
   }
 
-  onOpenNews = () => this.setState({ openNews: true })
+  onOpenNews = () => {
+    this.setState({ openNews: true })
+    this.props.history.push('/news')
+  }
   onCloseNews = () => this.setState({ openNews: false })
 
   openDrawer = () => this.setState({ drawer: !this.state.drawer })

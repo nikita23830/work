@@ -184,7 +184,7 @@ const CustomMenuText = styled.span`{
   font-size: 14px;
   line-height: 19px;
   font-feature-settings: 'pnum' on, 'lnum' on;
-  color: ${p=>p.lvl === 1 ? '#FFFFFF' : '#2285EE'};
+  color: ${p=>p.lvl > 0 ? '#FFFFFF' : '#2285EE'};
   user-select: none;
   text-align: left;
   display: flex;
@@ -273,7 +273,7 @@ const CustomDrawer = styled.div` {
   width: ${p=>p.open ? '260px' : '72px'};
   height: ${document.documentElement.clientHeight}px;
   z-index: 51;
-  background-color: ${p=>p.lvl === 1 ? '#2F363A' : '#FFFFFF'};
+  background-color: ${p=>p.lvl > 0 ? '#2F363A' : '#FFFFFF'};
   display: block;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
   animation: ${p=>p.open ? openDrawerAnim : closeDrawerAnim} 0.2s linear both;

@@ -14,7 +14,8 @@ class FeedBack extends React.PureComponent {
     activeTab: 0,
     textOpenMessage: '',
     chats: [],
-    createModal: false
+    createModal: false,
+    admin: false
   }
 
   onChangeTabs = (id) => () => {
@@ -26,7 +27,10 @@ class FeedBack extends React.PureComponent {
   sendMessage = () => {
     const { textOpenMessage, activeTab, chats } = this.state
     const { socket } = this.context
-    socket.emit('sendMessageToChat', {chat: chats[activeTab].id, text: textOpenMessage, date: +new Date()})
+    if (textOpenMessage.replace(/\s/g, '') !== '') {
+      socket.emit('sendMessageToChat', {chat: chats[activeTab].id, text: textOpenMessage, date: +new Date()})
+      this.setState({ textOpenMessage: '' })
+    }
   }
 
   componentDidMount = async () => {
@@ -38,33 +42,32 @@ class FeedBack extends React.PureComponent {
       chats.forEach(i => {
         if (!i.msg) i.msg = data.message.filter(j => j.feedback_id === i.id)
       })
-      this.setState({ chats: chats, textOpenMessage: '', createModal: false })
+      this.setState({ chats: chats, createModal: false, admin: data.admin })
       if (chats[0].msg.length > 0 && this.message) this.message.scrollTo(0, 10000000)
     })
     await socket.on('getNewMessage', (data) => {
       let chats = [...this.state.chats]
       chats.forEach(i => { if (i.id === data.chat) i.msg.push(data) }) 
-      this.setState({ chats: chats, textOpenMessage: '' })
+      this.setState({ chats: chats })
       if (chats[this.state.activeTab].msg.length > 0 && this.message) this.message.scrollTo(0, 10000000)
     })
+    await socket.on('checkChatsCount', () => socket.emit('getChatList', '') )
   }
 
   render () {
     const { drawer } = this.props
-    const { activeTab, chats, textOpenMessage, createModal } = this.state
+    const { activeTab, chats, textOpenMessage, createModal, admin } = this.state
     return (
       <Body drawer={drawer}>
         {createModal && <NewModalChats onClose={() => this.setState({ createModal: false})} socket={this.context.socket} />}
         <Header>
           <SendTab>
-            <StyleSend>
-              <Send active={true} />
-            </StyleSend>
-            <TextSendTab>Сообщения</TextSendTab>
+            <TextSendTab>Обращения</TextSendTab>
+            <CountSendTab>{chats.length}</CountSendTab>
           </SendTab>
-          <CreateTicket onClick={() => this.setState({ createModal: true })}>
+          {!admin && <CreateTicket onClick={() => this.setState({ createModal: true })}>
             <CreateTicketIcon />
-          </CreateTicket>
+          </CreateTicket>}
         </Header>
         {!Boolean(chats.length) && <NoMessage />}
         {Boolean(chats.length) && <BodyTickets>
@@ -81,11 +84,11 @@ class FeedBack extends React.PureComponent {
             </ListTicket>
             <LineTickets />
             <HeaderTicket>
-              <StyledAvatar>КР</StyledAvatar>
-              <HeaderName>Команда разработчиков</HeaderName>
+              <StyledAvatar>{admin ? `${chats[activeTab].surname[0]}${chats[activeTab].name[0]}` : 'КР'}</StyledAvatar>
+              <HeaderName>{admin ? `${chats[activeTab].surname} ${chats[activeTab].name}` : 'Команда разработчиков'}</HeaderName>
             </HeaderTicket>
             <MessagesTicket container spacing={1} ref={message => this.message = message}>
-              <MessageBodyPlace chats={chats} activeTab={activeTab} />              
+              <MessageBodyPlace chats={chats} activeTab={activeTab} lvl={this.props.level.level_id}/>              
             </MessagesTicket>
             <SendMessage>
               {!chats[activeTab].close && <StyleTextField 
@@ -133,6 +136,31 @@ const LockOutlinedIcon = styled(LockOutlined)` && {
   color: ${p=>p.active ? '#2285EE' : '#072D57'};
 }`
 
+const CountSendTab = styled.span`{
+  position: absolute;
+  left: 103px;
+  top: 10px;
+  min-width: 30px;
+  max-width: 35px;
+  height: 20px
+  background: #2285EE;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  font-feature-settings: 'pnum' on, 'lnum' on;
+  color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}`
 
 const TitleList = styled.span`{
   position: absolute;
@@ -274,38 +302,36 @@ const CreateTicket = styled.div`{
   right: 0px;
 }`
 
-const StyleSend = styled.span`{
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  left: 24px;
-  top: 20px;
-}`
-
 const TextSendTab = styled.span`{
   position: absolute;
-  width: 106px;
-  height: 19px;
-  left: 56px;
-  top: 22px;
+  width: 100px;
+  height: 18px;
+  left: 16px;
+  top: 11px;
   font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 19px;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
   font-feature-settings: 'pnum' on, 'lnum' on;
-  text-align: left;
+  color: #2285EE;
+  flex: none;
+  order: 0;
+  align-self: center;
 }`
 
 const SendTab = styled.span`{
   position: absolute;
-  width: 186px;
-  height: 63px;
-  left: 0px;
-  top: 0px;
-  border-bottom: 2px solid #2285EE;
+  width: 149px;
+  height: 40px;
+  left: 16px;
+  top: 12px;
   color: #2285EE;
-  cursor: pointer;
+  cursor: default;
   user-select: none;
+  background: #E9F3FD;
+  border-radius: 4px;
 }`
 
 const openDrawer = keyframes`

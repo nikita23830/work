@@ -145,8 +145,8 @@ const StyleNotif = styled.span` && {
 }`;
 
 const StyleAvatar = styled(Avatar)` && {
-  background: ${p=>p.lvl === 1 ? '#2285EE' : '#E9F3FD'};
-  color: ${p=>p.lvl === 1 ? '#fff' : '#2285EE'};
+  background: ${p=>p.lvl > 0 ? '#2285EE' : '#E9F3FD'};
+  color: ${p=>p.lvl > 0 ? '#fff' : '#2285EE'};
   width: 40px;
   height: 40px;
   cursor: pointer;
@@ -198,7 +198,7 @@ const PageName = styled.span`{
   font-size: 18px;
   line-height: 25px;
   font-feature-settings: 'pnum' on, 'lnum' on;
-  color: ${p=>p.lvl === 1 ? '#fff' : '#072D57'};
+  color: ${p=>p.lvl > 0 ? '#fff' : '#072D57'};
   position: absolute;
   width: 276px;
   left: ${p=>p.drawer ? '270px' : '80px'};
@@ -218,7 +218,7 @@ const CustomGrid = styled(Grid)` && {
 }`;
 
 const CustomAppBar = styled(AppBar)` && {
-  background: ${p=>p.lvl === 1 ? '#2F363A' : '#FFFFFF'};
+  background: ${p=>p.lvl > 0 ? '#2F363A' : '#FFFFFF'};
 }`;
 
 const CustomBreadcrumbs = styled(Breadcrumbs)` && {

@@ -2,12 +2,12 @@ import React from 'react'
 import styled from 'styled-components'
 import { Grid } from '@material-ui/core'
 
-export const MessageBodyPlace = ({ chats, activeTab }) => (
+export const MessageBodyPlace = ({ chats, activeTab, lvl }) => (
     <>{chats[activeTab].msg.map(i => {
         let date = new Date(parseInt(i.date, 10))
         return (
-          <Message toMe={Boolean(i.sender)} item xs={12} sm={12}>
-            <MessageBody toMe={Boolean(i.sender)}>
+          <Message toMe={lvl === 2 ? Boolean(i.sender-1) : Boolean(i.sender)} item xs={12} sm={12}>
+            <MessageBody toMe={lvl === 2 ? Boolean(i.sender-1) : Boolean(i.sender)}>
               {i.text}
             </MessageBody>
             <MessageTime>
