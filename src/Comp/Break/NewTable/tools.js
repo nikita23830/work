@@ -19,8 +19,8 @@ export const setTable = (data, people_id) => {
       let rule_hour_temp = rule_hour.indexOf( timing_zone_temp ) // есть ли текущий час в правилах
       result[i].key = global_rule.p === 1 && result[i].data.length >= global_rule.d ? 2 : result[i].key // проверка на глобал правило
       result[i].key = rule_hour_temp !== -1 && result[i].data.length >= rule_hour_data[rule_hour_temp] ? 2 : result[i].key // проверка на правило по часам
-      result[i].key = result[i].data.filter(j => j.people_id === people_id).length > 0 ? 1 : result[i].key
-      result[i].key = data.dept === 1 && result[i].data.filter(j => j.start_end === 1).length > 0 ? 2 : result[i].key
+      result[i].key = result[i].data.filter(j => j.people_id === people_id).length > 0 ? 1 : result[i].key // проверка на мой
+      result[i].key = data.dept === 1 && result[i].key !== 1 && result[i].data.filter(j => j.start_end === 1).length > 0 ? 2 : result[i].key // 1C
   })
     // 0 - свободной, 1 - мое, 2 - занято
   return result
