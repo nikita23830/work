@@ -168,8 +168,8 @@ const CollapsedGrid = styled(Grid)` && {
 const CustomVector = styled.span`{
   position: absolute;
   width: 12px;
-  height: 6px;
-  top: 12px;
+  height: 20px;
+  top: 9px;
   right: 21px;
 }`
 
