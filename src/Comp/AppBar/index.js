@@ -17,13 +17,14 @@ import { Search, Add, Notifications, NotificationsOff } from '@material-ui/icons
 import styled, { keyframes } from 'styled-components'
 import { Notif } from 'Comp/AppBar/svg'
 import { PAGES } from 'Comp/NewMenu/index'
-
+import { withRouter } from 'react-router-dom'
 
 class DefAppBar extends React.PureComponent {
 
   state = {
     notif: true,
-    anchorMenu: null
+    anchorMenu: null,
+    searchText: ''
   }
 
   onChangeNotif = () => this.setState({ notif: !this.state.notif })
@@ -31,16 +32,21 @@ class DefAppBar extends React.PureComponent {
   onMenuOpen = (e) => this.setState({ anchorMenu: e.currentTarget })
   onMenuClose = () => this.setState({ anchorMenu: null })
 
-  onSearch = (e) =>  {
-    console.log('Тут будет функция поиска по фразе: ', e.target.value)
+  onSearch = () =>  {
+    const { history } = this.props
+    const { searchText } = this.state
+    if (searchText.replace(/\s/g, '') !== '') {
+      history.push(`/search?${searchText}`)
+      this.setState({ searchText: '' })
+    }
   }
 
   render() {
     const { openDrawer, onExit, onChangePage, page, drawer, level, onOpenNews, people_name } = this.props
-    const { notif, anchorMenu } = this.state
+    const { notif, anchorMenu, searchText } = this.state
     const LEVEL_NEWS = level.news_lvl // поправить как внесу поправки в БД
     let currentPage = PAGES.filter(i => i.link === page.pathname)[0] && PAGES.filter(i => i.link === page.pathname)[0].name
-    if (!currentPage) currentPage = page.pathname === '/' ? 'Новости' : '404 Not Found'
+    if (!currentPage) currentPage = page.pathname === '/' ? 'Новости' : page.pathname === '/search' ? 'Поиск' : '404 Not Found'
     return (
       <CustomAppBar position="static" lvl={level.level_id}>
         <CustomToolbar>
@@ -57,7 +63,9 @@ class DefAppBar extends React.PureComponent {
                 <Search />
               </InputAdornment>
             }
-            onKeyPress={e=> e.key === 'Enter' ? this.onSearch(e) : ''}
+            value={searchText}
+            onChange={e => this.setState({ searchText: e.target.value })}
+            onKeyPress={e=> e.key === 'Enter' ? this.onSearch() : ''}
           />
           {LEVEL_NEWS == 2 && <StyleFab color='primary' size='small' onClick={onOpenNews}>
             <Add />
@@ -237,4 +245,4 @@ const CustomToolbar = styled(Toolbar)` && {
   position: relative;
 }`
 
-export default DefAppBar
+export default withRouter(DefAppBar)

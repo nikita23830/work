@@ -4,8 +4,8 @@ import { Grid } from '@material-ui/core'
 import { FavoriteBorderOutlined, Favorite, DeleteForeverOutlined } from '@material-ui/icons'
 
 
-export const OpenNewsRead = ({ URL_SERVER, LEVEL_NEWS, news, imgReadNews, like, readNews, people_id, installLike, deleteLike }) => {
-    let myLike = like[readNews] ? like[readNews].filter(i => i.people_id === people_id) : []
+export const OpenNewsRead = ({ URL_SERVER, LEVEL_NEWS, news, imgReadNews, like, readNews, people_id, installLike, deleteLike, dissableLike }) => {
+    let myLike = !dissableLike && like[readNews] ? like[readNews].filter(i => i.people_id === people_id) : []
     return (
         <Root>
             <CustomGrid container spacing={3}>
@@ -19,7 +19,7 @@ export const OpenNewsRead = ({ URL_SERVER, LEVEL_NEWS, news, imgReadNews, like, 
                 ))}
                 <TextNews item xs={12} sm={12}>{news.text}</TextNews>
             </CustomGrid>
-            {news.islike && <>
+            {!dissableLike && news.islike && <>
                 {Boolean(myLike.length) ? <LikeInstall color='secondary' onClick={deleteLike(news.id)} /> : <LikeIcon onClick={installLike(news.id)}/>}
             
                 <LikeCount>{like[readNews] ? like[readNews].length : 0}</LikeCount>

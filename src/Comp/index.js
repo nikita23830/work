@@ -50,7 +50,7 @@ class Main extends Component {
   onExit = () => {
     const { cookies } = this.props
     cookies.remove('token')
-    window.location.reload()
+    this.setState({ needAuth: true })
   }
 
   async componentWillMount() {
