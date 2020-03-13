@@ -63,7 +63,7 @@ class Administartion extends React.Component {
     const { level, drawer } = this.props
     if (level[0] === 0) return (<Forbidden {...this.props}/>)
     else return (
-      <Root drawer={drawer}>
+      <Root drawer={drawer} level={level.level_id}>
         <RequestCard>
           <ReqCard
             socket={this.context.socket}
@@ -85,32 +85,34 @@ export default withSnackbar(Administartion)
 
 const openDrawer = keyframes`
   0% {
-    width: ${document.documentElement.clientWidth - 80}px;
+    width: ${document.documentElement.clientWidth - 72}px;
   }
   100% {
-    width: ${document.documentElement.clientWidth - 270}px;
+    width: ${document.documentElement.clientWidth - 260}px;
   }
 `;
 
 const closeDrawer = keyframes`
   0% {
-    width: ${document.documentElement.clientWidth - 270}px;
+    width: ${document.documentElement.clientWidth - 260}px;
   }
   100% {
-    width: ${document.documentElement.clientWidth - 80}px;
+    width: ${document.documentElement.clientWidth - 72}px;
   }
 `;
 
 const Root = styled.div` {
   animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
-  height: ${document.documentElement.clientHeight - 95}px;
+  height: ${document.documentElement.clientHeight - 65}px;
   position: absolute;
-  top: 70px;
+  top: 64px;
   right: 0px;
+  background: ${p=>p.level === 1 ? '#E5E5E5' : '#222'};
 }`
 
 const RequestCard = styled(Card)` && {
   width: 480px;
   height: ${document.documentElement.clientHeight - 95}px;
   padding: 10px;
+  margin: 5px 0 0 5px;
 }`

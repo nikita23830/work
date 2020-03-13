@@ -55,12 +55,12 @@ class FeedBack extends React.PureComponent {
   }
 
   render () {
-    const { drawer } = this.props
+    const { drawer, level } = this.props
     const { activeTab, chats, textOpenMessage, createModal, admin } = this.state
     return (
-      <Body drawer={drawer}>
+      <Body drawer={drawer} level={level.level_id}>
         {createModal && <NewModalChats onClose={() => this.setState({ createModal: false})} socket={this.context.socket} />}
-        <Header>
+        <Header level={level.level_id}>
           <SendTab>
             <TextSendTab>Обращения</TextSendTab>
             <CountSendTab>{chats.length}</CountSendTab>
@@ -357,7 +357,7 @@ const Body = styled.div`{
   height: ${document.documentElement.scrollHeight - 64}px;
   right: 0px;
   top: 64px;
-  background: #E5E5E5;
+  background: ${p=>p.level === 0 ? '#E5E5E5' : '#222'};
   animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
   display: flex;
   justify-content: center;
@@ -370,7 +370,7 @@ const Header = styled.div`{
   height: 65px;
   left: 0px;
   top: 1px;
-  background: #FFFFFF;
+  background: ${p=>p.level === 0 ? '#ffffff' : '#2F363A'};
 }`
 
 FeedBack.contextType = SocketConsumer;

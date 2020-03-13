@@ -95,7 +95,7 @@ class NewTableBreak extends React.PureComponent{
     }
 
     render () {
-        const { drawer } = this.props
+        const { drawer, level } = this.props
         const { date, activeTab, table, loader, variantTime, modalTime, blockedTime, myBreak } = this.state
         let dateToCalendarDate = [addZero(date.getDate()), isDateMonth[date.getMonth()+1], date.getFullYear()]
         return (

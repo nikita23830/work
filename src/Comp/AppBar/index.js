@@ -68,7 +68,7 @@ class DefAppBar extends React.PureComponent {
             onKeyPress={e=> e.key === 'Enter' ? this.onSearch() : ''}
           />
           {LEVEL_NEWS == 2 && <StyleFab color='primary' size='small' onClick={onOpenNews}>
-            <Add />
+            <Add /> Новость
           </StyleFab>}
           <StyleNotif><Notif /></StyleNotif>
           <StyleAvatar sizes='small' onClick={this.onMenuOpen} lvl={level.level_id}>{people_name[1].charAt(0)}{people_name[0].charAt(0)}</StyleAvatar>
@@ -129,19 +129,19 @@ const closeDrawerInput = keyframes`
 
 const openDrawerInputLevel = keyframes`
   0% {
-    width: ${document.documentElement.clientWidth - 564}px;
+    width: ${document.documentElement.clientWidth - 640}px;
   }
   100% {
-    width: ${document.documentElement.clientWidth - 754}px;
+    width: ${document.documentElement.clientWidth - 830}px;
   }
 `;
 
 const closeDrawerInputLevel = keyframes`
   0% {
-    width: ${document.documentElement.clientWidth - 754}px;
+    width: ${document.documentElement.clientWidth - 830}px;
   }
   100% {
-    width: ${document.documentElement.clientWidth - 564}px;
+    width: ${document.documentElement.clientWidth - 640}px;
   }
 `;
 
@@ -163,12 +163,22 @@ const StyleAvatar = styled(Avatar)` && {
   right: 24px;
 }`;
 
-const StyleFab = styled(Fab)` && {
+const StyleFab = styled(Button)` && {
   background: #2285EE;
   position: absolute;
   top: 12px;
   right: 120px;
+  height: 40px;
+  width: 120px;
   box-shadow: none;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  font-feature-settings: 'pnum' on, 'lnum' on;
+  color: #FFFFFF;
+  text-transform: none;
 } &&:hover {
   background: #2285EE;
   box-shadow: none;
@@ -182,7 +192,7 @@ const StyleInput = styled(Input)` && {
   border-bottom: none;
   position: absolute;
   top: 12px;
-  right: ${p=>p.level !== 2 ? 125 : 184}px;
+  right: ${p=>p.level !== 2 ? 125 : 260}px;
   animation: ${p=>p.drawer ? p.level === 2 ? openDrawerInputLevel : openDrawerInput : p.level === 2 ? closeDrawerInputLevel : closeDrawerInput} 0.2s linear both;
 } &&:before {
   border-bottom: none;

@@ -96,7 +96,7 @@ class NewNews extends React.Component {
       <>
         {openNews && <NewPost onCloseNews={onCloseNews} people_name={people_name} />}
 
-        <RootNews drawer={drawer}>
+        <RootNews drawer={drawer} level={LEVEL_NEWS}>
           <FirstModal URL_SERVER={URL_SERVER} newUser={newUser} onNewUser={this.onNewUser} />
           {!Boolean(news.length) && <NotNews>
             <CircleNews level={LEVEL_NEWS}/>
@@ -181,10 +181,10 @@ const NotNews = styled.div` {
 
 const RootNews = styled.div` {
   position: absolute;
-  top: 65px;
+  top: 64px;
   right: 0px;
   width: ${p=>p.drawer ? document.documentElement.clientWidth - 260 : document.documentElement.clientWidth - 72}px;
   animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
   height: ${document.documentElement.clientHeight - 65}px;
-  background: #E5E5E5;
+  background: ${p=>p.level === 1 ? '#E5E5E5' : '#222'};
 }`

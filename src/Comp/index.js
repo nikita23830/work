@@ -29,45 +29,42 @@ class Main extends Component {
     this.setState({ openNews: true })
     this.props.history.push('/news')
   }
+
   onCloseNews = () => this.setState({ openNews: false })
 
   openDrawer = () => this.setState({ drawer: !this.state.drawer })
 
-  onChangePage = (index) => () => {
-    this.setState({ prev_page: this.state.page, page: index })
-	  localStorage.setItem('activePage', index)
-  }
-
   onCheckAuth = async (uid, login) => {
-    const { cookies, socket } = this.props
+    const { cookies, socket, history } = this.props
     await cookies.set('token', uid, { path: '/' });
     await this.setState({ needAuth: false })
+    history.push('/news')
     await socket.emit('addLogin', {type: 'login', login: login})
   }
 
   onBackPage = () => this.setState({ page: this.state.prev_page })
 
   onExit = () => {
-    const { cookies } = this.props
+    const { cookies, history } = this.props
     cookies.remove('token')
-    this.setState({ needAuth: true })
+    history.push('/auth')
   }
 
   async componentWillMount() {
-    const { cookies, socket } = this.props
+    const { cookies, location } = this.props
     const uid = cookies.get('token')
     if (uid) this.setState({ needAuth: false })
-    let page = localStorage.getItem('activePage')
-	  this.setState({ page: page === null ? 0 : +page })
   }
 
   async componentDidMount() {
     const { needAuth } = this.state
-    const { cookies, socket, URL_SERVER } = this.props
+    const { cookies, socket, URL_SERVER, history, location } = this.props
     const uid = cookies.get('token')
     await socket.emit('newCon', '')
     if (!needAuth) await socket.emit('addLogin', {type: 'uid', uid: uid})
+    else history.push('/auth')
     await socket.on('addLogin', (data) => {
+      if (location.pathname === '/auth') history.push('/news')
       this.setState({ login: data.login, people_id: data.people_id, loader: false, people_name: [data.name, data.surname] })
     })
     await socket.on('checkLevel', (data) => {
@@ -89,9 +86,10 @@ class Main extends Component {
   render () {
     const { openDialogTable, page, drawer, needAuth, loader, people_id, level, openNews, people_name } = this.state
     const { socket, location } = this.props
-    if (needAuth) return (
-      <Auth socket={socket} submit={this.onCheckAuth}/>
-    )
+
+    if (location.pathname === '/auth') 
+      return <Auth socket={socket} submit={this.onCheckAuth} page={location} />
+
     else if (loader) return (
       <Loader />
     )

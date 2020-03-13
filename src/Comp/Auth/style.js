@@ -78,8 +78,8 @@ export const CustomLink = styled(Link)` && {
 
 export const DivSvg = styled.div`{
   position: absolute;
-  width: 552px;
-  height: 670px;
+  width: 830px;
+  height: 552px;
   left: 50%;
   transform: translate(-50%, -50%);
   top: 50%;
@@ -205,14 +205,14 @@ export const LogoAndName = styled.div` {
 }`
 
 export const CustomGrid = styled(Grid)` && {
-  height: ${document.documentElement.clientHeight-20}px;
+  height: ${document.documentElement.clientHeight}px;
   width: ${p=>p.item ? '50%' : '100%'};
   background-color: ${p=>p.left ? '#F5F8FF' : '#fff'};
   position: relative;
   overflow-x: none;
   overflow-y: none;
   padding: 0px;
-  max-height: ${document.documentElement.clientHeight-20}px;
+  max-height: ${document.documentElement.clientHeight}px;
 }`
 
 export const StyleAuthCard = styled(Card)` && {

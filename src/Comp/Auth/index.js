@@ -112,7 +112,7 @@ class Auth extends React.Component {
       if (!data.true) this.setState({ errorAuth: true })
       else {
         if (data.actual === 0) { this.setState({ notActual: true }); return 0; }
-        enqueueSnackbar(`Успешная авторизация: ${data.surname} ${data.name}. Отдел: ${dept[data.dept]}`, {variant: 'success',autoHideDuration: 5000})
+        enqueueSnackbar(`Успешная авторизация: ${data.surname} ${data.name}. Отдел: ${dept[data.dept]}`, {variant: 'success',autoHideDuration: 5000, preventDuplicate: true})
         submit(data.uid, this.state.login)
       }
     })
