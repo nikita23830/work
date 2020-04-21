@@ -49,7 +49,7 @@ class Search extends React.Component {
         const { URL_SERVER } = this.context
         const { news, img, read, empty, loader } = this.state
         return (
-            <RootNews drawer={drawer}>
+            <RootNews drawer={drawer} level={level.level_id}>
                 {loader && <Loader><Circle1 /><Circle2 /><Circle3 /><Circle4 /></Loader>}
                 {/*!Boolean(news.length) && <NotNews>
                     <CircleNews level={LEVEL_NEWS}/>
@@ -199,7 +199,7 @@ const RootNews = styled.div`{
     width: ${p=>p.drawer ? document.documentElement.clientWidth - 260 : document.documentElement.clientWidth - 72}px;
     animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
     height: ${document.documentElement.clientHeight - 65}px;
-    background: #E5E5E5;
+    background: ${p=>p.level === 0 ? '#ffffff' : '#2F363A'};
 }`
 
 Search.contextType = SocketConsumer;

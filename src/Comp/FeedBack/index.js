@@ -7,6 +7,7 @@ import { Grid, Avatar, Input, InputAdornment } from '@material-ui/core'
 import { LockOutlined } from '@material-ui/icons'
 import { MessageBodyPlace } from 'Comp/FeedBack/MessageBody';
 import NewModalChats from 'Comp/FeedBack/New'
+import { withRouter } from 'react-router-dom'
 
 class FeedBack extends React.PureComponent {
 
@@ -19,8 +20,10 @@ class FeedBack extends React.PureComponent {
   }
 
   onChangeTabs = (id) => () => {
-    const { chats, activeTab } = this.state
+    const { chats } = this.state
+    const { history } = this.props
     this.setState({ activeTab: id })
+    history.push(`/feedback?chats=${chats[id].id}`)
     if (chats[id].msg.length > 0 && this.message) this.message.scrollTo(0, 10000000)
   }
 
@@ -35,6 +38,7 @@ class FeedBack extends React.PureComponent {
 
   componentDidMount = async () => {
     const { socket } = this.context
+    const { location } = this.props
     await socket.emit('getChatList', '');
     await socket.on('getChatList', (data) => {
       if (data.empty) { return 0; }
@@ -42,7 +46,14 @@ class FeedBack extends React.PureComponent {
       chats.forEach(i => {
         if (!i.msg) i.msg = data.message.filter(j => j.feedback_id === i.id)
       })
-      this.setState({ chats: chats, createModal: false, admin: data.admin })
+
+      let activeChats = 0
+      let urlChats = parseInt(getAllUrlParams().chats, 10)
+      chats.forEach((i, ind) => {
+        if (urlChats && i.id === urlChats) activeChats = ind
+      })
+
+      this.setState({ chats: chats, createModal: false, admin: data.admin, activeTab: activeChats })
       if (chats[0].msg.length > 0 && this.message) this.message.scrollTo(0, 10000000)
     })
     await socket.on('getNewMessage', (data) => {
@@ -55,7 +66,7 @@ class FeedBack extends React.PureComponent {
   }
 
   render () {
-    const { drawer, level } = this.props
+    const { drawer, level, history } = this.props
     const { activeTab, chats, textOpenMessage, createModal, admin } = this.state
     return (
       <Body drawer={drawer} level={level.level_id}>
@@ -373,5 +384,40 @@ const Header = styled.div`{
   background: ${p=>p.level === 0 ? '#ffffff' : '#2F363A'};
 }`
 
+const getAllUrlParams = (url) => {
+  let queryString = url ? url.split('?')[1] : window.location.search.slice(1);
+  let obj = {};
+  if (queryString) {
+    queryString = queryString.split('#')[0];
+    let arr = queryString.split('&');
+    arr.forEach((i,ind) => {
+      let a = i.split('=');
+      let paramNum = undefined;
+      let paramName = a[0].replace(/\[\d*\]/, function(v) {
+        paramNum = v.slice(1,-1);
+        return '';
+      });
+      let paramValue = typeof(a[1])==='undefined' ? true : a[1];
+      paramName = paramName.toLowerCase();
+      paramValue = paramValue.toLowerCase();
+      if (obj[paramName]) {
+        if (typeof obj[paramName] === 'string') {
+          obj[paramName] = [obj[paramName]];
+        }
+        if (typeof paramNum === 'undefined') {
+          obj[paramName].push(paramValue);
+        }
+        else {
+          obj[paramName][paramNum] = paramValue;
+        }
+      }
+      else {
+        obj[paramName] = paramValue;
+      }
+    })
+  }
+  return obj;
+}
+
 FeedBack.contextType = SocketConsumer;
-export default withSnackbar(FeedBack)
+export default withRouter(FeedBack)
