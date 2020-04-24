@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components'
 import { SocketConsumer } from 'ContextSocket'
 import { withSnackbar } from 'notistack';
 import { Send, NoMessage, MailBox, DeleteIcon, CreateTicketIcon } from 'Comp/FeedBack/Svg'
-import { Grid, Avatar, Input, InputAdornment } from '@material-ui/core'
+import { Grid, Avatar, Input, InputAdornment, Button } from '@material-ui/core'
 import { LockOutlined } from '@material-ui/icons'
 import { MessageBodyPlace } from 'Comp/FeedBack/MessageBody';
 import NewModalChats from 'Comp/FeedBack/New'
@@ -36,6 +36,12 @@ class FeedBack extends React.PureComponent {
     }
   }
 
+  changeStatusTicket = () => {
+    const { chats, activeTab } = this.state
+    const { socket } = this.context
+    socket.emit('changeStatusTicket', chats[activeTab])
+  }
+
   componentDidMount = async () => {
     const { socket } = this.context
     const { location } = this.props
@@ -63,6 +69,15 @@ class FeedBack extends React.PureComponent {
       if (chats[this.state.activeTab].msg.length > 0 && this.message) this.message.scrollTo(0, 10000000)
     })
     await socket.on('checkChatsCount', () => socket.emit('getChatList', '') )
+    await socket.on('changeStatusTicket', (data) => {
+      let { chats } = this.state
+      let newChats = []
+      chats.map((i, index) => {
+        if (i.id !== data.id) newChats.push(chats[index])
+        else if (!data.delete) newChats[index] = {...chats[index], close: data.newState}
+      })
+      this.setState({ chats: newChats })
+    })
   }
 
   render () {
@@ -97,6 +112,7 @@ class FeedBack extends React.PureComponent {
             <HeaderTicket>
               <StyledAvatar>{admin ? `${chats[activeTab].surname[0]}${chats[activeTab].name[0]}` : 'КР'}</StyledAvatar>
               <HeaderName>{admin ? `${chats[activeTab].surname} ${chats[activeTab].name}` : 'Команда разработчиков'}</HeaderName>
+              <CloseTicket onClick={this.changeStatusTicket}>{!chats[activeTab].close ? 'Закрыть обращение' : 'Открыть обращение'}</CloseTicket>
             </HeaderTicket>
             <MessagesTicket container spacing={1} ref={message => this.message = message}>
               <MessageBodyPlace chats={chats} activeTab={activeTab} lvl={this.props.level.level_id}/>              
@@ -122,6 +138,20 @@ class FeedBack extends React.PureComponent {
     )
   }
 }
+
+const CloseTicket = styled(Button)` && {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: #2285EE;
+  color: #fff;
+  width: 200px;
+  padding: 9px;
+  text-transform: none;
+} &&:hover {
+  background: #2285EE;
+  color: #fff;
+}`
 
 const CloseText = styled.span`{
   position: absolute;
