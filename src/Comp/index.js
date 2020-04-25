@@ -132,8 +132,8 @@ class Main extends Component {
 
 const StyleMainDiv = styled.div` && {
   min-width: 600px;
-  height: 100%;
-  margin-top: 5px;
+  height: ${document.documentElement.clientHeight}px;
+  background: #F0F4F7;
 }`
 
 export default withCookies(Main)

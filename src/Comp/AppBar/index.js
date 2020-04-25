@@ -42,7 +42,7 @@ class DefAppBar extends React.PureComponent {
   }
 
   render() {
-    const { openDrawer, onExit, onChangePage, page, drawer, level, onOpenNews, people_name } = this.props
+    const { openDrawer, onExit, onChangePage, page, drawer, level, onOpenNews, people_name, history } = this.props
     const { notif, anchorMenu, searchText } = this.state
     const LEVEL_NEWS = level.news_lvl // поправить как внесу поправки в БД
     let currentPage = PAGES.filter(i => i.link === page.pathname)[0] && PAGES.filter(i => i.link === page.pathname)[0].name
@@ -82,7 +82,7 @@ class DefAppBar extends React.PureComponent {
           open={Boolean(anchorMenu)}
           onClose={this.onMenuClose}
         >
-          <MenuItem>Личный кабинет</MenuItem>
+          <MenuItem onClick={() => { history.push('/lk'); this.setState({ anchorMenu: undefined })}}>Личный кабинет</MenuItem>
           <MenuItem onClick={onExit}>Выход</MenuItem>
         </Menu>
 

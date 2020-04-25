@@ -117,6 +117,7 @@ class Auth extends React.Component {
       }
     })
     await socket.on('send_error', (data) => { // прием ошибок
+      console.log('111')
       if (data.name) enqueueSnackbar(`${data.severity}: ${data.routine}. Code: ${data.code}`, {variant: data.name,autoHideDuration: 6000})
       else enqueueSnackbar(data, {variant: 'error',autoHideDuration: 6000})
       this.setState({ loader: false })

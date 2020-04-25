@@ -12,6 +12,7 @@ export const PAGES = [
     multi: false,
     link: '/news',
     level: 'news_lvl',
+    show: true,
     svg: <NewsSvg />
   },
   {
@@ -19,6 +20,7 @@ export const PAGES = [
     multi: true,
     level: 'break_lvl',
     link: '/break',
+    show: true,
     svg: <BreakSvg />,
     page: [
       {
@@ -26,6 +28,7 @@ export const PAGES = [
         name: 'Главная',
         multi: false,
         link: '/break',
+        show: true,
         level: 1
       },
       {
@@ -33,6 +36,7 @@ export const PAGES = [
         name: 'Статистика',
         multi: false,
         link: '/break?stat',
+        show: true,
         level: 2
       },
       {
@@ -40,6 +44,7 @@ export const PAGES = [
         name: 'Правила',
         multi: false,
         link: '/break?rule',
+        show: true,
         level: 2
       }
     ]
@@ -50,6 +55,7 @@ export const PAGES = [
     multi: false,
     link: '/administration',
     level: 'manager',
+    show: true,
     svg: <SettingSvg />
   },
   {
@@ -57,8 +63,17 @@ export const PAGES = [
     name: 'Обратная связь',
     multi: false,
     link: '/feedback',
+    show: true,
     svg: <FeedBackSvg />
   },
+  {
+    id: 22,
+    name: 'Личный кабинет',
+    multi: false,
+    link: '/lk',
+    show: false,
+    svg: <></>
+  }
 ]
 
 class NewMenu extends React.PureComponent{
@@ -92,7 +107,7 @@ class NewMenu extends React.PureComponent{
           {PAGES.map((i, ind) => {
             let collapseBreak = (drawer && i.name === 'Перерывы' && level.break_lvl === 2) ? true : false
             let visible = i.level === 'manager' ? Boolean(level[i.level]) ? true : false : true
-            if (visible) return (
+            if (visible && i.show) return (
               <CustomGrid item xs={12} sm={12} drawer={drawer} open={collapse[ind]} col={i.multi ? i.page.length-1 : 1}>
                 <ClickedZone onClick={collapseBreak && this.openCollapse(ind)} drawer={drawer} to={!collapseBreak && i.link}>
                   <CustomMenuIcon>
