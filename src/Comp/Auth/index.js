@@ -34,8 +34,8 @@ class Auth extends React.Component {
     manager: [],
     regist: {
       dept: '',
-      manager: '',
-      chart: ''
+      manager: undefined,
+      chart: undefined
     },
     errorRegist: {},
     notActual: false,

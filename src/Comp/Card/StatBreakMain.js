@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { PureComponent } from 'react'
 import styled, { keyframes } from 'styled-components'
 import {Card, CardContent, CardActions, Typography, Button} from '@material-ui/core'
 import { BarChart } from "reaviz";
@@ -7,7 +7,7 @@ import {
   Legend, LabelList
 } from 'recharts';
 
-class MainPageDiagram extends Component {
+class MainPageDiagram extends PureComponent {
   state = {
     chartWidth: 0,
   }
@@ -17,9 +17,6 @@ class MainPageDiagram extends Component {
     return (
       <StyledCard ref={(card) => { this.card = card; }} drawer={drawer}>
         <CardContent>
-          <Typography variant="h5" component="h2">
-            Количество перерывов
-          </Typography> <br />
           <ComposedChart
             width={drawer ? document.documentElement.clientWidth - 305 : document.documentElement.clientWidth - 115}
             height={150}
@@ -98,7 +95,7 @@ const Styletext = styled.text` && {
 const StyledCard = styled(Card)` && {
   animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
   position: absolute;
-  top: 70px;
+  top: 10px;
   right: 5px;
 }`
 

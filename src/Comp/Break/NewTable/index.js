@@ -8,12 +8,14 @@ import { Circle1, Circle2, Circle3, Circle4 } from 'Comp/NewNews/svg'
 import { ModalBreak } from 'Comp/Break/NewTable/Modal'
 import { withSnackbar } from 'notistack';
 import MyBreak from 'Comp/Break/NewTable/MyBreak'
+import StatBreak from 'Comp/Break/StatBreak'
+import RuleBreak from 'Comp/Break/RuleBreak'
 
 class NewTableBreak extends React.PureComponent{
 
     state = {
         date: new Date(),
-        activeTab: 0,
+        activeTab: ActiveTabs(this.props.page.search),
         loader: true,
         table: {},
         variantTime: 2,
@@ -23,7 +25,12 @@ class NewTableBreak extends React.PureComponent{
         myBreak: []
     }
 
-    onChangeTab = (id) => () => this.setState({ activeTab: id })
+    onChangeTab = (id) => () => {
+        const tabs = ['', '?my', '?stat', '?rule']
+        const { history } = this.props
+        history.push(`/break${tabs[id]}`)
+        this.setState({ activeTab: id })
+    }
 
     onNextDate = () => {
         const { date } = this.state
@@ -62,6 +69,7 @@ class NewTableBreak extends React.PureComponent{
 
     componentDidMount = async () => {
         const { enqueueSnackbar, people_id } = this.props
+        console.log(this.props)
         const { socket } = this.context
         await socket.emit('updateTable', undefined)
         socket.on('updateTable', (data) => {
@@ -123,11 +131,17 @@ class NewTableBreak extends React.PureComponent{
                         </VectorNextClicked>
                         <AllTab active={activeTab === 0} onClick={this.onChangeTab(0)}>Все</AllTab>
                         <MyTab active={activeTab === 1} onClick={this.onChangeTab(1)}>Мои перерывы</MyTab>
+
+                        <StatTab active={activeTab === 2} onClick={this.onChangeTab(2)}>Статистика</StatTab>
+                        <RuleTab active={activeTab === 3} onClick={this.onChangeTab(3)}>Правила</RuleTab>
+
                     </CalendarText>
                 </DivHead>
                 <DivBody>
                     {!Boolean(activeTab) && !loader && <AllBreak table={table} onClickedTime={this.onClickedTime} />}
                     {activeTab === 1 && !loader && <MyBreak myBreak={myBreak} date={date}/>}
+                    {activeTab === 2 && <StatBreak drawer={drawer} date={date} loader={loader}/>}
+                    {activeTab === 3 && <RuleBreak drawer={drawer} date={date} loader={loader}/>}
                 </DivBody>
             </Root>
         )
@@ -136,6 +150,15 @@ class NewTableBreak extends React.PureComponent{
 
 NewTableBreak.contextType = SocketConsumer;
 export default withSnackbar(NewTableBreak)
+
+const ActiveTabs = (page) => {
+    switch (page) {
+        case '?my': return 1;
+        case '?stat': return 2;
+        case '?rule': return 3;
+        default: return 0;
+    }
+}
 
 const animation = keyframes`
   0% {
@@ -157,7 +180,45 @@ const Loader = styled.div`{
     left: 50%;
     animation: ${animation} 3s linear infinite;
     z-index: 10
-  }`
+}`
+
+const RuleTab = styled.span`{
+    position: absolute;
+    width: 110px;
+    height: 62px;
+    left: 570px;
+    top: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 19px;
+    font-feature-settings: 'pnum' on, 'lnum' on;
+    color: ${p=>p.active ? '#2285EE' : '#9A9BAE'};
+    border-bottom: ${p=>p.active ? 2 : 0}px solid #2285EE;
+    cursor: pointer;
+}`
+
+const StatTab = styled.span`{
+    position: absolute;
+    width: 110px;
+    height: 62px;
+    left: 460px;
+    top: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 19px;
+    font-feature-settings: 'pnum' on, 'lnum' on;
+    color: ${p=>p.active ? '#2285EE' : '#9A9BAE'};
+    border-bottom: ${p=>p.active ? 2 : 0}px solid #2285EE;
+    cursor: pointer;
+}`
 
 const MyTab = styled.span`{
     position: absolute;

@@ -62,7 +62,7 @@ export const Registration = (props) => {
               onChange={e=>props.chandeDataRegist('dept', e.target.value)}
             >
               {listDept.map(i=>(
-                <MenuItem value={i.id}>{i.name}</MenuItem>
+                <MenuItem value={i.id}>{i.dept_name}</MenuItem>
               ))}
             </Select>
           </StyleFormControl>

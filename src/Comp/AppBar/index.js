@@ -1,19 +1,17 @@
 import React from 'react'
 import { AppBar,
   Toolbar,
-  IconButton,
   Button,
   Breadcrumbs,
   Link,
   Grid,
   Input,
   InputAdornment,
-  Fab,
   Avatar,
   MenuItem,
   Menu
 } from '@material-ui/core'
-import { Search, Add, Notifications, NotificationsOff } from '@material-ui/icons';
+import { Search, Add } from '@material-ui/icons';
 import styled, { keyframes } from 'styled-components'
 import { Notif } from 'Comp/AppBar/svg'
 import { PAGES } from 'Comp/NewMenu/index'
@@ -24,7 +22,7 @@ class DefAppBar extends React.PureComponent {
   state = {
     notif: true,
     anchorMenu: null,
-    searchText: ''
+    searchText: '',
   }
 
   onChangeNotif = () => this.setState({ notif: !this.state.notif })
@@ -42,8 +40,8 @@ class DefAppBar extends React.PureComponent {
   }
 
   render() {
-    const { openDrawer, onExit, onChangePage, page, drawer, level, onOpenNews, people_name, history } = this.props
-    const { notif, anchorMenu, searchText } = this.state
+    const { onExit, page, drawer, level, onOpenNews, people_name, history } = this.props
+    const { anchorMenu, searchText } = this.state
     const LEVEL_NEWS = level.news_lvl // поправить как внесу поправки в БД
     let currentPage = PAGES.filter(i => i.link === page.pathname)[0] && PAGES.filter(i => i.link === page.pathname)[0].name
     if (!currentPage) currentPage = page.pathname === '/' ? 'Новости' : page.pathname === '/search' ? 'Поиск' : '404 Not Found'

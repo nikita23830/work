@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 import StatBreakMain from 'Comp/Card/StatBreakMain'
@@ -8,7 +8,7 @@ import { SocketConsumer } from 'ContextSocket/index'
 import { withSnackbar } from 'notistack';
 import { TIMING_ZONE, TIMING } from 'Comp/Break/NewTable/tools'
 
-class StatBreak extends Component {
+class StatBreak extends React.PureComponent {
 
   state={
     list: [],
@@ -23,8 +23,8 @@ class StatBreak extends Component {
 
   async componentDidMount() {
     const { socket } = this.context
-    const { enqueueSnackbar } = this.props
-    socket.emit('fullListBreak', '')
+    const { enqueueSnackbar, date } = this.props
+    socket.emit('fullListBreak', +date)
 
     await socket.on('fullListBreak', (data) => {
       let result = getNormalArrayBreak(data.listbreak)
@@ -40,7 +40,8 @@ class StatBreak extends Component {
     })
 
     await socket.on('updateTable', (data) => {
-      socket.emit('fullListBreak', '')
+      socket.emit('fullListBreak', +this.props.date)
+      this.setState({ list: [] })
     })
 
     await socket.on('send_error', (data) => {
@@ -51,13 +52,13 @@ class StatBreak extends Component {
 
   render () {
     const { list, diag } = this.state
-    const { drawer } = this.props
+    const { drawer, loader } = this.props
     return (
       <>
         <StatBreakMain diag={diag} drawer={drawer} />
         <StyledDiv>
 
-          <StatBreakList list={list} delBreakWithListStat={this.delBreakWithListStat} drawer={drawer} />
+          {!loader && <StatBreakList list={list} delBreakWithListStat={this.delBreakWithListStat} drawer={drawer} />}
 
         </StyledDiv>
       </>
@@ -89,7 +90,7 @@ const getNormalArrayBreak = (data) => {
     switch (i.start_end) {
       case 0: { result[temp_index].array.push(i.timing_id); return 0; }
       case 1: { temp_index = result.length; result.push({start: i.timing_id, people: i.people_id, array: [i.timing_id]}); return 0; }
-      case 2: { result[temp_index].end = i.timing_id; result[temp_index].array.push(i.timing_id); return 0; }
+      case 2: { result[temp_index].end = i.timing_id+1; result[temp_index].array.push(i.timing_id); return 0; }
       case 3: { result.push({start: i.timing_id, people: i.people_id, end: i.timing_id, array: [i.timing_id]}); return 0; }
     }
   })
@@ -98,7 +99,7 @@ const getNormalArrayBreak = (data) => {
 
 const clearDiag = () => {
   let result = []
-  TIMING_ZONE.map((i, index) => {
+  TIMING_ZONE.map(i => {
     result.push({
       name: `${TIMING[i[0]][1]}:${addZero(TIMING[i[0]][2])}`,
       uv: 0

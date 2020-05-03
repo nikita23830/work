@@ -8,7 +8,7 @@ import { CircularProgress } from '@material-ui/core'
 import styled from 'styled-components'
 import { withSnackbar } from 'notistack';
 
-const URL_SERVER = 'http://localhost:4001'
+const URL_SERVER = 'http://192.168.31.232:4001'
 
 // const URL_SERVER = '10.254.4.41:4001' // 52.15.148.190
 const socket = socketIOClient(URL_SERVER)
@@ -28,7 +28,7 @@ class App extends React.Component {
       window.location.reload()
     })
     await socket.on('disconnect', (data) => {
-      console.log('Сервер остановлен!')
+      enqueueSnackbar('Потерено соединение с сервером', {variant: 'error'})
     })
   }
 
