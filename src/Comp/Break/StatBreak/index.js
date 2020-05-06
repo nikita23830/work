@@ -52,7 +52,8 @@ class StatBreak extends React.PureComponent {
 
   render () {
     const { list, diag } = this.state
-    const { drawer, loader } = this.props
+    const { drawer, loader, onChangeTab, level } = this.props
+    if (!Boolean(level)) onChangeTab(0)()
     return (
       <>
         <StatBreakMain diag={diag} drawer={drawer} />

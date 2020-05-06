@@ -10,23 +10,27 @@ import { withSnackbar } from 'notistack';
 import MyBreak from 'Comp/Break/NewTable/MyBreak'
 import StatBreak from 'Comp/Break/StatBreak'
 import RuleBreak from 'Comp/Break/RuleBreak'
+import ExchangeBreak from 'Comp/Break/exchange'
+import RequestExchange from 'Comp/Break/exchange/request'
 
 class NewTableBreak extends React.PureComponent{
 
     state = {
         date: new Date(),
-        activeTab: ActiveTabs(this.props.page.search),
+        activeTab: activeTabs(this.props.page.search),
         loader: true,
         table: {},
         variantTime: 2,
         modalTime: false,
         tempTime: '',
         blockedTime: 0, // 0 -ничего не блочим, 1 - блочим 15 минут, 2 - блочим 10 минут и 15 минут,
-        myBreak: []
+        myBreak: [],
+        exchengeBreakOpen: false,
+        exchangeRowID: undefined
     }
 
     onChangeTab = (id) => () => {
-        const tabs = ['', '?my', '?stat', '?rule']
+        const tabs = ['', '?my', '?stat', '?rule', '?exchange']
         const { history } = this.props
         history.push(`/break${tabs[id]}`)
         this.setState({ activeTab: id })
@@ -67,9 +71,13 @@ class NewTableBreak extends React.PureComponent{
         this.setState({ modalTime: false, loader: true })
     }
 
+    onExchangeOpen = (id_row) => (e) => {
+        e.preventDefault()
+        this.setState({ exchengeBreakOpen: !this.state.exchengeBreakOpen, exchangeRowID: id_row })
+    }
+
     componentDidMount = async () => {
         const { enqueueSnackbar, people_id } = this.props
-        console.log(this.props)
         const { socket } = this.context
         await socket.emit('updateTable', undefined)
         socket.on('updateTable', (data) => {
@@ -100,11 +108,19 @@ class NewTableBreak extends React.PureComponent{
             else enqueueSnackbar(data, {variant: 'error',autoHideDuration: 6000,preventDuplicate: true})
             this.setState({ loader: false })
         })
+        socket.on('exchangeSend', (data) => {
+            if (data === 'ok') {
+                enqueueSnackbar('Запрос успешно отправлен', {variant: 'success',autoHideDuration: 6000,preventDuplicate: true})
+                this.setState({ exchengeBreakOpen: false, exchangeRowID: undefined })
+            }
+        })
+        
     }
 
     render () {
-        const { drawer, level } = this.props
-        const { date, activeTab, table, loader, variantTime, modalTime, blockedTime, myBreak } = this.state
+        const { drawer, level, history } = this.props
+        const { date, activeTab, table, loader, variantTime, modalTime, blockedTime, myBreak, exchengeBreakOpen, exchangeRowID } = this.state
+        const { socket } = this.context
         let dateToCalendarDate = [addZero(date.getDate()), isDateMonth[date.getMonth()+1], date.getFullYear()]
         return (
             <Root drawer={drawer}>
@@ -131,18 +147,30 @@ class NewTableBreak extends React.PureComponent{
                         </VectorNextClicked>
                         <AllTab active={activeTab === 0} onClick={this.onChangeTab(0)}>Все</AllTab>
                         <MyTab active={activeTab === 1} onClick={this.onChangeTab(1)}>Мои перерывы</MyTab>
+                        <ExchangeTab active={activeTab === 4} onClick={this.onChangeTab(4)}>Обмен перерывами</ExchangeTab>
 
-                        <StatTab active={activeTab === 2} onClick={this.onChangeTab(2)}>Статистика</StatTab>
-                        <RuleTab active={activeTab === 3} onClick={this.onChangeTab(3)}>Правила</RuleTab>
+                        {level.level_id > 0 && <StatTab active={activeTab === 2} onClick={this.onChangeTab(2)}>Статистика</StatTab>}
+                        {level.level_id > 0 && <RuleTab active={activeTab === 3} onClick={this.onChangeTab(3)}>Правила</RuleTab>}
 
                     </CalendarText>
                 </DivHead>
                 <DivBody>
-                    {!Boolean(activeTab) && !loader && <AllBreak table={table} onClickedTime={this.onClickedTime} />}
+                    {!Boolean(activeTab) && !loader && <AllBreak table={table} onClickedTime={this.onClickedTime} onExchange={this.onExchangeOpen} />}
                     {activeTab === 1 && !loader && <MyBreak myBreak={myBreak} date={date}/>}
-                    {activeTab === 2 && <StatBreak drawer={drawer} date={date} loader={loader}/>}
-                    {activeTab === 3 && <RuleBreak drawer={drawer} date={date} loader={loader}/>}
+                    {activeTab === 2 && <StatBreak drawer={drawer} date={date} loader={loader} onChangeTab={this.onChangeTab} level={level.level_id}/>}
+                    {activeTab === 3 && <RuleBreak drawer={drawer} date={date} loader={loader} onChangeTab={this.onChangeTab} level={level.level_id}/>}
+                    {activeTab === 4 && <ExchangeBreak onChangeTab={this.onChangeTab}/>}
                 </DivBody>
+                
+                <RequestExchange 
+                    open={exchengeBreakOpen} 
+                    onClose={this.onExchangeOpen} 
+                    exchangeRowID={exchangeRowID} 
+                    table={table} 
+                    myBreak={myBreak} 
+                    onChangeTab={this.onChangeTab}
+                    socket={socket}
+                />
             </Root>
         )
     }
@@ -151,11 +179,12 @@ class NewTableBreak extends React.PureComponent{
 NewTableBreak.contextType = SocketConsumer;
 export default withSnackbar(NewTableBreak)
 
-const ActiveTabs = (page) => {
+const activeTabs = (page) => {
     switch (page) {
         case '?my': return 1;
         case '?stat': return 2;
         case '?rule': return 3;
+        case '?exchange': return 4;
         default: return 0;
     }
 }
@@ -186,7 +215,7 @@ const RuleTab = styled.span`{
     position: absolute;
     width: 110px;
     height: 62px;
-    left: 570px;
+    left: 732px;
     top: 0px;
     display: flex;
     justify-content: center;
@@ -204,6 +233,25 @@ const RuleTab = styled.span`{
 const StatTab = styled.span`{
     position: absolute;
     width: 110px;
+    height: 62px;
+    left: 621px;
+    top: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 19px;
+    font-feature-settings: 'pnum' on, 'lnum' on;
+    color: ${p=>p.active ? '#2285EE' : '#9A9BAE'};
+    border-bottom: ${p=>p.active ? 2 : 0}px solid #2285EE;
+    cursor: pointer;
+}`
+
+const ExchangeTab = styled.span`{
+    position: absolute;
+    width: 160px;
     height: 62px;
     left: 460px;
     top: 0px;

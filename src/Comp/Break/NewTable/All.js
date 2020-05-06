@@ -1,11 +1,13 @@
 import React from 'react'
-import { Grid } from '@material-ui/core'
+import { Grid, Tooltip } from '@material-ui/core'
 import styled from 'styled-components'
 import { People, Coffee, Lock } from 'Comp/Break/NewTable/Svg'
 import { isDateMonth, addZero } from 'Comp/Break/NewTable/tools'
+import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 
-export const AllBreak = React.memo(function AllBreak({ table, onClickedTime }) {
+export const AllBreak = React.memo(function AllBreak({ table, onClickedTime, onExchange }) {
     return (
+        <MuiThemeProvider theme={theme}>
         <Container container spacing={1}>
             {Hour.map(i => (
                 <>
@@ -16,15 +18,16 @@ export const AllBreak = React.memo(function AllBreak({ table, onClickedTime }) {
                         let foundInTable = table[Object.keys(table).filter(k => k === `${i}_${j}`)[0]]
                         return (
                             <CustomGrid item xs={12} sm={2}>
-                                {foundInTable.key === 0 && <Free i={i} j={j} ind={foundInTable.data.length} onClickedTime={onClickedTime}/>}
+                                {foundInTable.key === 0 && <Free i={i} j={j} ind={foundInTable.data.length} onClickedTime={onClickedTime} />}
                                 {foundInTable.key === 1 && <My i={i} j={j} />}
-                                {foundInTable.key === 2 && <NotFree i={i} j={j} ind={foundInTable.data.length} />}
+                                {foundInTable.key === 2 && <NotFree i={i} j={j} ind={foundInTable.data.length} onExchange={onExchange} />}
                             </CustomGrid>
                         )
                     })}
                 </>
             ))}
         </Container>
+        </MuiThemeProvider>
     )
 })
 
@@ -43,11 +46,13 @@ const Free = ({ i, j, ind, onClickedTime }) => (
     </TableButton>
 )
 
-const NotFree = ({ i, j, ind }) => (
-    <NotFreeButton>
-        <LockIcon><Lock /></LockIcon>
-        <LockText>Свободных  мест  не  осталось</LockText>
-    </NotFreeButton>
+const NotFree = ({ i, j, onExchange }) => (
+    <Tooltip title="Используйте правый клик мыши для создания запроса на обмен">
+        <NotFreeButton onContextMenu={onExchange(`${i}_${j}`)}>
+            <LockIcon><Lock /></LockIcon>
+            <LockText>Свободных  мест  не  осталось</LockText>
+        </NotFreeButton>
+    </Tooltip>
 )
 
 const Minuts = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55']
@@ -81,7 +86,7 @@ const NotFreeButton = styled.div`{
     background: #DDE2E8;
     box-shadow: inset 4px 4px 12px rgba(0, 0, 0, 0.08);
     border-radius: 8px;
-    cursor: not-allowed;
+    cursor: cell;
     user-select: none;
 }`
 
@@ -189,3 +194,13 @@ const Container = styled(Grid)` && {
     text-align: left;
     overflow-y: auto;
 }`
+
+const theme = createMuiTheme({
+    overrides: {
+      MuiTooltip: {
+        tooltip: {
+          fontSize: "13px",
+        }
+      }
+    }
+});
