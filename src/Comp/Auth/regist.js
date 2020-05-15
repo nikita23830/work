@@ -32,6 +32,7 @@ export const Registration = (props) => {
               label={i.label}
               variant='outlined'
               color='primary'
+              error={Boolean(errorRegist[i.name])}
               value={regist[i.name]}
               helperText={i.name === 'login' ? errorRegist.login : i.name === 'email' ? errorRegist.email : ''}
               onChange={e => props.chandeDataRegist(i.name, e.target.value)}
@@ -45,6 +46,7 @@ export const Registration = (props) => {
             <Select
               fullWidth
               value={regist.chart}
+              error={Boolean(errorRegist['chart'])}
               onChange={e=>props.chandeDataRegist('chart', e.target.value)}
             >
               {GRAF.map((i, ind) => (
@@ -59,10 +61,11 @@ export const Registration = (props) => {
             <Select
               fullWidth
               value={regist.dept}
+              error={Boolean(errorRegist['dept'])}
               onChange={e=>props.chandeDataRegist('dept', e.target.value)}
             >
               {listDept.map(i=>(
-                <MenuItem value={i.id}>{i.name}</MenuItem>
+                <MenuItem value={i.id}>{i.dept_name}</MenuItem>
               ))}
             </Select>
           </StyleFormControl>
@@ -74,6 +77,7 @@ export const Registration = (props) => {
               fullWidth
               value={regist.manager}
               disabled={regist.dept === -1}
+              error={Boolean(errorRegist['manager'])}
               onChange={e=>props.chandeDataRegist('manager', e.target.value)}
             >
               {(manager[regist.dept] && manager[regist.dept].length) ? manager[regist.dept].map(i=>(

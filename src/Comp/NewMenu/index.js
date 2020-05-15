@@ -16,38 +16,13 @@ export const PAGES = [
     svg: <NewsSvg />
   },
   {
+    id: 1,
     name: 'Перерывы',
-    multi: true,
+    multi: false,
     level: 'break_lvl',
     link: '/break',
     show: true,
     svg: <BreakSvg />,
-    page: [
-      {
-        id: 1,
-        name: 'Главная',
-        multi: false,
-        link: '/break',
-        show: true,
-        level: 1
-      },
-      {
-        id: 3,
-        name: 'Статистика',
-        multi: false,
-        link: '/break?stat',
-        show: true,
-        level: 2
-      },
-      {
-        id: 4,
-        name: 'Правила',
-        multi: false,
-        link: '/break?rule',
-        show: true,
-        level: 2
-      }
-    ]
   },
   {
     id: 20,
@@ -105,8 +80,8 @@ class NewMenu extends React.PureComponent{
         <StyleGridMenu container spacing={1} open={drawer}>
 
           {PAGES.map((i, ind) => {
-            let collapseBreak = (drawer && i.name === 'Перерывы' && level.break_lvl === 2) ? true : false
-            let visible = i.level === 'manager' ? Boolean(level[i.level]) ? true : false : true
+            let collapseBreak = false
+            let visible = i.level === 'manager' ? Boolean(level.level_id) ? true : false : true
             if (visible && i.show) return (
               <CustomGrid item xs={12} sm={12} drawer={drawer} open={collapse[ind]} col={i.multi ? i.page.length-1 : 1}>
                 <ClickedZone onClick={collapseBreak && this.openCollapse(ind)} drawer={drawer} to={!collapseBreak && i.link}>
@@ -120,7 +95,7 @@ class NewMenu extends React.PureComponent{
                 </ClickedZone>
                 {collapseBreak && <CustomCollapse in={collapse[ind]}>
                   <CollapsedGrid container spacing={1} open={drawer}>
-                    {i.page.map((i, ind) => (
+                    {i.multi && i.page.map((i, ind) => (
                         <CustomGrid item xs={12} sm={12}>
                           <ClickedZoneLittle to={i.link && page.pathname !== i.link && i.link}>
                             <CustomMenuIcon little={true} >

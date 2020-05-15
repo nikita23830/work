@@ -8,6 +8,8 @@ import MyBreakTemplate from 'Comp/Card/MyBreakTemplate'
 class RuleBreak extends Component {
 
   render () {
+    const { onChangeTab, level } = this.props
+    if (!Boolean(level)) onChangeTab(0)()
     return (
       <>
         <AddRuleBreak {...this.props} />

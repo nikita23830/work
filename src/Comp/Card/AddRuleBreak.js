@@ -177,7 +177,7 @@ const StyleButton = styled(Button)` && {
 const StyledCard = styled(Card)` && {
   position: absolute;
   right: 5px;
-  top: 70px;
+  top: 10px;
   animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
 }`
 

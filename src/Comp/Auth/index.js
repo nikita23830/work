@@ -34,8 +34,8 @@ class Auth extends React.Component {
     manager: [],
     regist: {
       dept: '',
-      manager: '',
-      chart: ''
+      manager: undefined,
+      chart: undefined
     },
     errorRegist: {},
     notActual: false,
@@ -248,9 +248,9 @@ const checkRegist = (regist, errorRegist) => {
   if (regist.login && regist.login.replace(/\s/g, '') === '') result.login = true
   if (regist.pass && regist.pass.replace(/\s/g, '') === '') result.pass = true
   if (regist.email && regist.email.replace(/\s/g, '') === '') result.email = true
-  if (regist.dept === '') result.dept = true
-  if (regist.manager === '') result.manager = true
-  if (regist.chart === '') result.chart = true
-  if (!re.test(regist.email)) result.email = true
+  if (regist.dept === undefined || regist.dept === '') result.dept = true
+  if (regist.manager === undefined || regist.manager === '') result.manager = true
+  if (regist.chart === undefined || regist.chart === '') result.chart = true
+  if (!re.test(regist.email)) result.email = 'Некорректный e-mail'
   return result
 }

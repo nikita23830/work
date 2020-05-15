@@ -1,5 +1,5 @@
 import React from 'react'
-import { Break } from 'Comp/Break'
+import NewTableBreak from 'Comp/Break/NewTable'
 import { Report } from 'Comp/Report'
 import { RouterRating } from 'Comp/Rating/Router'
 import RouterTest from 'Comp/Testing/router'
@@ -21,7 +21,7 @@ const GetPageContent = props => {
 
     case '/break': 
       return (
-        <Break {...props} />
+        <NewTableBreak {...props} />
       );
     case '/report/:id':
       return (

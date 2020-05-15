@@ -85,7 +85,7 @@ class Main extends Component {
 
   render () {
     const { openDialogTable, page, drawer, needAuth, loader, people_id, level, openNews, people_name } = this.state
-    const { socket, location } = this.props
+    const { socket, location, history, URL_SERVER } = this.props
 
     if (location.pathname === '/auth') 
       return <Auth socket={socket} submit={this.onCheckAuth} page={location} />
@@ -108,7 +108,7 @@ class Main extends Component {
 
         <NewMenu onChangePage={this.onChangePage} drawer={drawer} openDrawer={this.openDrawer} level={level} page={location}/>
 
-        <StyleMainDiv>
+        <StyleMainDiv level={level.level_id}>
 
           <GetPageContent 
             people_name={people_name}
@@ -120,6 +120,7 @@ class Main extends Component {
             openNews={openNews}
             onOpenNews={this.onOpenNews}
             onCloseNews={this.onCloseNews}
+            history={history}
           />
 
         </StyleMainDiv>
@@ -133,7 +134,7 @@ class Main extends Component {
 const StyleMainDiv = styled.div` && {
   min-width: 600px;
   height: ${document.documentElement.clientHeight}px;
-  background: #F0F4F7;
+  background: ${p=>p.level > 0 ? '#222' : '#F0F4F7' };
 }`
 
 export default withCookies(Main)

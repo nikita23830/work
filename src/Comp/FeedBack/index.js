@@ -16,7 +16,11 @@ class FeedBack extends React.PureComponent {
     textOpenMessage: '',
     chats: [],
     createModal: false,
-    admin: false
+    admin: false,
+    tabs: [{name: 'Открытые', count: 0}, {name: 'Закрытые', count: 0}],
+    tab: 0,
+    closeChats: [],
+    openChats: []
   }
 
   onChangeTabs = (id) => () => {
@@ -37,7 +41,7 @@ class FeedBack extends React.PureComponent {
   }
 
   changeStatusTicket = () => {
-    const { chats, activeTab } = this.state
+    const { chats, activeTab, tab } = this.state
     const { socket } = this.context
     socket.emit('changeStatusTicket', chats[activeTab])
   }
@@ -48,8 +52,14 @@ class FeedBack extends React.PureComponent {
     await socket.emit('getChatList', '');
     await socket.on('getChatList', (data) => {
       if (data.empty) { return 0; }
-      let chats = [...data.chats]
+
+      let chats = data.chats.filter(i => !i.close)
+      let closeChats = data.chats.filter(i => i.close)
+
       chats.forEach(i => {
+        if (!i.msg) i.msg = data.message.filter(j => j.feedback_id === i.id)
+      })
+      closeChats.forEach(i => {
         if (!i.msg) i.msg = data.message.filter(j => j.feedback_id === i.id)
       })
 
@@ -58,9 +68,12 @@ class FeedBack extends React.PureComponent {
       chats.forEach((i, ind) => {
         if (urlChats && i.id === urlChats) activeChats = ind
       })
-
-      this.setState({ chats: chats, createModal: false, admin: data.admin, activeTab: activeChats })
-      if (chats[0].msg.length > 0 && this.message) this.message.scrollTo(0, 10000000)
+      let tabs = [
+        {name: 'Открытые', count: chats.length}, 
+        {name: 'Закрытые', count: closeChats.length}
+      ]
+      this.setState({ chats: chats, createModal: false, admin: data.admin, activeTab: activeChats, tabs: tabs, closeChats: closeChats, openChats: chats })
+      if (chats.length && chats[0].msg.length > 0 && this.message) this.message.scrollTo(0, 10000000)
     })
     await socket.on('getNewMessage', (data) => {
       let chats = [...this.state.chats]
@@ -70,27 +83,49 @@ class FeedBack extends React.PureComponent {
     })
     await socket.on('checkChatsCount', () => socket.emit('getChatList', '') )
     await socket.on('changeStatusTicket', (data) => {
-      let { chats } = this.state
-      let newChats = []
-      chats.map((i, index) => {
-        if (i.id !== data.id) newChats.push(chats[index])
-        else if (!data.delete) newChats[index] = {...chats[index], close: data.newState}
+      const { openChats, closeChats } = this.state
+      let newOpenChats = []
+      let newCloseChats = []
+      if (Boolean(data.newState)) {
+        newOpenChats = openChats.filter(i => i.id !== data.id)
+        newCloseChats.push(...closeChats, ...openChats.filter(i => i.id === data.id))
+      } else {
+        newOpenChats.push(...openChats, ...closeChats.filter(i => i.id === data.id))
+        newCloseChats = closeChats.filter(i => i.id !== data.id)
+      }
+      console.log(openChats, newOpenChats)
+      newOpenChats.forEach((i, ind) => { if (newOpenChats[ind].close) newOpenChats[ind].close = false })
+      newCloseChats.forEach((i, ind) => { if (!newCloseChats[ind].close) newCloseChats[ind].close = true })
+      let tabs = [
+        {name: 'Открытые', count: newOpenChats.length}, 
+        {name: 'Закрытые', count: newCloseChats.length}
+      ]
+      this.setState({ 
+        openChats: newOpenChats,
+        closeChats: newCloseChats,
+        chats: data.newState ? newCloseChats : newOpenChats,
+        tab: data.newState ? 1 : 0,
+        tabs: tabs,
+        activeTab: data.newState ? newCloseChats.length - 1 : newOpenChats.length - 1
       })
-      this.setState({ chats: newChats })
     })
   }
 
   render () {
-    const { drawer, level, history } = this.props
-    const { activeTab, chats, textOpenMessage, createModal, admin } = this.state
+    const { drawer, level } = this.props
+    const { activeTab, chats, textOpenMessage, createModal, admin, tabs, tab, openChats, closeChats, resultSearch } = this.state
     return (
       <Body drawer={drawer} level={level.level_id}>
         {createModal && <NewModalChats onClose={() => this.setState({ createModal: false})} socket={this.context.socket} />}
         <Header level={level.level_id}>
-          <SendTab>
-            <TextSendTab>Обращения</TextSendTab>
-            <CountSendTab>{chats.length}</CountSendTab>
-          </SendTab>
+
+          {tabs.map((i, ind) => (
+            <SendTab tab={tab} ind={ind} onClick={() => this.setState({ chats: ind === 0 ? openChats : ind === 1 ? closeChats : resultSearch, activeTab: 0, tab: ind })}>
+              <TextSendTab tab={tab} ind={ind}>{i.name}</TextSendTab>
+              <CountSendTab tab={tab} ind={ind}>{i.count}</CountSendTab>
+            </SendTab>
+          ))}
+
           {!admin && <CreateTicket onClick={() => this.setState({ createModal: true })}>
             <CreateTicketIcon />
           </CreateTicket>}
@@ -112,7 +147,7 @@ class FeedBack extends React.PureComponent {
             <HeaderTicket>
               <StyledAvatar>{admin ? `${chats[activeTab].surname[0]}${chats[activeTab].name[0]}` : 'КР'}</StyledAvatar>
               <HeaderName>{admin ? `${chats[activeTab].surname} ${chats[activeTab].name}` : 'Команда разработчиков'}</HeaderName>
-              <CloseTicket onClick={this.changeStatusTicket}>{!chats[activeTab].close ? 'Закрыть обращение' : 'Открыть обращение'}</CloseTicket>
+              {level.level_id === 2 && <CloseTicket onClick={this.changeStatusTicket}>{!chats[activeTab].close ? 'Закрыть обращение' : 'Открыть обращение'}</CloseTicket>}
             </HeaderTicket>
             <MessagesTicket container spacing={1} ref={message => this.message = message}>
               <MessageBodyPlace chats={chats} activeTab={activeTab} lvl={this.props.level.level_id}/>              
@@ -184,7 +219,7 @@ const CountSendTab = styled.span`{
   min-width: 30px;
   max-width: 35px;
   height: 20px
-  background: #2285EE;
+  background: ${p=>p.ind === p.tab ? '#FFFFFF' : '#2285EE'};
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -197,7 +232,7 @@ const CountSendTab = styled.span`{
   align-items: center;
   text-align: center;
   font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #FFFFFF;
+  color: ${p=>p.ind === p.tab ? '#2285EE' : '#FFFFFF'};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -356,7 +391,7 @@ const TextSendTab = styled.span`{
   display: flex;
   align-items: center;
   font-feature-settings: 'pnum' on, 'lnum' on;
-  color: #2285EE;
+  color: ${p=>p.tab === p.ind ? '#E9F3FD' : '#2285EE'};
   flex: none;
   order: 0;
   align-self: center;
@@ -366,13 +401,14 @@ const SendTab = styled.span`{
   position: absolute;
   width: 149px;
   height: 40px;
-  left: 16px;
+  left: ${p=>16+(p.ind * 166)}px;
   top: 12px;
-  color: #2285EE;
+  color: ${p=>p.tab === p.ind ? '#E9F3FD' : '#2285EE'};
   cursor: default;
   user-select: none;
-  background: #E9F3FD;
+  background: ${p=>p.tab === p.ind ? '#2285EE' : '#E9F3FD'};
   border-radius: 4px;
+  cursor: pointer;
 }`
 
 const openDrawer = keyframes`

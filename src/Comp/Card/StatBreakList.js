@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { PureComponent } from 'react'
 import styled, { keyframes } from 'styled-components'
 import {Card,
   CardContent,
@@ -15,7 +15,7 @@ import {Card,
 import { Delete } from '@material-ui/icons'
 import { TIMING } from 'Comp/Break/NewTable/tools'
 
-class StatBreakList extends Component {
+class StatBreakList extends PureComponent {
 
   render() {
     const { list, delBreakWithListStat, drawer } = this.props
@@ -37,7 +37,7 @@ class StatBreakList extends Component {
               <TableRow>
                 <TableCell>{i.name}</TableCell>
                 <TableCell>{TIMING[i.start][1]}:{addZero(TIMING[i.start][2])}</TableCell>
-                <TableCell>{TIMING[i.end][1]}:{addZero(TIMING[i.end+1][2])}</TableCell>
+                <TableCell>{TIMING[i.end][1]}:{addZero(TIMING[i.end][2])}</TableCell>
                 <TableCell>{i.array.length * 5} мин.</TableCell>
                 <TableCell>{i.mName}</TableCell>
                 <TableCell>
@@ -74,11 +74,11 @@ const closeDrawer = keyframes`
 `;
 
 const StyledCard = styled(Card)` && {
-  height: ${document.documentElement.clientHeight - 320}px;
+  height: ${document.documentElement.clientHeight - 340}px;
   overflow-y: auto;
   position: absolute;
   right: 5px;
-  top: 315px;
+  top: 205px;
   animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
 }`
 

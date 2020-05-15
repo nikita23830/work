@@ -34,21 +34,7 @@ class Lk extends React.Component {
         manager: '',
         dataDiag: [{color: '#EBEEF1', title: '', value: 100 }],
         date: new Date,
-        balanceMiniHistory: [
-            {
-                action: 'replenish',
-                author: 'AstralPayCollab',
-                reason: 'Награда за регистрацию',
-                sum: '150'
-            },
-            {
-                action: 'debiting',
-                author: 'T.Test',
-                reason: 'Решение руководства',
-                sum: '150'
-            },
-        ],
-        balance: 0,
+        balanceMiniHistory: [],
     }
 
     onViewDiag = (id) => () => {
@@ -69,15 +55,28 @@ class Lk extends React.Component {
     componentDidMount = async () => {
         const { socket } = this.context
         socket.emit('getMyManager', '')
-        socket.on('getMyManager', (data) => {
+        socket.emit('getBalance', '')
+        await socket.on('getMyManager', (data) => {
             let link = `user/${data.id}`
             this.setState({ manager: data.empty ? '-' : <Link to={link}>{data.name}</Link> })
+        })
+        await socket.on('getBalance', (data) => {
+            let balanceMiniHistory = []
+            data.map(i => {
+                balanceMiniHistory.push({
+                    action: i.replenish ? 'replenish' : 'debiting',
+                    author: `${i.name} ${i.surname}`,
+                    reason: i.reason,
+                    sum: i.shift
+                })             
+            })
+            this.setState({ balanceMiniHistory: balanceMiniHistory })
         })
     }
 
     render () {
         const { drawer, level, people_name } = this.props
-        const { param, diag, dataDiag, manager, date, balanceMiniHistory, balance } = this.state
+        const { param, diag, dataDiag, manager, date, balanceMiniHistory } = this.state
         let bdate = new Date(level.bdate)
         const headAttr = [
             {name: 'Дата рождения', attr: `${addZero(bdate.getDate())}.${addZero(bdate.getMonth()+1)}.${bdate.getFullYear()}`}, 
@@ -100,7 +99,7 @@ class Lk extends React.Component {
                 <Balance>
                     <BAvatar><AttachMoney color='primary'/></BAvatar>
                     <BTitle>Баланс</BTitle>
-                    <BCount>{balance} баллов</BCount>
+                    <BCount>{level.balance} баллов</BCount>
                 </Balance>
                 <BHistory container spacing={1}>
                     {balanceMiniHistory.map(i => (
@@ -382,7 +381,7 @@ const BHItemReason = styled.span`{
 
 const BHItemTitle = styled.span`{
     position: absolute;
-    width: 57px;
+    width: 200px;
     height: 17px;
     left: 77px;
     top: 18px;

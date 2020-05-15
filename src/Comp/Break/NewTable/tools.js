@@ -22,7 +22,7 @@ export const setTable = (data, people_id) => {
       result[i].key = result[i].data.filter(j => j.people_id === people_id).length > 0 ? 1 : result[i].key // проверка на мой
       result[i].key = data.dept === 1 && result[i].key !== 1 && result[i].data.filter(j => j.start_end === 1).length > 0 ? 2 : result[i].key // 1C
   })
-    // 0 - свободной, 1 - мое, 2 - занято
+  // 0 - свободной, 1 - мое, 2 - занято
   return result
 }
 

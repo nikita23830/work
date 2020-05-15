@@ -91,13 +91,12 @@ const CustomTypography = styled(Typography)` && {
 }`
 
 const StyledCard = styled(Card)` && {
-  width: ${p=>p.w}px;
-  height: ${document.documentElement.clientHeight - 155}px;
+  height: ${document.documentElement.clientHeight - 230}px;
   animation: ${p=>p.drawer ? openDrawer : closeDrawer} 0.2s linear both;
   overflow-y: auto;
   position: absolute;
   right: 5px;
-  top: 150px;
+  top: 95px;
 }`
 
 MainRuleBreak.contextType = SocketConsumer;

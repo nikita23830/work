@@ -221,7 +221,7 @@ export const StyleAuthCard = styled(Card)` && {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 524px;
-  height: ${p=>!p.error ? '437px' : '485px'};
+  height: ${p=>!p.error ? '437px' : '509px'};
   animation: ${p=>
     p.authToRestore === 1
     ? authToRestoreAuth
