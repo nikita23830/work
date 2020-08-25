@@ -11,7 +11,7 @@ import { AppBar,
   MenuItem,
   Menu
 } from '@material-ui/core'
-import { Search, Add } from '@material-ui/icons';
+import { Search, Add, ShoppingCartOutlined } from '@material-ui/icons';
 import styled, { keyframes } from 'styled-components'
 import { Notif } from 'Comp/AppBar/svg'
 import { PAGES } from 'Comp/NewMenu/index'
@@ -68,6 +68,7 @@ class DefAppBar extends React.PureComponent {
           {LEVEL_NEWS == 2 && <StyleFab color='primary' size='small' onClick={onOpenNews}>
             <Add /> Новость
           </StyleFab>}
+          <StyleShop onClick={() => history.push('/shop')}><CShoppingCartOutlined /></StyleShop>
           <StyleNotif><Notif /></StyleNotif>
           <StyleAvatar sizes='small' onClick={this.onMenuOpen} lvl={level.level_id}>{people_name[1].charAt(0)}{people_name[0].charAt(0)}</StyleAvatar>
 
@@ -81,6 +82,7 @@ class DefAppBar extends React.PureComponent {
           onClose={this.onMenuClose}
         >
           <MenuItem onClick={() => { history.push('/lk'); this.setState({ anchorMenu: undefined })}}>Личный кабинет</MenuItem>
+          <MenuItem onClick={() => { history.push('/shop'); this.setState({ anchorMenu: undefined })}}>Магазин</MenuItem>
           <MenuItem onClick={onExit}>Выход</MenuItem>
         </Menu>
 
@@ -109,39 +111,55 @@ const closeDrawerNamePage = keyframes`
 
 const openDrawerInput = keyframes`
   0% {
-    width: ${document.documentElement.clientWidth - 505}px;
+    width: ${document.documentElement.clientWidth - 542}px;
   }
   100% {
-    width: ${document.documentElement.clientWidth - 695}px;
+    width: ${document.documentElement.clientWidth - 732}px;
   }
 `;
 
 const closeDrawerInput = keyframes`
   0% {
-    width: ${document.documentElement.clientWidth - 695}px;
+    width: ${document.documentElement.clientWidth - 732}px;
   }
   100% {
-    width: ${document.documentElement.clientWidth - 505}px;
+    width: ${document.documentElement.clientWidth - 542}px;
   }
 `;
 
 const openDrawerInputLevel = keyframes`
   0% {
-    width: ${document.documentElement.clientWidth - 640}px;
+    width: ${document.documentElement.clientWidth - 677}px;
   }
   100% {
-    width: ${document.documentElement.clientWidth - 830}px;
+    width: ${document.documentElement.clientWidth - 867}px;
   }
 `;
 
 const closeDrawerInputLevel = keyframes`
   0% {
-    width: ${document.documentElement.clientWidth - 830}px;
+    width: ${document.documentElement.clientWidth - 867}px;
   }
   100% {
-    width: ${document.documentElement.clientWidth - 640}px;
+    width: ${document.documentElement.clientWidth - 677}px;
   }
 `;
+
+const CShoppingCartOutlined = styled(ShoppingCartOutlined)` && {
+  color: #B7C2CE;
+}`
+
+const StyleShop = styled.span` && {
+  position: absolute;
+  top: 21px;
+  right: 120px;
+  cursor: pointer;
+  color: #C4C4C4;
+} &:hover {
+  ${CShoppingCartOutlined} {
+    color: #2285EE;
+  }
+}`
 
 const StyleNotif = styled.span` && {
   position: absolute;
@@ -165,7 +183,7 @@ const StyleFab = styled(Button)` && {
   background: #2285EE;
   position: absolute;
   top: 12px;
-  right: 120px;
+  right: 157px;
   height: 40px;
   width: 120px;
   box-shadow: none;
@@ -190,7 +208,7 @@ const StyleInput = styled(Input)` && {
   border-bottom: none;
   position: absolute;
   top: 12px;
-  right: ${p=>p.level !== 2 ? 125 : 260}px;
+  right: ${p=>p.level !== 2 ? 162 : 297}px;
   animation: ${p=>p.drawer ? p.level === 2 ? openDrawerInputLevel : openDrawerInput : p.level === 2 ? closeDrawerInputLevel : closeDrawerInput} 0.2s linear both;
 } &&:before {
   border-bottom: none;

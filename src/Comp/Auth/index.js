@@ -22,7 +22,7 @@ import { LinkRegistration,
   LogoAndName,
   CustomGrid,
   StyleAuthCard,
-  AuthorName
+  AuthorName,
 } from 'Comp/Auth/style'
 
 class Auth extends React.Component {
@@ -33,9 +33,9 @@ class Auth extends React.Component {
     listDept: [],
     manager: [],
     regist: {
-      dept: '',
-      manager: undefined,
-      chart: undefined
+      dept: -1,
+      manager: -1,
+      chart: -1
     },
     errorRegist: {},
     notActual: false,
@@ -46,6 +46,8 @@ class Auth extends React.Component {
     sendRestore: false,
     authToReg: false,
     notFoundLogin: false,
+    stepReg: 0,
+    regNextBlock: false,
   }
 
   changeRestore = (e) => this.setState({ restoreLogin: e.target.value, errorRestore: '' })
@@ -67,14 +69,22 @@ class Auth extends React.Component {
   }
 
   chandeDataRegist = (name, value) => {
+    let regex = new RegExp("^([0-9]{2})\\.([0-9]{2})\\.([1-2][0-9]{3})$");
+    let newValue = value
     let error = this.state.errorRegist
     delete error[name]
+    if (name === 'bdate') {
+      if (!regex.test(newValue)) error.bdate = true
+      if ((newValue.length === 2 && this.state.regist.bdate.length === 1) || (newValue.length === 5 && this.state.regist.bdate.length === 4)) newValue = newValue + '.'
+      console.log(regex.test(newValue))
+    }
     if (name === 'dept')
-      this.setState({ regist: { ...this.state.regist, [name]: value, manager: '' }, errorRegist: error })
-    else this.setState({ regist: { ...this.state.regist, [name]: value }, errorRegist: error })
+      this.setState({ regist: { ...this.state.regist, [name]: newValue, manager: -1 }, errorRegist: error })
+    else this.setState({ regist: { ...this.state.regist, [name]: newValue }, errorRegist: error })
   }
 
   onRequestRegistration = () => {
+    console.log('1')
     const { regist, errorRegist } = this.state
     const { socket, enqueueSnackbar } = this.props
     let error = checkRegist(regist, errorRegist)
@@ -149,11 +159,46 @@ class Auth extends React.Component {
     })
   }
 
+  onNextStep = () => {
+    const { stepReg, regist, errorRegist } = this.state
+    const { socket } = this.props
+    let newErrorRegist = {...errorRegist}
+    if (Object.keys(errorRegist).length > 0) return 0
+    else if (stepReg === 0) {
+      if (!regist.login || (regist.login.replace(/\s/g, '') === '')) newErrorRegist.login = true
+      if (!regist.pass || (regist.pass.replace(/\s/g, '') === '')) newErrorRegist.pass = true
+      if (!regist.email || (regist.email.replace(/\s/g, '') === '')) newErrorRegist.email = true
+      if (!newErrorRegist.login && !newErrorRegist.pass && !newErrorRegist.email) this.setState({ stepReg: 1 })
+      else this.setState({ errorRegist: newErrorRegist })
+    } else if (stepReg === 1) {
+      if (regist.chart === -1) newErrorRegist.chart = true
+      if (regist.dept === -1) newErrorRegist.dept = true
+      if (regist.manager === -1) newErrorRegist.manager = true
+      if (!newErrorRegist.chart && !newErrorRegist.dept && !newErrorRegist.manager) this.setState({ stepReg: 2 })
+      else this.setState({ errorRegist: newErrorRegist })
+    } else {
+      if (!regist.name || (regist.name.replace(/\s/g, '') === '')) newErrorRegist.name = true
+      if (!regist.surname || (regist.surname.replace(/\s/g, '') === '')) newErrorRegist.surname = true
+      if (!regist.bdate || (regist.bdate.replace(/\s/g, '') === '')) newErrorRegist.bdate = true
+      if (!newErrorRegist.name && !newErrorRegist.surname && !newErrorRegist.bdate) {
+        this.setState({ authToReg:false, notActual: true, regist: {dept: -1,manager: -1,chart: -1},errorRegist: {}, stepReg: 0 })
+        socket.emit('requestRegistration', regist)
+      }
+      else this.setState({ errorRegist: newErrorRegist })
+    }
+  }
+
+  onBackStep = () => {
+    const { stepReg } = this.state
+    if (stepReg === 0) this.setState({ authToReg: false })
+    else this.setState({ stepReg: stepReg - 1 })
+  }
+
   render () {
-    const { login, notFoundLogin, pass, manager, listDept, regist, errorRegist, notActual, height, errorAuth, authToRestore, restoreLogin, errorRestore, sendRestore, authToReg } = this.state
+    const { login, notFoundLogin, pass, manager, listDept, regist, errorRegist, notActual, height, errorAuth, authToRestore, restoreLogin, errorRestore, sendRestore, authToReg, stepReg, regNextBlock } = this.state
     return (
       <CustomGrid container spacing={0} h={height}>
-        <CustomGrid item xs={12} sm={6}>
+        <CustomGrid item xs={12} sm={4}>
 
           {notActual && <SuccessRegistration  closeNotActual={this.closeNotActual} />}
 
@@ -169,6 +214,10 @@ class Auth extends React.Component {
             checkEmailInReg={this.checkEmailInReg}
             chandeDataRegist={this.chandeDataRegist}
             onRequestRegistration={this.onRequestRegistration}
+            stepReg={stepReg}
+            onNextStep={this.onNextStep}
+            onBackStep={this.onBackStep}
+            regNextBlock={regNextBlock}
           />}
 
           <LogoAndName>
@@ -205,30 +254,31 @@ class Auth extends React.Component {
               <Grid item xs={12} sm={12}>
                 <CustomLink onClick={this.onAuthToRestore}>Забыли пароль?</CustomLink>
               </Grid>
-              <Grid item xs={12} sm={5}>
+              <Grid item xs={12} sm={12}>
                 <CustomButton
                   variant='contained'
                   onClick={this.checkAuth}
+                  fullWidth
                 >
                   Войти
                 </CustomButton>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={6}>
                 <CustomTypography>Нет аккаунта?</CustomTypography>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={6}>
                 <LinkRegistration onClick={this.onAuthToReg}>Регистрация</LinkRegistration>
               </Grid>
             </StyleGrid>
           </StyleAuthCard>}
           <BottomDiv>
             <OrgName>АО «Калуга Астрал», 2020</OrgName>
-            <AuthorName>Developed By N. Zhuravlev. Designer: D. Krylov</AuthorName>
+            <AuthorName>N. Zhuravlev. D. Krylov</AuthorName>
           </BottomDiv>
 
         </CustomGrid>
         {/* тут заканчивается окно справо */}
-        <CustomGrid item xs={12} sm={6} left>
+        <CustomGrid item xs={12} sm={8} left>
           <DivSvg><Main /></DivSvg>
         </CustomGrid>
       </CustomGrid>

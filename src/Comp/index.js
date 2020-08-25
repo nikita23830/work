@@ -19,7 +19,7 @@ class Main extends Component {
     login: '',
     people_id: -1,
     loader: true,
-    level: [0,0,0,0,0,0],
+    level: undefined,
     prev_page: 0,
     openNews: false,
     people_name: ['', '']
@@ -46,6 +46,18 @@ class Main extends Component {
 
   onExit = () => {
     const { cookies, history } = this.props
+    this.setState({ 
+      page: 0,
+      drawer: true,
+      needAuth: true,
+      login: '',
+      people_id: -1,
+      loader: true,
+      level: undefined,
+      prev_page: 0,
+      openNews: false,
+      people_name: ['', '']
+    })
     cookies.remove('token')
     history.push('/auth')
   }
@@ -86,11 +98,11 @@ class Main extends Component {
   render () {
     const { openDialogTable, page, drawer, needAuth, loader, people_id, level, openNews, people_name } = this.state
     const { socket, location, history, URL_SERVER } = this.props
-
+    console.log(level)
     if (location.pathname === '/auth') 
       return <Auth socket={socket} submit={this.onCheckAuth} page={location} />
 
-    else if (loader) return (
+    else if (loader || level === 'undefined') return (
       <Loader />
     )
     else return (
@@ -134,7 +146,7 @@ class Main extends Component {
 const StyleMainDiv = styled.div` && {
   min-width: 600px;
   height: ${document.documentElement.clientHeight}px;
-  background: ${p=>p.level > 0 ? '#222' : '#F0F4F7' };
+  background: ${p=>p.level === 1 || p.level === 2 ? '#222' : '#F0F4F7' };
 }`
 
 export default withCookies(Main)

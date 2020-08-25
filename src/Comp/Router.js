@@ -8,6 +8,7 @@ import NewNews from 'Comp/NewNews'
 import FeedBack from 'Comp/FeedBack'
 import Search from 'Comp/Search'
 import Lk from 'Comp/lk'
+import Shop from 'Comp/Market'
 
 import { Redirect } from 'react-router-dom'
 
@@ -56,6 +57,11 @@ const GetPageContent = props => {
     case '/lk':
       return (
         <Lk {...props} />
+      )
+    
+    case '/shop':
+      return (
+        <Shop {...props} />
       )
 
     default: return (<Redirect to='/' />)

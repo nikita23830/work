@@ -48,6 +48,14 @@ export const PAGES = [
     link: '/lk',
     show: false,
     svg: <></>
+  },
+  {
+    id: 23,
+    name: 'Магазин',
+    multi: false,
+    link: '/shop',
+    show: false,
+    svg: <></>
   }
 ]
 

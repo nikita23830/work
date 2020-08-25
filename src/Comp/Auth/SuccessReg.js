@@ -20,10 +20,6 @@ class SuccessRegistration extends React.Component {
     const { color, colorText, repeat } = this.state
     return (
       <StyleCardSuccessReg>
-        <DivBack onClick={this.props.closeNotActual}>
-          <Arrow />
-          <ArrowText>Назад</ArrowText>
-        </DivBack>
         <TitleSuccess>Ожидается подтверждение!</TitleSuccess>
         <TextSuccess>Обратитесь к руководителю, чтобы он принял вашу заявку для авторизации</TextSuccess>
         <RepeatButton variant='contained' clr={color} clrt={colorText} onClick={color === '#2285EE' && this.changeColor}>Выслать повторно</RepeatButton>

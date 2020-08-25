@@ -48,7 +48,6 @@ export const authToRestoreBackRestore = keyframes`
 `;
 
 export const LinkRegistration = styled(Link)` && {
-  margin-top: 9px;
   width: 90px;
   height: 19px;
   font-size: 14px;
@@ -74,6 +73,7 @@ export const CustomLink = styled(Link)` && {
   color: #2285EE;
   cursor: pointer;
   user-select: none;
+  margin-left: 28px;
 }`
 
 export const DivSvg = styled.div`{
@@ -88,6 +88,7 @@ export const DivSvg = styled.div`{
 export const ErrorGrid = styled(Grid)` && {
   display: flex;
   flex-direction: row;
+  margin-left: 28px;
 }`
 
 export const CustomError = styled.p` {
@@ -107,9 +108,9 @@ export const CustomError = styled.p` {
 
 export const StyleGrid = styled(Grid)` && {
   position: absolute;
-  top: 44px;
-  left: 44px;
-  width: 467px;
+  top: 0px;
+  left: 0px;
+  width: 376px;
   padding: 17px;
 }`
 
@@ -149,7 +150,6 @@ export const BottomDiv = styled.div` {
 }`
 
 export const CustomTypography = styled(Typography)` && {
-  margin-top: 9px;
   width: 99px;
   height: 19px;
   font-size: 14px;
@@ -158,10 +158,11 @@ export const CustomTypography = styled(Typography)` && {
   align-items: center;
   font-feature-settings: 'pnum' on, 'lnum' on;
   color: #99A9BA;
+  margin-left: 28px;
 }`
 
 export const CustomButton = styled(Button)` && {
-  width: 164px;
+  width: 256px;
   height: 40px;
   background: #2285EE;
   font-style: normal;
@@ -173,24 +174,25 @@ export const CustomButton = styled(Button)` && {
   text-align: center;
   font-feature-settings: 'pnum' on, 'lnum' on;
   color: #FFFFFF;
-  margin-bottom: 44px;
+  margin-left: 28px;
 } &&:hover {
   background: #2285EE;
 }`
 
 export const CustomTextField = styled(TextField)` && {
-  width: 435px;
+  width: 256px;
   height: 56px;
 }`
 
 export const CustomTypographyTitle = styled(Typography)` && {
-  width: 250px;
+  width: 312px;
   height: 50px;
   font-style: normal;
   font-weight: bold;
-  font-size: 36px;
-  line-height: 49px;
+  font-size: 24px;
+  line-height: 33px;
   font-feature-settings: 'pnum' on, 'lnum' on;
+  text-align: center;
 }`
 
 export const LogoAndName = styled.div` {
@@ -207,7 +209,7 @@ export const LogoAndName = styled.div` {
 export const CustomGrid = styled(Grid)` && {
   height: ${document.documentElement.clientHeight}px;
   width: ${p=>p.item ? '50%' : '100%'};
-  background-color: ${p=>p.left ? '#F5F8FF' : '#fff'};
+  background-color: #fff;
   position: relative;
   overflow-x: none;
   overflow-y: none;
@@ -220,7 +222,7 @@ export const StyleAuthCard = styled(Card)` && {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 524px;
+  width: 344px;
   height: ${p=>!p.error ? '437px' : '509px'};
   animation: ${p=>
     p.authToRestore === 1
@@ -318,10 +320,10 @@ export const DivBack = styled.div` {
 
 export const ButtonRestore = styled(Button)` && {
   position: absolute;
-  width: 200px;
-  height: 40px;
-  left: 44px;
-  top: 245px;
+  width: 293px;
+  height: 48px;
+  left: 24px;
+  top: 215px;
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
@@ -338,16 +340,17 @@ export const ButtonRestore = styled(Button)` && {
 
 export const RestoreTextField = styled(TextField)` && {
   position: absolute;
-  width: 435px;
+  width: 293px;
   height: 76px;
-  left: 44px;
-  top: 151px;
+  left: 24px;
+  top: 140px;
 }`
 
 export const TitleRestore = styled.p`{
   position: absolute;
   height: 33px;
-  left: 44px;
+  left: 24px;
+  width: 293px;
   top: 88px;
   font-style: normal;
   font-weight: bold;
@@ -373,8 +376,8 @@ export const ArrowText = styled.p` {
 
 export const StyleCard = styled(Card)` && {
   position: absolute;
-  width: 524px;
-  height: ${p=>p.sendRestore ? '290px' : '317px'};
+  width: 344px;
+  height: ${p=>p.sendRestore ? '290px' : '278px'};
   left: 50%;
   top: 50%;
   visibility: hidden;
@@ -393,8 +396,8 @@ export const chengeColor = keyframes`
 
 export const MailDivBox = styled.div`{
   position: absolute;
-  top: 123px;
-  left: 331px;
+  top: 24px;
+  left: 93px;
   width: 174px;
   height: 157px;
 }`
@@ -403,8 +406,8 @@ export const AuthButton = styled(Button)` && {
   position: absolute;
   width: 200px;
   height: 40px;
-  left: 44px;
-  top: 295px;
+  left: 72px;
+  top: 369px;
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
@@ -424,8 +427,8 @@ export const RepeatButton = styled(Button)` && {
   position: absolute;
   width: 200px;
   height: 40px;
-  left: 44px;
-  top: 243px;
+  left: 72px;
+  top: 421px;
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
@@ -443,38 +446,39 @@ export const RepeatButton = styled(Button)` && {
 
 export const TextSuccess = styled.p`{
   position: absolute;
-  width: 243px;
+  width: 256px;
   height: 57px;
   left: 44px;
-  top: 162px;
+  top: 296px;
+  font-family: Manrope3;
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
   line-height: 19px;
   font-feature-settings: 'pnum' on, 'lnum' on;
   color: #99A9BA;
-  text-align: left
+  text-align: center;
 }`
 
 export const TitleSuccess = styled.p`{
   position: absolute;
-  width: 222px;
+  width: 256px;
   height: 66px;
   left: 44px;
-  top: 84px;
+  top: 214px;
   font-style: normal;
   font-weight: bold;
   font-size: 24px;
   line-height: 33px;
   font-feature-settings: 'pnum' on, 'lnum' on;
   color: #000000;
-  text-align: left
+  text-align: center
 }`
 
 export const StyleCardSuccessReg = styled(Card)` && {
   position: absolute;
-  width: 532px;
-  height: 367px;
+  width: 344px;
+  height: 485px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
