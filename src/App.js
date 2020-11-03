@@ -10,7 +10,7 @@ import { withSnackbar } from 'notistack';
 
 const URL_SERVER = 'http://localhost:4001'
 
-// const URL_SERVER = '10.254.4.41:4001' // 52.15.148.190
+// const URL_SERVER = 'http://3.139.17.164:4001'
 const socket = socketIOClient(URL_SERVER)
 
 class App extends React.Component {

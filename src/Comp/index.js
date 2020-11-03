@@ -133,6 +133,7 @@ class Main extends Component {
             onOpenNews={this.onOpenNews}
             onCloseNews={this.onCloseNews}
             history={history}
+            URL_SERVER={URL_SERVER}
           />
 
         </StyleMainDiv>
