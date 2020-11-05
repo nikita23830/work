@@ -1,6 +1,6 @@
 import React from 'react'
-import { Modal, Grid, Tooltip, Radio } from '@material-ui/core';
-import styled from 'styled-components'
+import { Modal, Grid, Tooltip, Radio, Collapse  } from '@material-ui/core';
+import styled, { keyframes } from 'styled-components'
 import { TimeIcon } from 'Comp/Break/NewTable/Svg'
 import { TIMING, addZero } from 'Comp/Break/NewTable/tools'
 
@@ -47,12 +47,10 @@ class RequestExchange extends React.PureComponent {
                 open={open}
                 onClose={onClose()}
             >
-                <Root error={error.status}> 
+                <Root s={receive !== undefined}> 
                     <MuiThemeProvider theme={theme}>
                     <IconTime><TimeIcon /></IconTime>
                     <IconTitle>Запрос на обмен</IconTitle>
-
-                    {error.status && <Error>Допущена ошибка при создании запроса</Error>}
 
                     <ReceiveTitle error={error.field === 'receive'}>Выберите получателя</ReceiveTitle>
                     <ReceiveList>
@@ -69,20 +67,25 @@ class RequestExchange extends React.PureComponent {
                             ))}
                         </ReceiveListItems>
                     </ReceiveList>
-
-                    <BreakTitle error={error.field === 'breaks'}>Выберите свой перерыв</BreakTitle>
-                    <BreakList>
-                        <ReceiveListItems container spacing={2}>
-                            {myBreak.map((i, ind) => (
-                                <ReceiveItem item xs={12}>
-                                    <CRadio name="receiveExchange" color='primary' value={ind} checked={parseInt(breaks)===ind} onChange={this.onChangeBreak}/>
-                                    <Tooltip title="Нажмите для просмотра своих перерывов"><BreakItem onClick={onChangeTab(1)}>
-                                        {addZero(TIMING[i.timing[0]][1])}:{addZero(TIMING[i.timing[0]][2])} - {addZero(TIMING[i.timing[i.timing.length-1]+1][1])}:{addZero(TIMING[i.timing[i.timing.length-1]+1][2])} ({i.timing.length*5} мин)
-                                    </BreakItem></Tooltip>
-                                </ReceiveItem>
-                            ))}
-                        </ReceiveListItems>
-                    </BreakList>
+                    
+                    {(receive !== undefined) && <BreakTitle error={error.field === 'breaks'}>Выберите свой перерыв</BreakTitle>}
+                    <SCollapse in={receive !== undefined}>
+                        
+                        <BreakList>
+                            <ReceiveListItems container spacing={2}>
+                                {myBreak.map((i, ind) => {
+                                    if (receive && table[exchangeRowID].data[receive].length === i.timing.length) return (
+                                        <ReceiveItem item xs={12}>
+                                            <CRadio name="receiveExchange" color='primary' value={ind} checked={parseInt(breaks)===ind} onChange={this.onChangeBreak}/>
+                                            <Tooltip title="Нажмите для просмотра своих перерывов"><BreakItem onClick={onChangeTab(1)}>
+                                                {addZero(TIMING[i.timing[0]][1])}:{addZero(TIMING[i.timing[0]][2])} - {addZero(TIMING[i.timing[i.timing.length-1]+1][1])}:{addZero(TIMING[i.timing[i.timing.length-1]+1][2])} ({i.timing.length*5} мин)
+                                            </BreakItem></Tooltip>
+                                        </ReceiveItem>
+                                    )
+                                })}
+                            </ReceiveListItems>
+                        </BreakList>
+                    </SCollapse>    
                     
                     <Tooltip title="В текущей версии сайта обмен возможен только с идентичными по длине перерывами"><InfoPanel>Есть временные ограничения</InfoPanel></Tooltip>
                     <Create onClick={this.onCreate}>Создать</Create>
@@ -94,6 +97,29 @@ class RequestExchange extends React.PureComponent {
 }
 
 export default RequestExchange
+
+const openRoot = keyframes`
+  0% { height: 275px; }
+  100% { height: 418px; }
+`
+
+const SCollapse = styled(Collapse)` && {
+    position: absolute;
+    top: 195px;
+    left: 7px;
+}`
+
+const NotReceive = styled.div`{
+    margin-left: 8px;
+    width: calc(100% - 16px);
+    font-size: 14px;
+    line-height: 25px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    font-feature-settings: 'pnum' on, 'lnum' on;
+    color: #FFBE18;
+}`
 
 const Error = styled.div`{
     position: absolute;
@@ -160,7 +186,7 @@ const BreakItem = styled.span`{
 }`
 
 const BreakList = styled.div`{
-    position: absolute;
+    
     width: 240px;
     height: 150px
     max-height: 135px;
@@ -180,7 +206,7 @@ const BreakTitle = styled.span`{
     width: 164px;
     height: 14px;
     left: 14px;
-    bottom: 215px;
+    top: 188px;
     font-style: normal;
     font-weight: normal;
     font-size: 15px;
@@ -241,7 +267,7 @@ const ReceiveTitle = styled.span`{
     width: 150px;
     height: 14px;
     left: 14px;
-    bottom: 362px;
+    top: 43px;
     font-style: normal;
     font-weight: normal;
     font-size: 15px;
@@ -261,7 +287,7 @@ const ReceiveList = styled.div`{
     max-height: 135px;
     overflow-y: auto;
     left: 7px;
-    bottom: 233px;
+    top: 51px;
     background: #FFFFFF;
     border: 1px solid #072D57;
     box-sizing: border-box;
@@ -302,7 +328,12 @@ const Root = styled.div`{
     background: #fff;
     border-radius: 5px;
     width: 256px;
-    height: ${p=>p.error ? 453 : 418}px;
+    height: 275px;
+    animation: ${p=>p.s ? openRoot : ''} 0.3s 0s both;
+} &:hover {
+    outline: none;
+} &:focus {
+    outline: none;
 }`
 
 const theme = createMuiTheme({

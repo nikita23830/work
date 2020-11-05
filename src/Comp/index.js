@@ -98,7 +98,6 @@ class Main extends Component {
   render () {
     const { openDialogTable, page, drawer, needAuth, loader, people_id, level, openNews, people_name } = this.state
     const { socket, location, history, URL_SERVER } = this.props
-    console.log(level)
     if (location.pathname === '/auth') 
       return <Auth socket={socket} submit={this.onCheckAuth} page={location} />
 

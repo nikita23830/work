@@ -90,4 +90,8 @@ const RootModal = styled.div`{
     background: #FFFFFF;
     box-shadow: 0px 16px 56px rgba(0, 0, 0, 0.1);
     border-radius: 4px;
+} &:hover {
+    outline: none;
+} &:focus {
+    outline: none;
 }`

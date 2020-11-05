@@ -9,13 +9,17 @@ import { AppBar,
   InputAdornment,
   Avatar,
   MenuItem,
-  Menu
+  Menu,
+  Popper,
+  ClickAwayListener,
+  IconButton
 } from '@material-ui/core'
-import { Search, Add, ShoppingCartOutlined } from '@material-ui/icons';
+import { Search, Add, ShoppingCartOutlined, Delete } from '@material-ui/icons';
 import styled, { keyframes } from 'styled-components'
 import { Notif } from 'Comp/AppBar/svg'
 import { PAGES } from 'Comp/NewMenu/index'
 import { withRouter } from 'react-router-dom'
+import { SocketConsumer } from 'ContextSocket/index'
 
 class DefAppBar extends React.PureComponent {
 
@@ -23,6 +27,8 @@ class DefAppBar extends React.PureComponent {
     notif: true,
     anchorMenu: null,
     searchText: '',
+    notifList: [],
+    anchorElNotif: undefined
   }
 
   onChangeNotif = () => this.setState({ notif: !this.state.notif })
@@ -39,9 +45,30 @@ class DefAppBar extends React.PureComponent {
     }
   }
 
+  componentDidMount () {
+    const { socket } = this.context
+    const { location } = this.props
+    socket.on('newExchangeReceive', (data) => {
+      let newnotifList = [...this.state.notifList]
+      if (location.pathname !== '/break') {
+        newnotifList.push('[Перерывы] Новый запрос на обмен')
+      }
+      this.setState({ notifList: newnotifList })
+    })
+  }
+
+  openNotif = (e) => {
+    this.setState({ anchorElNotif: this.state.anchorElNotif === undefined ? e.currentTarget : undefined })
+  }
+
+  delNotif = (id) => {
+    let newNotifList = this.state.notifList.filter((i, ind) => ind !== id)
+    this.setState({ notifList: newNotifList })
+  }
+
   render() {
     const { onExit, page, drawer, level, onOpenNews, people_name, history } = this.props
-    const { anchorMenu, searchText } = this.state
+    const { anchorMenu, searchText, anchorElNotif, notifList } = this.state
     const LEVEL_NEWS = level.news_lvl // поправить как внесу поправки в БД
     let currentPage = PAGES.filter(i => i.link === page.pathname)[0] && PAGES.filter(i => i.link === page.pathname)[0].name
     if (!currentPage) currentPage = page.pathname === '/' ? 'Новости' : page.pathname === '/search' ? 'Поиск' : '404 Not Found'
@@ -69,7 +96,25 @@ class DefAppBar extends React.PureComponent {
             <Add /> Новость
           </StyleFab>}
           <StyleShop onClick={() => history.push('/shop')}><CShoppingCartOutlined /></StyleShop>
-          <StyleNotif><Notif /></StyleNotif>
+          <StyleNotif onClick={this.openNotif} s={anchorElNotif === undefined && notifList.length > 0}><Notif /></StyleNotif>
+
+          <Popper id='notif' open={Boolean(anchorElNotif)} anchorEl={anchorElNotif}>
+            <ClickAwayListener onClickAway={this.openNotif}>
+              <NotifList container spacing={2}>
+                <NotifItemTop item xs={12}><NotifText>Уведомления</NotifText></NotifItemTop>
+                {notifList.length === 0 && <NotifItem item xs={12}><NotifText>Новых уведомлений нет</NotifText></NotifItem>} 
+                {notifList.length > 0 && notifList.map((i, ind) => (
+                  <NotifItem item xs={12}>
+                    <NotifText>{i}</NotifText>
+                    <SIconButton aria-label="delete" onClick={() => this.delNotif(ind)}>
+                      <Delete fontSize="small" />
+                    </SIconButton>
+                  </NotifItem>
+                ))}
+              </NotifList>
+            </ClickAwayListener>
+          </Popper>
+
           <StyleAvatar sizes='small' onClick={this.onMenuOpen} lvl={level.level_id}>{people_name[1].charAt(0)}{people_name[0].charAt(0)}</StyleAvatar>
 
         </CustomToolbar>
@@ -90,6 +135,75 @@ class DefAppBar extends React.PureComponent {
     )
   }
 }
+
+const changeColor = keyframes`
+  0% {
+    color: #DDE2E8;
+  }
+  50% {
+    color: #0097EC;
+  }
+  100% {
+    color: #DDE2E8;
+  }
+`;
+
+const SIconButton = styled(IconButton)` && {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+}`
+
+const NotifText = styled(Grid)` && {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 19px;
+  font-feature-settings: 'pnum' on, 'lnum' on;
+  max-width: 330px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}`
+
+const NotifItemTop = styled(Grid)` && {
+  height: 50px;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0px 8px;
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #2285EE;
+}`
+
+const NotifItem = styled(Grid)` && {
+  position: relative;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0px 8px;
+  max-width: 400px;
+  width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #072D57;
+} &&:hover {
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.08);
+}`
+
+const NotifList = styled(Grid)` && {
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  padding: 8px;
+  min-width: 200px;
+  max-width: 400px;
+}`
 
 const openDrawerNamePage = keyframes`
   0% {
@@ -166,6 +280,8 @@ const StyleNotif = styled.span` && {
   top: 21px;
   right: 83px;
   cursor: pointer;
+  color: #DDE2E8;
+  animation: ${p=>p.s ? changeColor : ''} 2s infinite linear;
 }`;
 
 const StyleAvatar = styled(Avatar)` && {
@@ -271,4 +387,5 @@ const CustomToolbar = styled(Toolbar)` && {
   position: relative;
 }`
 
+DefAppBar.contextType = SocketConsumer;
 export default withRouter(DefAppBar)

@@ -33,7 +33,7 @@ class NewTableBreak extends React.PureComponent{
         const tabs = ['', '?my', '?stat', '?rule', '?exchange']
         const { history } = this.props
         history.push(`/break${tabs[id]}`)
-        this.setState({ activeTab: id })
+        this.setState({ activeTab: id, exchengeBreakOpen: false })
     }
 
     onNextDate = () => {
@@ -80,6 +80,9 @@ class NewTableBreak extends React.PureComponent{
         const { enqueueSnackbar, people_id } = this.props
         const { socket } = this.context
         await socket.emit('updateTable', undefined)
+        socket.on('needUpdate', (data) => {
+            socket.emit('updateTable', undefined)
+        })
         socket.on('updateTable', (data) => {
             let table = setTable(data, people_id)
             let temp_my = Object.keys(table).filter(i => table[i].key === 1) // выделили ячейки в которых есть мои перерывы
@@ -109,10 +112,11 @@ class NewTableBreak extends React.PureComponent{
             this.setState({ loader: false })
         })
         socket.on('exchangeSend', (data) => {
-            if (data === 'ok') {
-                enqueueSnackbar('Запрос успешно отправлен', {variant: 'success',autoHideDuration: 6000,preventDuplicate: true})
-                this.setState({ exchengeBreakOpen: false, exchangeRowID: undefined })
-            }
+            enqueueSnackbar('Запрос успешно отправлен', {variant: 'success',autoHideDuration: 6000,preventDuplicate: true})
+            this.setState({ exchengeBreakOpen: false, exchangeRowID: undefined })
+        })
+        socket.on('exchangeReceive', (data) => {
+            enqueueSnackbar('Получен запрос на обмен перерывом', {variant: 'success',autoHideDuration: 6000,preventDuplicate: true})
         })
         
     }
@@ -159,7 +163,7 @@ class NewTableBreak extends React.PureComponent{
                     {activeTab === 1 && !loader && <MyBreak myBreak={myBreak} date={date}/>}
                     {activeTab === 2 && <StatBreak drawer={drawer} date={date} loader={loader} onChangeTab={this.onChangeTab} level={level.level_id}/>}
                     {activeTab === 3 && <RuleBreak drawer={drawer} date={date} loader={loader} onChangeTab={this.onChangeTab} level={level.level_id}/>}
-                    {activeTab === 4 && <ExchangeBreak onChangeTab={this.onChangeTab}/>}
+                    {activeTab === 4 && <ExchangeBreak onChangeTab={this.onChangeTab} date={date} />}
                 </DivBody>
                 
                 <RequestExchange 
@@ -170,6 +174,7 @@ class NewTableBreak extends React.PureComponent{
                     myBreak={myBreak} 
                     onChangeTab={this.onChangeTab}
                     socket={socket}
+                    date={date}
                 />
             </Root>
         )
