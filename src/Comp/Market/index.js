@@ -4,6 +4,8 @@ import { Search, SettingsOutlined, FavoriteBorder, LocalMallOutlined } from '@ma
 import { NotLikePopular } from 'Comp/Market/svg'
 import { Button, Grid, Badge } from '@material-ui/core';
 import { List } from 'Comp/Market/list'
+import { SocketConsumer } from 'ContextSocket/index'
+import { BadgeMarket } from 'Comp/Market/badge'
 
 class Shop extends React.PureComponent {
 
@@ -11,48 +13,10 @@ class Shop extends React.PureComponent {
         page: -1,
         cat: 0,
         inBadge: [],
-        items: [
-          {
-            id: 0,
-            name: 'Товар А',
-            hvPic: false,
-            srcPic: undefined,
-            price: 200,
-            cat: 1
-          },
-          {
-            id: 1,
-            name: 'Товар Б',
-            hvPic: false,
-            srcPic: undefined,
-            price: 250,
-            cat: 2
-          },
-          {
-            id: 3,
-            name: 'Товар В',
-            hvPic: false,
-            srcPic: undefined,
-            price: 300,
-            cat: 3
-          },
-          {
-            id: 4,
-            name: 'Товар Г',
-            hvPic: false,
-            srcPic: undefined,
-            price: 350,
-            cat: 4
-          },
-          {
-            id: 5,
-            name: 'Товар Д',
-            hvPic: false,
-            srcPic: undefined,
-            price: 400,
-            cat: 5
-          }
-        ]
+        items: [],
+        categorList: [{id: 0, text: 'Главная', name: 'SYSTEM', surname: '', active: true}],
+        empty: true,
+        anchorElBadge: undefined
     }
 
     onChangePage = (id) => (e) => this.setState({ page: id })
@@ -71,10 +35,24 @@ class Shop extends React.PureComponent {
       this.setState({ inBadge: newInBadge })
     }
 
+    openBadge = (e) => {
+      this.setState({ anchorElBadge: this.state.anchorElBadge ? undefined : e.currentTarget })
+    }
+
+    componentDidMount() {
+      const { socket } = this.context
+      socket.emit('getMarket', {});
+      socket.on('getMarket', (data) => {
+        if (data.empty) { return 0; }
+        let newCatList = [{id: 0, text: 'Главная', name: 'SYSTEM', surname: '', active: true}, ...data.cat]
+        let newMarketItem = [...data.item]
+        this.setState({ categorList: newCatList, items: newMarketItem })
+      })
+    }
+
     render () {
-        const { page, cat, inBadge, items } = this.state
-        const { drawer } = this.props
-        const categor = ['Главная', 'Категория 1', 'Категория 2', 'Категория 3', 'Категория 4', 'Категория 5', 'Категория 6', 'Категория 7', 'Категория 8', 'Категория 9']
+        const { page, cat, inBadge, items, categorList, anchorElBadge } = this.state
+        const { drawer, level } = this.props
         return (
             <Root p={drawer}>
                 <SearchPanel p={drawer}>
@@ -85,27 +63,30 @@ class Shop extends React.PureComponent {
                     <SetTitle onClick={this.onChangePage(0)} s={page === 0}>Настройка</SetTitle>
                     <FavoriteBorderSt onClick={this.onChangePage(1)} s={page === 1}/>
                     <LikeTitle onClick={this.onChangePage(1)} s={page === 1}>Избранное</LikeTitle>
-                    <LocalMallOutlinedSt onClick={this.onChangePage(2)} s={page === 2}/>
-                    <ShopTitle onClick={this.onChangePage(2)} s={page === 2}>
-                      <CBadge badgeContent={inBadge.length} color="primary">Корзина</CBadge>
+                    <LocalMallOutlinedSt onClick={this.onChangePage(2)} s={Boolean(anchorElBadge)} onClick={this.openBadge}/>
+                    <ShopTitle onClick={this.onChangePage(2)} s={Boolean(anchorElBadge)}>
+                      <CBadge badgeContent={inBadge.length} color="primary" onClick={this.openBadge}>Корзина</CBadge>
                     </ShopTitle>
                 </SearchPanel>
                 <Popular p={drawer}>
                     <NotLikePopular />
-                    <PopularTitle>Стоимость корзины: {price(inBadge)} балов</PopularTitle>
-                    <PopularText>Баланс: 200 балов</PopularText>
+                    <PopularTitle s={price(inBadge) > level.balance}>Стоимость корзины: {price(inBadge)} балов</PopularTitle>
+                    <PopularText>Баланс: {level.balance} балов</PopularText>
                     <PopularButton variant='contained' color='primary'>История изменения баланса</PopularButton>
                 </Popular>
                 <ListCategories p={drawer}>
                     <SGrid container spacing={1}>
-                        {categor.map((i, ind) => (
+                        {categorList.map((i, ind) => (
                           <Grid item xs={12}>
-                            <ItemList a={ind === cat} onClick={() => this.setState({ cat: ind })}>{i}</ItemList>
+                            <ItemList a={ind === cat} onClick={() => this.setState({ cat: ind })}>{i.text}</ItemList>
                           </Grid>
                         ))}
                     </SGrid>
                 </ListCategories>
                 <List addBadge={this.addBadge} items={items} inBadge={inBadge} removeBadge={this.removeBadge} URL_SERVER={this.props.URL_SERVER} cat={cat} />
+                
+                <BadgeMarket open={Boolean(anchorElBadge)} anchorEl={anchorElBadge} onClose={this.openBadge} />
+
             </Root>
         )
     }
@@ -122,6 +103,8 @@ const price = (bad) => {
 const CBadge = styled(Badge)` && {  
 } && .MuiBadge-anchorOriginTopRightRectangle {
   transform: scale(1) translate(100%, -70%);
+} && .MuiBadge-badge {
+  z-index: 0;
 }`
 
 export const onDrawerSearch = keyframes`
@@ -278,7 +261,7 @@ const PopularTitle = styled.div`{
     align-items: center;
     text-align: center;
     font-feature-settings: 'pnum' on, 'lnum' on;
-    color: #072D57;
+    color: ${p=>p.s ? '#C5202F' : '#072D57'};
     user-select: none;
 }`
 
@@ -393,4 +376,5 @@ const SearchPanel = styled.div`{
     height: 64px;
 }`
 
+Shop.contextType = SocketConsumer;
 export default Shop

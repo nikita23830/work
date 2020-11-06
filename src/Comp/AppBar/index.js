@@ -193,6 +193,7 @@ const NotifItem = styled(Grid)` && {
   overflow: hidden;
   text-overflow: ellipsis;
   color: #072D57;
+  z-index: 1001;
 } &&:hover {
   box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.08);
 }`
@@ -203,6 +204,7 @@ const NotifList = styled(Grid)` && {
   padding: 8px;
   min-width: 200px;
   max-width: 400px;
+  z-index: 1000;
 }`
 
 const openDrawerNamePage = keyframes`

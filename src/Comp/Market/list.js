@@ -8,7 +8,7 @@ export const List = React.memo(function List({ addBadge, items, inBadge, removeB
             {items.map((i,ind) => {
                 let res = false
                 inBadge.map(j => { if (j.id === i.id) res = true })
-                let src = i.hvPic ? i.srcPic : `${URL_SERVER}/image/item.png`
+                let src = i.hvimage ? `${URL_SERVER}/marketimg/${i.image}` : `${URL_SERVER}/image/item.png`
                 if (cat === 0 || i.cat === cat) return (
                     <Item onContextMenu={(e) => e.preventDefault()}>
                         <ItemImg src={src} />
